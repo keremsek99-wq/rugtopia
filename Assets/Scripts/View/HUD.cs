@@ -17,7 +17,8 @@ namespace Rugtopia.View
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winTitle, _winCoins, _failTitle, _failBody, _continueLabel, _menuBody, _introText;
-        Text _playLabel, _langLabel, _mapTitle, _menuSub, _skip;
+        Text _playLabel, _langLabel, _mapTitle, _menuSub, _skip, _chipText;
+        GameObject _dim, _chip;
         Text[] _stars;
         GameObject _intro;
         Button _slot, _comb, _shuttle;
@@ -62,6 +63,20 @@ namespace Rugtopia.View
             _slot = Btn(root, "Slot", new Vector2(0.04f, 0.225f), new Vector2(0.32f, 0.305f), "+  Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
             _comb = Btn(root, "Comb", new Vector2(0.36f, 0.225f), new Vector2(0.64f, 0.305f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
             _shuttle = Btn(root, "Shuttle", new Vector2(0.68f, 0.225f), new Vector2(0.96f, 0.305f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+
+            _dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.059f, 0.031f, 0.02f, 0.72f)).gameObject;
+            _dim.SetActive(false);
+            var chip = Panel(root, "CoinChip", new Vector2(0.33f, 0.905f), new Vector2(0.67f, 0.97f), new Color(0f, 0f, 0f, 0.55f));
+            var chipImg = chip.GetComponent<Image>();
+            chipImg.sprite = ArtKit.UiRound;
+            chipImg.type = Image.Type.Sliced;
+            var icon = Panel(chip, "Icon", new Vector2(0.06f, 0.14f), new Vector2(0.28f, 0.86f), Color.white);
+            var iconImg = icon.GetComponent<Image>();
+            iconImg.sprite = ArtKit.Coin;
+            iconImg.raycastTarget = false;
+            _chipText = Txt(chip, "Val", new Vector2(0.28f, 0f), new Vector2(0.96f, 1f), "", 34, TextAnchor.MiddleCenter, ViewKit.Hex("#FFE9A8"));
+            _chip = chip.gameObject;
+            _chip.SetActive(false);
 
             _winPanel = Card(root, "WinPanel", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.68f), ViewKit.Green);
             _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.06f, 0.74f), new Vector2(0.94f, 0.96f), "", 72, TextAnchor.MiddleCenter, ViewKit.Ink);
@@ -235,6 +250,7 @@ namespace Rugtopia.View
             ApplyLanguage();
             if (restartStars) _starT = 0f;
             _winCoins.text = "+" + coins + "  " + Copy.Get("coins");
+            ShowDim(true);
             _winPanel.SetActive(true);
             _winPanel.transform.SetAsLastSibling();
         }
@@ -272,10 +288,32 @@ namespace Rugtopia.View
             _failTitle.text = title;
             _failBody.text = body;
             _continueLabel.text = Copy.Get("bSlot") + "  " + continuePrice;
+            ShowDim(false);
             _failPanel.SetActive(true);
             _failPanel.transform.SetAsLastSibling();
         }
-        public void HidePanels() { _winPanel.SetActive(false); _failPanel.SetActive(false); }
+        public void HidePanels()
+        {
+            _winPanel.SetActive(false);
+            _failPanel.SetActive(false);
+            if (_dim != null) _dim.SetActive(false);
+            if (_chip != null) _chip.SetActive(false);
+        }
+
+        void ShowDim(bool withChip)
+        {
+            if (_dim != null)
+            {
+                _dim.SetActive(true);
+                _dim.transform.SetAsLastSibling();
+            }
+            if (_chip != null)
+            {
+                _chip.SetActive(withChip);
+                if (withChip && _chipText != null) _chipText.text = _coins != null ? _coins.text.Replace(" ¢", "") : "";
+                if (withChip) _chip.transform.SetAsLastSibling();
+            }
+        }
 
         static RectTransform Rect(Transform parent, string name, Vector2 aMin, Vector2 aMax)
         {

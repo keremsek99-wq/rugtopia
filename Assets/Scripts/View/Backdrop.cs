@@ -2,15 +2,34 @@ using UnityEngine;
 
 namespace Rugtopia.View
 {
-    /// <summary>Plain dark gradient, the same family as the HTML prototype background.</summary>
+    /// <summary>One full-height gradient, the same brown the HTML prototype paints behind everything.</summary>
     public class Backdrop : MonoBehaviour
     {
+        static Sprite _gradient;
+
         public void Build(Vector2 rugCenter, Vector2 rugSize)
         {
             ViewKit.Clear(transform);
-            ViewKit.Quad(transform, "Sky", new Vector2(0f, 2f), new Vector2(14f, 24f), ViewKit.Hex("#4A2C20"), -30);
-            ViewKit.Quad(transform, "Floor", new Vector2(0f, -6f), new Vector2(14f, 12f), ViewKit.Hex("#22140F"), -29);
-            ViewKit.Quad(transform, "RugShadow", rugCenter + new Vector2(0f, -0.12f), rugSize + new Vector2(0.35f, 0.28f), new Color(0f, 0f, 0f, 0.28f), -5);
+            ViewKit.Quad(transform, "Background", new Vector2(0f, 0f), new Vector2(16f, 28f), Color.white, -30, Gradient());
+        }
+
+        static Sprite Gradient()
+        {
+            if (_gradient != null) return _gradient;
+            const int h = 256;
+            var t = new Texture2D(4, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            var top = ViewKit.Hex("#4A2C20");
+            var bot = ViewKit.Hex("#22140F");
+            var px = new Color[4 * h];
+            for (int y = 0; y < h; y++)
+            {
+                float k = y / (float)(h - 1);
+                var c = Color.Lerp(bot, top, k);
+                for (int x = 0; x < 4; x++) px[y * 4 + x] = c;
+            }
+            t.SetPixels(px); t.Apply();
+            _gradient = Sprite.Create(t, new Rect(0, 0, 4, h), new Vector2(0.5f, 0.5f), h);
+            return _gradient;
         }
     }
 }
