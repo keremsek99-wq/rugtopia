@@ -134,7 +134,7 @@ namespace Rugtopia.EditorTools
                 if (d.solution != null && d.solution.Length > 1) midGame.Take(d.solution[0]);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-playing.png", midGame, d, w, h, false, false);
                 var hard = LevelLoader.Get(8);
-                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER HARD");
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER");
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-fail.png", midGame, d, w, h, false, false, null, true);
                 var solved = LevelBuilder.Build(d);
                 if (d.solution != null)
@@ -148,7 +148,14 @@ namespace Rugtopia.EditorTools
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-mid.png", lightMid, d, w, h, false, false);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-win.png", solved, d, w, h, false, true);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-fail.png", lightMid, d, w, h, false, false, null, true);
-                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER HARD");
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER");
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "dense-level-1.png", LevelBuilder.Build(LevelLoader.Get(0)), LevelLoader.Get(0), w, h, true, false);
+                var lv9 = LevelLoader.Get(8);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "dense-level-9.png", LevelBuilder.Build(lv9), lv9, w, h, false, false, "SUPER");
+                var lv15 = LevelLoader.Get(14);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "dense-level-15.png", LevelBuilder.Build(lv15), lv15, w, h, false, false, "HARD");
+                var lv21 = LevelLoader.Get(20);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "dense-level-21.png", LevelBuilder.Build(lv21), lv21, w, h, false, false);
                 ThemeConfig.Current = ThemeConfig.Theme.Dark;
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-playing.png", ftue, d, w, h, true, false);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-win.png", solved, d, w, h, false, true);
@@ -173,6 +180,7 @@ namespace Rugtopia.EditorTools
             board.Build(g);
             backdrop.Build(board.area.center, new Vector2(board.area.width, board.area.height));
             belt.Refresh(g);
+            lanes.Fit(System.Math.Max(1, g.Lanes.Count), level.index >= 3);
             lanes.Refresh(g);
             hud.ShowPlay();
             hud.HidePanels();
@@ -191,7 +199,7 @@ namespace Rugtopia.EditorTools
             if (showHand && hint >= 0) hand.Show(lanes.FrontLocal(hint));
             else hand.Hide();
             hud.ApplyTheme();
-            if (!string.IsNullOrEmpty(badge)) hud.ShowBadge(badge, ViewKit.Hex("#8E44AD"));
+            if (!string.IsNullOrEmpty(badge)) hud.ShowBadge(badge, badge == "HARD" ? ViewKit.Hex("#C0392B") : ViewKit.Hex("#8E44AD"));
             else hud.HideBadge();
             if (failCard) hud.ShowFail("Belt Jammed", g.StitchesLeft, 1f - g.StitchesLeft / (float)System.Math.Max(1, g.Grid.Length), "Free · +1 slot & continue");
             if (winCard)

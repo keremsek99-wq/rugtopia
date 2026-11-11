@@ -19,7 +19,9 @@ namespace Rugtopia.View
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winTitle, _winCoins, _failTitle, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
         Image _failFill;
-        GameObject _badge;
+        GameObject _badge, _diffSplash;
+        Text _diffSplashText;
+        Coroutine _splash;
         Button _langEn, _langTr;
         Text _playLabel, _langLabel, _themeLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
         GameObject _dim, _chip;
@@ -64,9 +66,15 @@ namespace Rugtopia.View
             _lives = Txt(top, "Lives", new Vector2(0.03f, 0.0f), new Vector2(0.2f, 0.38f), "", 28, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
             _coins = Txt(top, "Coins", new Vector2(0.8f, 0.0f), new Vector2(0.97f, 0.38f), "", 28, TextAnchor.MiddleRight, ViewKit.Gold);
 
-            _slot = Btn(root, "Slot", new Vector2(0.04f, 0.225f), new Vector2(0.32f, 0.305f), "+  Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
-            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.225f), new Vector2(0.64f, 0.305f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
-            _shuttle = Btn(root, "Shuttle", new Vector2(0.68f, 0.225f), new Vector2(0.96f, 0.305f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+            float dx = 0.108f, dy = 0.05f, gap = 0.028f;
+            float row = 3f * dx + 2f * gap;
+            float bx = (1f - row) * 0.5f;
+            float by = 0.046f;
+            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), "+", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
+            bx += dx + gap;
+            _comb = IconBtn(root, "Comb", new Vector2(bx, by), new Vector2(bx + dx, by + dy), "#", "comb"); _combL = _comb.GetComponentInChildren<Text>();
+            bx += dx + gap;
+            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), ">", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
 
             _dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.059f, 0.031f, 0.02f, 0.72f)).gameObject;
             _dim.SetActive(false);
@@ -102,11 +110,15 @@ namespace Rugtopia.View
             _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.54f, 0.40f), new Vector2(0.9f, 0.52f), "Türkçe", "langTr", true);
             _langEn.gameObject.SetActive(false);
             _langTr.gameObject.SetActive(false);
-            _badge = Panel(root, "Badge", new Vector2(0.18f, 0.80f), new Vector2(0.82f, 0.88f), ViewKit.Hex("#8E44AD")).gameObject;
+            _badge = Panel(top, "Badge", new Vector2(0.62f, 0.52f), new Vector2(0.82f, 0.94f), ViewKit.Hex("#8E44AD")).gameObject;
             _badge.GetComponent<Image>().sprite = ArtKit.UiRound;
             _badge.GetComponent<Image>().type = Image.Type.Sliced;
-            _badgeText = Txt(_badge.transform, "Label", Vector2.zero, Vector2.one, "", 40, TextAnchor.MiddleCenter, Color.white);
+            _badgeText = Txt(_badge.transform, "Label", Vector2.zero, Vector2.one, "", 26, TextAnchor.MiddleCenter, Color.white);
             _badge.SetActive(false);
+            _diffSplash = Card(root, "DiffSplash", new Vector2(0.14f, 0.40f), new Vector2(0.86f, 0.60f), ViewKit.Hex("#8E44AD"));
+            _diffSplash.AddComponent<CanvasGroup>();
+            _diffSplashText = Txt(_diffSplash.transform, "Label", new Vector2(0.08f, 0.15f), new Vector2(0.92f, 0.85f), "", 52, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _diffSplash.SetActive(false);
             _playLabel = null;
             Remember(winNext, "winNext");
 
@@ -302,9 +314,12 @@ namespace Rugtopia.View
         {
             Button b = id == "slot" ? _slot : id == "comb" ? _comb : _shuttle;
             Text l = id == "slot" ? _slotL : id == "comb" ? _combL : _shuttleL;
-            string name = id == "slot" ? "+  Slot" : id == "comb" ? "#  Comb" : ">  Shuttle";
+            string icon = id == "slot" ? "+" : id == "comb" ? "#" : ">";
             b.interactable = unlocked;
-            l.text = !unlocked ? name : name + (inventory > 0 ? "  x" + inventory : "  " + price) + (armed ? "  ON" : "");
+            l.text = !unlocked ? icon : icon + "\n" + (inventory > 0 ? inventory.ToString() : price.ToString());
+            var img = b.GetComponent<Image>();
+            if (img != null) img.color = armed ? ViewKit.Gold : ThemeConfig.Button;
+            l.color = armed ? ViewKit.Ink : ThemeConfig.ButtonText;
         }
 
         public void ShowLangChoice(bool on)
@@ -315,6 +330,8 @@ namespace Rugtopia.View
 
         public void ShowBadge(string text, Color color)
         {
+            if (_splash != null) { StopCoroutine(_splash); _splash = null; }
+            if (_diffSplash != null) _diffSplash.SetActive(false);
             if (_badge == null) return;
             _badge.SetActive(true);
             var img = _badge.GetComponent<Image>();
@@ -323,7 +340,53 @@ namespace Rugtopia.View
             _badge.transform.SetAsLastSibling();
         }
 
-        public void HideBadge() { if (_badge != null) _badge.SetActive(false); }
+        /// <summary>Full-screen callout that shrinks away, then the header pill stays.</summary>
+        public void PlayDifficultyIntro(string splash, Color color, string pill)
+        {
+            if (_splash != null) StopCoroutine(_splash);
+            HideBadge();
+            _splash = StartCoroutine(SplashThenPill(splash, color, pill));
+        }
+
+        System.Collections.IEnumerator SplashThenPill(string splash, Color color, string pill)
+        {
+            if (_diffSplash != null)
+            {
+                var edge = _diffSplash.GetComponent<Image>();
+                if (edge != null) edge.color = color;
+                if (_diffSplashText != null) _diffSplashText.text = splash;
+                var rt = _diffSplash.GetComponent<RectTransform>();
+                var group = _diffSplash.GetComponent<CanvasGroup>();
+                rt.localScale = Vector3.one;
+                if (group != null) group.alpha = 1f;
+                _diffSplash.SetActive(true);
+                _diffSplash.transform.SetAsLastSibling();
+                float t = 0f;
+                while (t < 0.7f) { t += Time.unscaledDeltaTime; yield return null; }
+                float u = 0f;
+                while (u < 0.38f)
+                {
+                    u += Time.unscaledDeltaTime;
+                    float k = Mathf.Clamp01(u / 0.38f);
+                    float s = Mathf.Lerp(1f, 0.15f, k);
+                    rt.localScale = new Vector3(s, s, 1f);
+                    if (group != null) group.alpha = 1f - k;
+                    yield return null;
+                }
+                _diffSplash.SetActive(false);
+                rt.localScale = Vector3.one;
+                if (group != null) group.alpha = 1f;
+            }
+            _splash = null;
+            ShowBadge(pill, color);
+        }
+
+        public void HideBadge()
+        {
+            if (_splash != null) { StopCoroutine(_splash); _splash = null; }
+            if (_diffSplash != null) _diffSplash.SetActive(false);
+            if (_badge != null) _badge.SetActive(false);
+        }
 
         public void ApplyTheme()
         {
@@ -420,6 +483,7 @@ namespace Rugtopia.View
             _failPanel.SetActive(false);
             if (_dim != null) _dim.SetActive(false);
             if (_chip != null) _chip.SetActive(false);
+            if (_diffSplash != null) _diffSplash.SetActive(false);
         }
 
         void ShowDim(bool withChip)
@@ -491,6 +555,21 @@ namespace Rugtopia.View
             lrt.pivot = new Vector2(0.5f, 0.5f);
             lrt.sizeDelta = new Vector2(0f, 72f);
             lrt.anchoredPosition = Vector2.zero;
+            b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return b;
+        }
+
+        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id)
+        {
+            var rt = Panel(parent, name, aMin, aMax, ThemeConfig.Button);
+            var image = rt.GetComponent<Image>();
+            image.sprite = Glyphs.Circle;
+            image.preserveAspect = true;
+            var b = rt.gameObject.AddComponent<Button>();
+            var text = Txt(rt, "Label", new Vector2(0.12f, 0.08f), new Vector2(0.88f, 0.92f), label, 26, TextAnchor.MiddleCenter, ThemeConfig.ButtonText);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.lineSpacing = 0.8f;
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
         }

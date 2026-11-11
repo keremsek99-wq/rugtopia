@@ -160,6 +160,7 @@ namespace Rugtopia.View
             _t0 = Time.time;
             _board.SetVisualHp(-1);
             _board.Build(_g);
+            _lanes.Fit(_g.Lanes.Count, levelIndex >= 3);
             _hud.ShowPlay();
             _hud.HidePanels();
             if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -2.55f));
@@ -175,8 +176,8 @@ namespace Rugtopia.View
         void ShowDifficultyBadge()
         {
             var tag = _g.Level.tag;
-            if (tag == "veryhard") _hud.ShowBadge(Copy.Get("bannerVeryhard"), ViewKit.Hex("#8E44AD"));
-            else if (tag == "hard") _hud.ShowBadge(Copy.Get("bannerHard"), ViewKit.Hex("#C0392B"));
+            if (tag == "veryhard") _hud.PlayDifficultyIntro(Copy.Get("bannerVeryhard"), ViewKit.Hex("#8E44AD"), Copy.Get("pillSuper"));
+            else if (tag == "hard") _hud.PlayDifficultyIntro(Copy.Get("bannerHard"), ViewKit.Hex("#C0392B"), Copy.Get("pillHard"));
             else _hud.HideBadge();
         }
 

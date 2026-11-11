@@ -195,7 +195,7 @@ namespace Rugtopia.View
             if (!hidden)
                 Quad(parent, name + "Mark", pos + new Vector2(0f, height * 0.06f), Vector2.one * height * 0.34f, InkFor(color), order + 2, Glyphs.Of(color));
             var badge = pos + new Vector2(w * 0.42f, -height * 0.32f);
-            float br = Mathf.Max(0.16f, height * 0.22f);
+            float br = Mathf.Clamp(height * 0.2f, 0.11f, 0.26f);
             Quad(parent, name + "Badge", badge, Vector2.one * br * 2f, Ink, order + 3, Glyphs.Circle);
             Label(parent, name + "Num", badge, count, br * 0.42f, Color.white, order + 4);
         }
