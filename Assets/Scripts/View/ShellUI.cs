@@ -121,8 +121,8 @@ namespace Rugtopia.View
             bool streak = Economy.StreakUnlocked;
             if (_dailyLock != null) _dailyLock.text = daily ? Copy.Get("dailyReady") : Copy.Get("opens10");
             if (_dailyBadge != null) _dailyBadge.gameObject.SetActive(daily && !Economy.DailyClaimedToday());
-            if (_streakLock != null) _streakLock.text = streak ? (d.streak + "/3") : Copy.Get("opens20");
-            if (_streakReward != null) _streakReward.text = Copy.Get("streakReward");
+            if (_streakLock != null) _streakLock.text = streak ? d.streak + "/3" : Copy.Get("opens20");
+            if (_streakReward != null) _streakReward.text = streak ? Copy.Get("streakReward") : "";
             PaintPips(d.streak, streak);
             RebuildHero(d.maxLevel <= 0 ? 0 : d.maxLevel - 1);
             RebuildStrip();
@@ -421,9 +421,9 @@ namespace Rugtopia.View
             {
                 int col = i % 4, row = i / 4;
                 float x0 = 0.06f + col * 0.23f;
-                float y1 = 0.72f - row * 0.28f;
-                if (i == 6) { x0 = 0.3f; y1 = 0.18f; }
-                var cell = Panel(card.transform, "Day" + i, new Vector2(x0, y1), new Vector2(x0 + 0.2f, y1 + 0.22f), ThemeConfig.Button);
+                float y1 = 0.58f - row * 0.24f;
+                if (i == 6) { x0 = 0.52f; y1 = 0.34f; }
+                var cell = Panel(card.transform, "Day" + i, new Vector2(x0, y1), new Vector2(x0 + 0.2f, y1 + 0.2f), ThemeConfig.Button);
                 cell.GetComponent<Image>().sprite = ArtKit.UiRound;
                 cell.GetComponent<Image>().type = Image.Type.Sliced;
                 var label = Txt(cell, "V", Vector2.zero, Vector2.one, (i + 1).ToString(), 22, TextAnchor.MiddleCenter, ViewKit.Cream);
