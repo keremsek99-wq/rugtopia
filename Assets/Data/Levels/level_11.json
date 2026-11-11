@@ -1,0 +1,179 @@
+{
+ "index": 10,
+ "id": 11,
+ "nameEn": "Garden Grid",
+ "nameTr": "Bahçe Izgarası",
+ "tag": "normal",
+ "pattern": {
+  "t": "checker",
+  "w": 9,
+  "h": 8,
+  "c": "GCY",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "GGCCYYGGC",
+  "GGCCYYGGC",
+  "CCYYGGCCY",
+  "CCYYGGCCY",
+  "YYGGCCYYG",
+  "YYGGCCYYG",
+  "GGCCYYGGC",
+  "GGCCYYGGC"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 5,
+ "shuffle": 0.6,
+ "seed": 5,
+ "hidden": 0.25,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "Y",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "G",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  1,
+  0,
+  0,
+  2,
+  0,
+  2,
+  2,
+  2,
+  0,
+  2,
+  0,
+  2,
+  0,
+  0
+ ]
+}

@@ -1,0 +1,213 @@
+{
+ "index": 16,
+ "id": 17,
+ "nameEn": "Stepped Rings",
+ "nameTr": "Basamaklı Halkalar",
+ "tag": "normal",
+ "pattern": {
+  "t": "steps",
+  "w": 9,
+  "h": 10,
+  "c": "YRNC",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "YYRRNNCCY",
+  "RRNNCCYYR",
+  "NNCCYYRRN",
+  "CCYYRRNNC",
+  "YYRRNNCCY",
+  "RRNNCCYYR",
+  "NNCCYYRRN",
+  "CCYYRRNNC",
+  "YYRRNNCCY",
+  "RRNNCCYYR"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 5,
+ "shuffle": 0.6,
+ "seed": 5,
+ "hidden": 0.25,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": true,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "N",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  1,
+  0,
+  2,
+  2,
+  2,
+  2,
+  2,
+  0,
+  1,
+  1,
+  2,
+  2,
+  2,
+  0,
+  2,
+  2,
+  2,
+  2
+ ]
+}

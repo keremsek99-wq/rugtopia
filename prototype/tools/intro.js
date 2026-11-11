@@ -1,0 +1,10 @@
+const puppeteer=require('puppeteer-core');
+(async()=>{const b=await puppeteer.launch({executablePath:'/usr/bin/google-chrome',headless:'new',args:['--no-sandbox']});
+const p=await b.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.setViewport({width:390,height:844,deviceScaleFactor:2,isMobile:true,hasTouch:true});
+await p.goto(process.argv[2]||'file:///workspace/ilmek-prototype/index.html');await p.evaluate(()=>localStorage.clear());await p.reload();
+await new Promise(r=>setTimeout(r,500));
+await p.evaluate(()=>{__rug.debugAction('unlock');__rug.debugAction('close');__rug.press('lvl20');});
+await new Promise(r=>setTimeout(r,700));
+console.log(await p.evaluate(()=>__rug.state().modal&&__rug.state().modal.mech));
+await p.screenshot({path:'/workspace/ilmek-prototype/screenshot-intro.png'});console.log('errors',errs);await b.close();})();

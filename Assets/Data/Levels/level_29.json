@@ -1,0 +1,333 @@
+{
+ "index": 28,
+ "id": 29,
+ "nameEn": "Twilight Bands",
+ "nameTr": "Alacakaranlık",
+ "tag": "normal",
+ "pattern": {
+  "t": "diag",
+  "w": 10,
+  "h": 10,
+  "c": "NTYRC",
+  "k": 3,
+  "b": ""
+ },
+ "rows": [
+  "NNNTTTYYYR",
+  "NNTTTYYYRR",
+  "NTTTYYYRRR",
+  "TTTYYYRRRC",
+  "TTYYYRRRCC",
+  "TYYYRRRCCC",
+  "YYYRRRCCCN",
+  "YYRRRCCCNN",
+  "YRRRCCCNNN",
+  "RRRCCCNNNT"
+ ],
+ "belt": 6,
+ "lanes": 5,
+ "cap": 3,
+ "shuffle": 0,
+ "seed": 2,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 1,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 25
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 30
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 26
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 1,
+      "seq": 31
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 22
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 27
+     },
+     {
+      "c": "T",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 32
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 28
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 33
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 29
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  0,
+  3,
+  2,
+  1,
+  0,
+  2,
+  1,
+  1,
+  4,
+  1,
+  2,
+  0,
+  0,
+  0,
+  3,
+  3,
+  2,
+  4,
+  2,
+  1,
+  4,
+  3,
+  3,
+  4,
+  1,
+  2,
+  2,
+  1,
+  4,
+  4,
+  3,
+  3
+ ]
+}

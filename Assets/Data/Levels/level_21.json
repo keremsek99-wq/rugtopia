@@ -1,0 +1,237 @@
+{
+ "index": 20,
+ "id": 21,
+ "nameEn": "Knot Lozenge",
+ "nameTr": "Düğümlü Baklava",
+ "tag": "normal",
+ "pattern": {
+  "t": "baklava",
+  "w": 10,
+  "h": 10,
+  "c": "CR",
+  "k": 0,
+  "b": "N"
+ },
+ "rows": [
+  "NNNNNNNNNN",
+  "NRRCCRRCCN",
+  "NRRCCRRCCN",
+  "NCCCCCCCCN",
+  "NCCCCCCCCN",
+  "NRRCCRRCCN",
+  "NRRCCRRCCN",
+  "NCCCCCCCCN",
+  "NCCCCCCCCN",
+  "NNNNNNNNNN"
+ ],
+ "belt": 4,
+ "lanes": 5,
+ "cap": 5,
+ "shuffle": 0.3,
+ "seed": 1,
+ "hidden": 0,
+ "covered": "",
+ "knots": 1,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "N",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 1,
+      "seq": 3
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  2,
+  0,
+  1,
+  1,
+  2,
+  3,
+  4,
+  2,
+  4,
+  3,
+  4,
+  4,
+  3,
+  3,
+  4
+ ]
+}

@@ -1,0 +1,237 @@
+{
+ "index": 18,
+ "id": 19,
+ "nameEn": "Medallion",
+ "nameTr": "Madalyon",
+ "tag": "hard",
+ "pattern": {
+  "t": "diamond",
+  "w": 9,
+  "h": 10,
+  "c": "CRY",
+  "k": 0,
+  "b": "N"
+ },
+ "rows": [
+  "NNNNNNNNN",
+  "NCCRRRCCN",
+  "NCRRRRRCN",
+  "NRRRYRRRN",
+  "NRRYYYRRN",
+  "NRRYYYRRN",
+  "NRRRYRRRN",
+  "NCRRRRRCN",
+  "NCCRRRCCN",
+  "NNNNNNNNN"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 4,
+ "shuffle": 1,
+ "seed": 4,
+ "hidden": 0.3,
+ "covered": "alt",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "N",
+      "n": 2,
+      "hidden": true,
+      "knot": 0,
+      "seq": 22
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  1,
+  0,
+  0,
+  1,
+  2,
+  2,
+  2,
+  2,
+  1,
+  1,
+  0,
+  2,
+  0,
+  1,
+  0,
+  0,
+  1,
+  2,
+  2,
+  2,
+  2
+ ]
+}

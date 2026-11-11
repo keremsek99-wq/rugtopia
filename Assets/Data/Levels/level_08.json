@@ -1,0 +1,175 @@
+{
+ "index": 7,
+ "id": 8,
+ "nameEn": "Little Star",
+ "nameTr": "Küçük Yıldız",
+ "tag": "ftue",
+ "pattern": {
+  "t": "star",
+  "w": 8,
+  "h": 8,
+  "c": "NYC",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "NNNYYNNN",
+  "NYNYYNYN",
+  "NNYCCYNN",
+  "YYCCCCYY",
+  "YYCCCCYY",
+  "NNYCCYNN",
+  "NYNYYNYN",
+  "NNNYYNNN"
+ ],
+ "belt": 4,
+ "lanes": 2,
+ "cap": 4,
+ "shuffle": 1,
+ "seed": 2,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  1,
+  0,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  0,
+  0,
+  1
+ ]
+}

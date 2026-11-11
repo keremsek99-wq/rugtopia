@@ -1,0 +1,125 @@
+{
+ "index": 4,
+ "id": 5,
+ "nameEn": "Water Path",
+ "nameTr": "Su Yolu",
+ "tag": "ftue",
+ "pattern": {
+  "t": "zigzag",
+  "w": 7,
+  "h": 6,
+  "c": "CT",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "TCCTTCC",
+  "CTTCCTT",
+  "TCCTTCC",
+  "CTTCCTT",
+  "TCCTTCC",
+  "CTTCCTT"
+ ],
+ "belt": 3,
+ "lanes": 2,
+ "cap": 5,
+ "shuffle": 0.6,
+ "seed": 0,
+ "hidden": 0,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "T",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "T",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "T",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "T",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "T",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  1,
+  0,
+  0,
+  1,
+  1,
+  1,
+  0,
+  0,
+  1,
+  1
+ ]
+}

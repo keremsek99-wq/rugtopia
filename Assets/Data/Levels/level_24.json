@@ -1,0 +1,329 @@
+{
+ "index": 23,
+ "id": 24,
+ "nameEn": "Bullseye",
+ "nameTr": "Hedef",
+ "tag": "normal",
+ "pattern": {
+  "t": "rings",
+  "w": 10,
+  "h": 10,
+  "c": "RCYN",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CRNYCCYNRC",
+  "RNYCRRCYNR",
+  "NYCRNNRCYN",
+  "YCRNYYNRCY",
+  "CRNYCCYNRC",
+  "CRNYCCYNRC",
+  "YCRNYYNRCY",
+  "NYCRNNRCYN",
+  "RNYCRRCYNR",
+  "CRNYCCYNRC"
+ ],
+ "belt": 6,
+ "lanes": 4,
+ "cap": 3,
+ "shuffle": 0,
+ "seed": 2,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 2,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 1,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 28
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 32
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 1,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 25
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 29
+     },
+     {
+      "c": "C",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 33
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 22
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 26
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 30
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 27
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 31
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  2,
+  2,
+  0,
+  1,
+  3,
+  2,
+  0,
+  2,
+  1,
+  0,
+  3,
+  3,
+  1,
+  1,
+  3,
+  0,
+  2,
+  2,
+  0,
+  1,
+  1,
+  2,
+  0,
+  1,
+  2,
+  1,
+  0,
+  0,
+  3,
+  3,
+  3,
+  3
+ ]
+}

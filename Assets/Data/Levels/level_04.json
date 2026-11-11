@@ -1,0 +1,117 @@
+{
+ "index": 3,
+ "id": 4,
+ "nameEn": "Baklava",
+ "nameTr": "Baklava",
+ "tag": "ftue",
+ "pattern": {
+  "t": "diamond",
+  "w": 6,
+  "h": 6,
+  "c": "CNR",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CCNNCC",
+  "CNNNNC",
+  "NNRRNN",
+  "NNRRNN",
+  "CNNNNC",
+  "CCNNCC"
+ ],
+ "belt": 4,
+ "lanes": 4,
+ "cap": 5,
+ "shuffle": 1,
+ "seed": 2,
+ "hidden": 0,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  0,
+  2,
+  1,
+  1,
+  3,
+  1
+ ]
+}

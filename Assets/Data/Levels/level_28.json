@@ -1,0 +1,362 @@
+{
+ "index": 27,
+ "id": 28,
+ "nameEn": "Grand Lattice",
+ "nameTr": "Büyük Kafes",
+ "tag": "veryhard",
+ "pattern": {
+  "t": "lattice",
+  "w": 10,
+  "h": 11,
+  "c": "RNY",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "NRRNRRNRRN",
+  "RNNRNNRNNR",
+  "RNNRNNRNNR",
+  "NRRNRRNRRN",
+  "RNNRNNRNNR",
+  "RNNRNNRNNR",
+  "NRRNRRNRRN",
+  "RNNRNNRNNR",
+  "RNNRNNRNNR",
+  "NRRNRRNRRN",
+  "RNNRNNRNNR"
+ ],
+ "belt": 4,
+ "lanes": 4,
+ "cap": 3,
+ "shuffle": 0,
+ "seed": 6,
+ "hidden": 0.3,
+ "covered": "alt",
+ "knots": 2,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 28
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 32
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 36
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 25
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 29
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 1,
+      "seq": 33
+     },
+     {
+      "c": "N",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 37
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 22
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 26
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 30
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 1,
+      "seq": 34
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 23
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 27
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 31
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 35
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  0,
+  3,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  2,
+  1,
+  3,
+  1,
+  1,
+  1,
+  1,
+  2,
+  1,
+  3,
+  1,
+  2,
+  1,
+  2,
+  1,
+  2,
+  2,
+  2,
+  3,
+  3,
+  3,
+  3,
+  2,
+  2,
+  3,
+  3
+ ]
+}

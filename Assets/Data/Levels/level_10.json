@@ -1,0 +1,179 @@
+{
+ "index": 9,
+ "id": 10,
+ "nameEn": "Framed Diamond",
+ "nameTr": "Çerçeveli Elmas",
+ "tag": "ftue",
+ "pattern": {
+  "t": "diamond",
+  "w": 8,
+  "h": 8,
+  "c": "CRN",
+  "k": 0,
+  "b": "K"
+ },
+ "rows": [
+  "KKKKKKKK",
+  "KCRRRRCK",
+  "KRRRRRRK",
+  "KRRNNRRK",
+  "KRRNNRRK",
+  "KRRRRRRK",
+  "KCRRRRCK",
+  "KKKKKKKK"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 4,
+ "shuffle": 0.3,
+ "seed": 1,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 15
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 11
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  1,
+  1,
+  2,
+  0,
+  0,
+  0,
+  0,
+  0,
+  2,
+  2,
+  1,
+  0,
+  1,
+  1,
+  1,
+  2
+ ]
+}

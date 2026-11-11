@@ -1,0 +1,74 @@
+{
+ "index": 0,
+ "id": 1,
+ "nameEn": "First Threads",
+ "nameTr": "İlk İplikler",
+ "tag": "ftue",
+ "pattern": {
+  "t": "vstripes",
+  "w": 4,
+  "h": 3,
+  "c": "RC",
+  "k": 2,
+  "b": ""
+ },
+ "rows": [
+  "RRCC",
+  "RRCC",
+  "RRCC"
+ ],
+ "belt": 3,
+ "lanes": 2,
+ "cap": 4,
+ "shuffle": 0,
+ "seed": 0,
+ "hidden": 0,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "R",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  0,
+  1
+ ]
+}

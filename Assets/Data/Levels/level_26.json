@@ -1,0 +1,257 @@
+{
+ "index": 25,
+ "id": 26,
+ "nameEn": "Mosaic",
+ "nameTr": "Mozaik",
+ "tag": "normal",
+ "pattern": {
+  "t": "checker",
+  "w": 10,
+  "h": 10,
+  "c": "TCRY",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "TTCCRRYYTT",
+  "TTCCRRYYTT",
+  "CCRRYYTTCC",
+  "CCRRYYTTCC",
+  "RRYYTTCCRR",
+  "RRYYTTCCRR",
+  "YYTTCCRRYY",
+  "YYTTCCRRYY",
+  "TTCCRRYYTT",
+  "TTCCRRYYTT"
+ ],
+ "belt": 5,
+ "lanes": 4,
+ "cap": 4,
+ "shuffle": 1,
+ "seed": 1,
+ "hidden": 0,
+ "covered": "alt",
+ "knots": 1,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 22
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "Y",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "T",
+      "n": 4,
+      "hidden": false,
+      "knot": 1,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  3,
+  2,
+  1,
+  0,
+  2,
+  1,
+  3,
+  0,
+  1,
+  1,
+  0,
+  1,
+  1,
+  1,
+  0,
+  2,
+  3,
+  3,
+  0,
+  3,
+  0,
+  0,
+  0,
+  2,
+  2
+ ]
+}

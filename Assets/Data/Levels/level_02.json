@@ -1,0 +1,100 @@
+{
+ "index": 1,
+ "id": 2,
+ "nameEn": "Little Diamond",
+ "nameTr": "Küçük Elmas",
+ "tag": "ftue",
+ "pattern": {
+  "t": "diamond",
+  "w": 5,
+  "h": 5,
+  "c": "CR",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CCRCC",
+  "CRRRC",
+  "RRRRR",
+  "CRRRC",
+  "CCRCC"
+ ],
+ "belt": 3,
+ "lanes": 2,
+ "cap": 4,
+ "shuffle": 0,
+ "seed": 0,
+ "hidden": 0,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  1
+ ]
+}

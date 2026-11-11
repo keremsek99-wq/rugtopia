@@ -1,0 +1,151 @@
+name: ios-testflight
+
+# Manual runs and version tags only. Skips green when secrets are missing.
+# Signing uses fastlane match against a PRIVATE certificates repo (never this public repo).
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: Bundle id. Leave empty to use the IOS_BUNDLE_ID variable, or com.rugtopia.game.
+        required: false
+        default: ""
+        type: string
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  # Passed through to unity-build so the EditMode check can be published.
+  checks: write
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Check secrets
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+      bundle_id: ${{ steps.ids.outputs.bundle_id }}
+      marketing_version: ${{ steps.ids.outputs.marketing_version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Unity and App Store secrets
+        id: gate
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_P8: ${{ secrets.APPSTORE_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+        run: bash Tools/ci/check_secrets.sh testflight "$GITHUB_OUTPUT"
+
+      - name: Resolve bundle id and marketing version
+        id: ids
+        env:
+          INPUT_BUNDLE: ${{ inputs.bundle_id }}
+          VAR_BUNDLE: ${{ vars.IOS_BUNDLE_ID }}
+        run: |
+          set -euo pipefail
+          bundle="${INPUT_BUNDLE}"
+          if [ -z "$bundle" ]; then bundle="${VAR_BUNDLE}"; fi
+          if [ -z "$bundle" ]; then bundle="com.rugtopia.game"; fi
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            marketing="${GITHUB_REF_NAME#v}"
+          else
+            marketing="0.1.0"
+          fi
+          echo "bundle_id=$bundle" >> "$GITHUB_OUTPUT"
+          echo "marketing_version=$marketing" >> "$GITHUB_OUTPUT"
+          echo "bundle $bundle version $marketing"
+
+      - name: Explain skip
+        if: steps.gate.outputs.ready != 'true'
+        run: |
+          echo "::notice title=TestFlight skipped::${{ steps.gate.outputs.message }}"
+          {
+            echo "## TestFlight skipped"
+            echo "${{ steps.gate.outputs.message }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  unity-build:
+    name: Unity iOS Xcode project
+    needs: gate
+    if: needs.gate.outputs.ready == 'true'
+    uses: ./.github/workflows/unity-build.yml
+    secrets: inherit
+    with:
+      bundle_id: ${{ needs.gate.outputs.bundle_id }}
+      marketing_version: ${{ needs.gate.outputs.marketing_version }}
+
+  upload:
+    name: Sign and upload to TestFlight
+    needs: [gate, unity-build]
+    if: needs.gate.outputs.ready == 'true' && needs.unity-build.outputs.built == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      IOS_BUNDLE_ID: ${{ needs.gate.outputs.bundle_id }}
+      MATCH_READONLY_REQUESTED: ${{ vars.MATCH_READONLY }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show Xcode
+        run: xcodebuild -version
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.unity-build.outputs.artifact_name }}
+          path: build/iOS
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          working-directory: fastlane
+
+      - name: Install fastlane
+        working-directory: fastlane
+        run: bundle install
+
+      - name: Match git credentials
+        env:
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+        run: |
+          set -euo pipefail
+          auth=$(printf 'x-access-token:%s' "$MATCH_GIT_TOKEN" | base64 | tr -d '\n')
+          echo "MATCH_GIT_BASIC_AUTHORIZATION=$auth" >> "$GITHUB_ENV"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Sign and upload
+        working-directory: fastlane
+        env:
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_P8: ${{ secrets.APPSTORE_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: bundle exec fastlane ios beta
+
+  not-built:
+    name: Xcode project missing
+    needs: [gate, unity-build]
+    if: always() && needs.gate.outputs.ready == 'true' && needs.unity-build.result == 'success' && needs.unity-build.outputs.built != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail because the Unity job did not upload an Xcode project
+        run: |
+          echo "::error::Unity build reported success but did not upload the ios-xcode artifact."
+          exit 1

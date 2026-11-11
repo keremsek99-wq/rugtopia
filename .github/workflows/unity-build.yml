@@ -1,0 +1,200 @@
+name: unity-build
+
+# Compiles the Unity project, runs EditMode tests, and exports an iOS Xcode project.
+# Skips green (with a notice) when Unity license secrets are missing.
+# ios-testflight calls this workflow; do not upload to TestFlight from here.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      bundle_id:
+        description: iOS bundle identifier. Empty uses the IOS_BUNDLE_ID variable or com.rugtopia.game.
+        required: false
+        type: string
+        default: ""
+      marketing_version:
+        description: CFBundleShortVersionString. Empty uses the tag (v*) or 0.1.0.
+        required: false
+        type: string
+        default: ""
+      build_number:
+        description: CFBundleVersion. Empty uses a UTC timestamp.
+        required: false
+        type: string
+        default: ""
+    outputs:
+      built:
+        description: true when an Xcode project artifact was uploaded
+        value: ${{ jobs.build.outputs.built }}
+      artifact_name:
+        description: Name of the uploaded Xcode project artifact
+        value: ${{ jobs.build.outputs.artifact_name }}
+
+permissions:
+  contents: read
+  # unity-test-runner publishes the EditMode result as a GitHub check.
+  checks: write
+
+concurrency:
+  group: unity-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Unity iOS Xcode project
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      built: ${{ steps.result.outputs.built }}
+      artifact_name: ${{ steps.result.outputs.artifact_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+          fetch-depth: 0
+
+      - name: Check Unity license secrets
+        id: gate
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        run: bash Tools/ci/check_secrets.sh unity "$GITHUB_OUTPUT"
+
+      - name: Explain skip
+        if: steps.gate.outputs.ready != 'true'
+        run: |
+          echo "::notice title=Unity build skipped::${{ steps.gate.outputs.message }}"
+          {
+            echo "## Unity build skipped"
+            echo "${{ steps.gate.outputs.message }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Resolve bundle id and versions
+        id: ids
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          INPUT_BUNDLE: ${{ inputs.bundle_id }}
+          INPUT_MARKETING: ${{ inputs.marketing_version }}
+          INPUT_BUILD: ${{ inputs.build_number }}
+          VAR_BUNDLE: ${{ vars.IOS_BUNDLE_ID }}
+        run: |
+          set -euo pipefail
+          bundle="${INPUT_BUNDLE}"
+          if [ -z "$bundle" ]; then bundle="${VAR_BUNDLE}"; fi
+          if [ -z "$bundle" ]; then bundle="com.rugtopia.game"; fi
+          marketing="${INPUT_MARKETING}"
+          if [ -z "$marketing" ] && [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            marketing="${GITHUB_REF_NAME#v}"
+          fi
+          if [ -z "$marketing" ]; then marketing="0.1.0"; fi
+          build="${INPUT_BUILD}"
+          if [ -z "$build" ]; then build="$(date -u +%Y%m%d%H%M%S)"; fi
+          echo "bundle_id=$bundle" >> "$GITHUB_OUTPUT"
+          echo "marketing_version=$marketing" >> "$GITHUB_OUTPUT"
+          echo "build_number=$build" >> "$GITHUB_OUTPUT"
+          echo "iOS $bundle version $marketing ($build)"
+
+      - name: Cache Library
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-ubuntu-6000.3.0f1-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-ubuntu-6000.3.0f1-
+
+      - name: EditMode tests
+        if: steps.gate.outputs.ready == 'true'
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_LICENSE == '' && secrets.UNITY_SERIAL || '' }}
+        with:
+          unityVersion: 6000.3.0f1
+          testMode: editmode
+          projectPath: .
+          artifactsPath: editmode-artifacts
+
+      - name: Upload EditMode results
+        if: always() && steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: editmode-test-results
+          path: editmode-artifacts
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Build iOS Xcode project
+        if: steps.gate.outputs.ready == 'true'
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_LICENSE == '' && secrets.UNITY_SERIAL || '' }}
+        with:
+          targetPlatform: iOS
+          unityVersion: auto
+          projectPath: .
+          buildMethod: Rugtopia.EditorTools.RugtopiaMenu.BuildIOSBatch
+          manualExit: true
+          buildsPath: build
+          buildName: iOS
+          versioning: None
+          allowDirtyBuild: true
+          # Keep generated paths equal to the GitHub workspace so the macOS job can open the project.
+          dockerWorkspacePath: ${{ github.workspace }}
+          customParameters: -bundleId ${{ steps.ids.outputs.bundle_id }} -marketingVersion ${{ steps.ids.outputs.marketing_version }} -iosBuildNumber ${{ steps.ids.outputs.build_number }}
+
+      - name: Fix artifact ownership
+        if: always() && steps.gate.outputs.ready == 'true'
+        run: sudo chown -R "$(id -u):$(id -g)" build Library editmode-artifacts 2>/dev/null || true
+
+      - name: Locate Xcode project
+        id: xcode
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          proj=$(find build Builds -name 'Unity-iPhone.xcodeproj' -print -quit 2>/dev/null || true)
+          if [ -z "$proj" ]; then
+            proj=$(find . -path './Library' -prune -o -path './prototype' -prune -o -name 'Unity-iPhone.xcodeproj' -print -quit)
+          fi
+          if [ -z "$proj" ]; then
+            echo "Unity-iPhone.xcodeproj was not produced"
+            exit 1
+          fi
+          root=$(dirname "$proj")
+          echo "root=$root" >> "$GITHUB_OUTPUT"
+          echo "Found $proj"
+          test -d "$proj"
+
+      - name: Upload Xcode project
+        id: upload
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-xcode
+          path: ${{ steps.xcode.outputs.root }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 1
+          include-hidden-files: true
+
+      - name: Record result
+        id: result
+        if: always()
+        run: |
+          if [ "${{ steps.gate.outputs.ready }}" = "true" ] && [ "${{ steps.upload.outcome }}" = "success" ]; then
+            echo "built=true" >> "$GITHUB_OUTPUT"
+            echo "artifact_name=ios-xcode" >> "$GITHUB_OUTPUT"
+          else
+            echo "built=false" >> "$GITHUB_OUTPUT"
+            echo "artifact_name=" >> "$GITHUB_OUTPUT"
+          fi

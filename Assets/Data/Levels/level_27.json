@@ -1,0 +1,261 @@
+{
+ "index": 26,
+ "id": 27,
+ "nameEn": "Zigzag Border",
+ "nameTr": "Zikzak Kenar",
+ "tag": "normal",
+ "pattern": {
+  "t": "zigzag",
+  "w": 10,
+  "h": 10,
+  "c": "CRN",
+  "k": 0,
+  "b": "K"
+ },
+ "rows": [
+  "KKKKKKKKKK",
+  "KRRNNRRNNK",
+  "KNNCCNNCCK",
+  "KCCRRCCRRK",
+  "KRRNNRRNNK",
+  "KNNCCNNCCK",
+  "KCCRRCCRRK",
+  "KRRNNRRNNK",
+  "KNNCCNNCCK",
+  "KKKKKKKKKK"
+ ],
+ "belt": 6,
+ "lanes": 5,
+ "cap": 4,
+ "shuffle": 0,
+ "seed": 4,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 2,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 21
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 22
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 1,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": true,
+      "knot": 1,
+      "seq": 18
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": true,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "K",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  0,
+  3,
+  4,
+  0,
+  3,
+  3,
+  0,
+  2,
+  2,
+  2,
+  2,
+  3,
+  4,
+  2,
+  4,
+  1,
+  1,
+  1,
+  1,
+  1,
+  4,
+  3,
+  4
+ ]
+}
