@@ -35,7 +35,10 @@ namespace Rugtopia.View
                 float cardW = LaneW * 0.9f;
                 var lane = g.Lanes[i];
                 bool hot = i == hint;
-                if (hot) ViewKit.Quad(transform, "Gold" + i, new Vector2(cx, area.center.y), new Vector2(cardW + 0.12f, area.height + 0.1f), ViewKit.Gold, 0, ArtKit.UiRound);
+                var shadow = new Color(0.28f, 0.14f, 0.06f, ThemeConfig.IsLight ? 0.28f : 0.2f);
+                ViewKit.Quad(transform, "Shade" + i, new Vector2(cx + 0.05f, area.center.y - 0.08f), new Vector2(cardW + 0.2f, area.height + 0.16f), shadow, -1, ArtKit.Shadow);
+                ViewKit.Quad(transform, "Edge" + i, new Vector2(cx, area.center.y), new Vector2(cardW + 0.14f, area.height + 0.12f), ThemeConfig.LaneEdge, 0, ArtKit.UiRound);
+                if (hot) ViewKit.Quad(transform, "Gold" + i, new Vector2(cx, area.center.y), new Vector2(cardW + 0.22f, area.height + 0.18f), ViewKit.Gold, 0, ArtKit.UiRound);
                 ViewKit.Quad(transform, "Lane" + i, new Vector2(cx, area.center.y), new Vector2(cardW, area.height), ThemeConfig.Lane, 1, ArtKit.UiRound);
                 int shown = Mathf.Min(VisibleDepth, lane.Count);
                 for (int d = shown - 1; d >= 0; d--)
@@ -52,7 +55,7 @@ namespace Rugtopia.View
                     }
                 }
                 if (lane.Count > VisibleDepth) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.22f), "+" + (lane.Count - VisibleDepth), 0.1f, ViewKit.Cream, 3);
-                if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", 0.1f, new Color(1f, 0.9f, 0.78f, 0.35f), 3);
+                if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", 0.1f, ThemeConfig.Muted, 3);
             }
         }
 

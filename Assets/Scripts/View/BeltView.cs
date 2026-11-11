@@ -22,8 +22,10 @@ namespace Rugtopia.View
             for (int i = 0; i < n; i++)
             {
                 var p = new Vector2(x0 + i * (slot + gap), y);
-                ViewKit.Quad(transform, "Slot" + i, p, new Vector2(slot * 0.92f, slot * 0.92f), ThemeConfig.BeltHole, 1, ArtKit.UiRound);
-                ViewKit.Quad(transform, "Ring" + i, p, new Vector2(slot * 0.78f, slot * 0.78f), new Color(1f, 0.9f, 0.78f, ThemeConfig.IsLight ? 0.45f : 0.35f), 2, Glyphs.Ring);
+                ViewKit.Quad(transform, "SlotEdge" + i, p, new Vector2(slot * 1.02f, slot * 1.02f), ThemeConfig.LaneEdge, 1, ArtKit.UiRound);
+                ViewKit.Quad(transform, "Slot" + i, p, new Vector2(slot * 0.88f, slot * 0.88f), ThemeConfig.BeltHole, 2, ArtKit.UiRound);
+                var ring = ThemeConfig.IsLight ? new Color(0.42f, 0.26f, 0.16f, 0.7f) : new Color(1f, 0.9f, 0.78f, 0.35f);
+                ViewKit.Quad(transform, "Ring" + i, p, new Vector2(slot * 0.72f, slot * 0.72f), ring, 3, Glyphs.Ring);
                 if (i >= g.Belt.Count) continue;
                 var s = g.Belt[i];
                 ViewKit.SpoolIcon(transform, "Spool" + s.Id, p, slot * 0.7f, s.Color, s.Left.ToString(), false, 4, 1f);

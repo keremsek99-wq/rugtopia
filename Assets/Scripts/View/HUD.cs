@@ -21,7 +21,7 @@ namespace Rugtopia.View
         Image _failFill;
         GameObject _badge;
         Button _langEn, _langTr;
-        Text _playLabel, _langLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
+        Text _playLabel, _langLabel, _themeLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
         GameObject _dim, _chip;
         Text[] _stars;
         GameObject _intro;
@@ -125,7 +125,8 @@ namespace Rugtopia.View
             _menuSub = Txt(_menu.transform, "Sub", new Vector2(0.1f, 0.52f), new Vector2(0.9f, 0.62f), "", 40, TextAnchor.MiddleCenter, ViewKit.Gold);
             _menuBody = Txt(_menu.transform, "Body", new Vector2(0.1f, 0.42f), new Vector2(0.9f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Cream);
             _playLabel = Btn(_menu.transform, "Play", new Vector2(0.18f, 0.24f), new Vector2(0.82f, 0.36f), "Play", "play", true).GetComponentInChildren<Text>();
-            _langLabel = Btn(_menu.transform, "Lang", new Vector2(0.28f, 0.12f), new Vector2(0.72f, 0.21f), "Türkçe", "lang").GetComponentInChildren<Text>();
+            _langLabel = Btn(_menu.transform, "Lang", new Vector2(0.08f, 0.12f), new Vector2(0.48f, 0.21f), "Türkçe", "lang").GetComponentInChildren<Text>();
+            _themeLabel = Btn(_menu.transform, "Theme", new Vector2(0.52f, 0.12f), new Vector2(0.92f, 0.21f), "Dark", "theme").GetComponentInChildren<Text>();
 
             _intro = Card(root, "Intro", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.66f), ViewKit.Gold);
             _introText = Txt(_intro.transform, "Body", new Vector2(0.08f, 0.38f), new Vector2(0.92f, 0.92f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
@@ -163,6 +164,7 @@ namespace Rugtopia.View
             if (_menuSub != null) _menuSub.text = Copy.Get("menuSub");
             if (_playLabel != null) _playLabel.text = Copy.Get("play");
             if (_langLabel != null) _langLabel.text = Copy.Get(LangIsTr() ? "langToEn" : "langToTr");
+            if (_themeLabel != null) _themeLabel.text = Copy.Get(ThemeConfig.IsLight ? "themeToDark" : "themeToLight");
             if (_mapTitle != null) _mapTitle.text = Copy.Get("levels");
             if (_winTitle != null) _winTitle.text = Copy.Get("winTitle");
             SetChildLabel(_winPanel, "winNext", Copy.Get("next"));
@@ -196,6 +198,7 @@ namespace Rugtopia.View
             _map.SetActive(false);
             HidePanels();
             _menuBody.text = "♥ " + Economy.Lives + "   ·   " + coins + " " + Copy.Get("coins");
+            ApplyTheme();
         }
 
         public void ShowMap(int unlockedIndex, int count)
@@ -207,6 +210,7 @@ namespace Rugtopia.View
             _map.SetActive(true);
             HidePanels();
             if (_mapMeta != null) _mapMeta.text = "♥ " + Economy.Lives + "   ·   " + SaveService.Data.coins;
+            ApplyTheme();
             int n = _levels == null ? 0 : _levels.Length;
             for (int i = 0; i < n; i++)
             {
@@ -214,7 +218,8 @@ namespace Rugtopia.View
                 _levels[i].gameObject.SetActive(i < count);
                 _levels[i].interactable = open;
                 var img = _levels[i].GetComponent<Image>();
-                if (img != null) img.color = open ? ViewKit.Hex("#F6ECD9") : new Color(0.72f, 0.66f, 0.58f);
+                if (img != null) img.color = open ? ThemeConfig.Button : (ThemeConfig.IsLight ? ViewKit.Hex("#CDB89A") : new Color(0.72f, 0.66f, 0.58f));
+                if (_levelLabels[i] != null) _levelLabels[i].color = open ? ThemeConfig.ButtonText : ThemeConfig.Muted;
                 if (_levelLabels[i] != null) _levelLabels[i].text = open ? (i + 1).ToString() : "·";
             }
         }
@@ -235,6 +240,7 @@ namespace Rugtopia.View
             if (_lives != null) _lives.gameObject.SetActive(false);
             if (_coins != null) _coins.gameObject.SetActive(false);
             if (_status != null) _status.gameObject.SetActive(false);
+            ApplyTheme();
         }
 
         void SetPlayChrome(bool on)
@@ -323,6 +329,68 @@ namespace Rugtopia.View
         {
             if (_title != null) _title.color = ThemeConfig.Ink;
             if (_status != null) _status.color = ThemeConfig.Muted;
+            var surface = ThemeConfig.IsLight ? ThemeConfig.BgTop : ViewKit.Background;
+            var titleInk = ThemeConfig.IsLight ? ThemeConfig.Ink : ViewKit.Cream;
+            Paint(_menu, surface);
+            Paint(_map, surface);
+            SetText(_menu, "Title", titleInk);
+            SetText(_menu, "Sub", ThemeConfig.Muted);
+            SetText(_menu, "Body", titleInk);
+            SetText(_map, "Title", titleInk);
+            SetText(_map, "Meta", titleInk);
+            TintButtons(_top != null ? _top.transform : null);
+            TintButtons(_menu != null ? _menu.transform : null);
+            TintButtons(_map != null ? _map.transform : null);
+            TintButtons(_failPanel != null ? _failPanel.transform : null);
+            TintButtons(_winPanel != null ? _winPanel.transform : null);
+            TintOne(_slot);
+            TintOne(_comb);
+            TintOne(_shuttle);
+            PaintFill(_winPanel, ThemeConfig.Card);
+            PaintFill(_failPanel, ThemeConfig.Card);
+            if (_themeLabel != null) _themeLabel.text = Copy.Get(ThemeConfig.IsLight ? "themeToDark" : "themeToLight");
+        }
+
+        static void Paint(GameObject go, Color color)
+        {
+            if (go == null) return;
+            var img = go.GetComponent<Image>();
+            if (img != null) img.color = color;
+        }
+
+        static void SetText(GameObject go, string child, Color color)
+        {
+            if (go == null) return;
+            var t = go.transform.Find(child);
+            if (t == null) return;
+            var label = t.GetComponent<Text>();
+            if (label != null) label.color = color;
+        }
+
+        static void PaintFill(GameObject card, Color color)
+        {
+            if (card == null) return;
+            var fill = card.transform.Find("Fill");
+            if (fill == null) return;
+            var img = fill.GetComponent<Image>();
+            if (img != null) img.color = color;
+        }
+
+        static void TintButtons(Transform root)
+        {
+            if (root == null) return;
+            for (int i = 0; i < root.childCount; i++) TintOne(root.GetChild(i).GetComponent<Button>());
+        }
+
+        static void TintOne(Button b)
+        {
+            if (b == null) return;
+            var img = b.GetComponent<Image>();
+            if (img == null) return;
+            if (Mathf.Abs(img.color.g - ViewKit.Green.g) < 0.08f && img.color.g > img.color.r) return;
+            img.color = ThemeConfig.Button;
+            var label = b.GetComponentInChildren<Text>();
+            if (label != null) label.color = ThemeConfig.ButtonText;
         }
 
         public void ShowWin(string text) { ShowLevelComplete(0); if (_winTitle != null) _winTitle.text = text; }

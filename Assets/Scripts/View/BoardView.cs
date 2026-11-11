@@ -27,23 +27,26 @@ namespace Rugtopia.View
         {
             ViewKit.Clear(transform);
             int rows = g.Grid.Rows, cols = g.Grid.Cols;
-            // Camera is ±10 tall. The header owns the top, the belt owns y ≈ -3.6 and up.
-            // Short rugs sit on the NEXT bar so the gap under the pattern is used by the rug.
+            // Camera is ±10 tall. Header owns the top. NEXT stays just above the belt.
+            // A short rug is centred in that band; a tall one fills it.
             const float safeTop = 6.85f;
-            const float cellBottom = -2.2f;
+            const float floor = -2.2f;
             const float availW = 8.9f;
-            _cs = Mathf.Min(availW / cols, (safeTop - cellBottom) / rows);
+            float availH = safeTop - floor;
+            _cs = Mathf.Min(availW / cols, availH / rows);
             float rugW = _cs * cols;
             float rugH = _cs * rows;
-            float bottom = cellBottom;
+            float slack = Mathf.Max(0f, availH - rugH);
+            float bottom = floor + slack * 0.5f;
             float topCells = bottom + rugH;
-            if (topCells > safeTop) { topCells = safeTop; bottom = topCells - rugH; }
             area = new Rect(-rugW * 0.5f, bottom, rugW, rugH);
             _origin = new Vector2(area.xMin + _cs * 0.5f, topCells - _cs * 0.5f);
             var rug = new Vector2(rugW, rugH);
             var origin = new Vector2(0f, (topCells + bottom) * 0.5f);
-            stripY = bottom - 0.62f;
-            ViewKit.Quad(transform, "Frame", origin, rug + new Vector2(0.36f, 0.42f), ViewKit.Hex("#1A0F0B"), 0, ArtKit.UiRound);
+            stripY = floor - 0.62f;
+            var shadow = ThemeConfig.IsLight ? new Color(0.28f, 0.14f, 0.06f, 0.32f) : new Color(0f, 0f, 0f, 0.28f);
+            ViewKit.Quad(transform, "RugShadow", origin + new Vector2(0.06f, -0.2f), rug + new Vector2(0.85f, 1.05f), shadow, -2, ArtKit.Shadow);
+            ViewKit.Quad(transform, "Frame", origin, rug + new Vector2(0.36f, 0.42f), ThemeConfig.RugFrame, 0, ArtKit.UiRound);
             float left = _origin.x - _cs * 0.5f, right = _origin.x + (cols - 0.5f) * _cs;
             float top = origin.y + rug.y * 0.5f + 0.18f;
             float bot = origin.y - rug.y * 0.5f - 0.18f;
@@ -154,8 +157,9 @@ namespace Rugtopia.View
         {
             ViewKit.Clear(_strip);
             var runs = g.PreviewRuns();
-            ViewKit.Quad(_strip, "Bar", new Vector2(area.center.x, stripY), new Vector2(area.width, 0.72f), new Color(0f, 0f, 0f, 0.35f), 3, ArtKit.UiRound);
-            ViewKit.Label(_strip, "Next", new Vector2(area.xMin + 0.55f, stripY), "NEXT", 0.07f, new Color(0.96f, 0.91f, 0.81f, 0.85f), 5);
+            var bar = ThemeConfig.IsLight ? new Color(0.28f, 0.16f, 0.1f, 0.55f) : new Color(0f, 0f, 0f, 0.35f);
+            ViewKit.Quad(_strip, "Bar", new Vector2(0f, stripY), new Vector2(8.9f, 0.72f), bar, 3, ArtKit.UiRound);
+            ViewKit.Label(_strip, "Next", new Vector2(-3.9f, stripY), "NEXT", 0.07f, ThemeConfig.IsLight ? ThemeConfig.Ink : new Color(0.96f, 0.91f, 0.81f, 0.85f), 5);
             float x = area.xMin + 1.25f;
             const float h = 0.48f;
             foreach (var run in runs)

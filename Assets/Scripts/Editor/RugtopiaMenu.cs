@@ -139,13 +139,23 @@ namespace Rugtopia.EditorTools
                 var solved = LevelBuilder.Build(d);
                 if (d.solution != null)
                     for (int i = 0; i < d.solution.Length; i++) solved.Take(d.solution[i]);
+                ThemeConfig.Current = ThemeConfig.Theme.Light;
+                var lightStart = LevelBuilder.Build(d);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-playing.png", lightStart, d, w, h, true, false);
+                var lightMid = LevelBuilder.Build(d);
+                if (d.solution != null)
+                    for (int i = 0; i < d.solution.Length / 2; i++) lightMid.Take(d.solution[i]);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-mid.png", lightMid, d, w, h, false, false);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-win.png", solved, d, w, h, false, true);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-fail.png", lightMid, d, w, h, false, false, null, true);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "light-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER HARD");
                 ThemeConfig.Current = ThemeConfig.Theme.Dark;
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-playing.png", ftue, d, w, h, true, false);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-win.png", solved, d, w, h, false, true);
                 ThemeConfig.Current = ThemeConfig.Theme.Light;
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-playing.png", ftue, d, w, h, true, false);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-win.png", solved, d, w, h, false, true);
-                ThemeConfig.Current = ThemeConfig.Theme.Dark;
+                ThemeConfig.Current = ThemeConfig.Theme.Light;
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
             catch (System.Exception ex)

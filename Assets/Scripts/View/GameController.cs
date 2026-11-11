@@ -44,6 +44,8 @@ namespace Rugtopia.View
 
         void Awake()
         {
+            SaveService.Load();
+            ThemeConfig.Load(SaveService.Data.theme);
             Application.targetFrameRate = 60;
             _cam = Camera.main;
             if (_cam == null)
@@ -70,8 +72,25 @@ namespace Rugtopia.View
             _bubble = Child<SpeechBubble>("Bubble");
             _hud.Build();
             _hud.Bind(_cam);
+            _hud.ApplyTheme();
             _hud.Clicked += OnHud;
             _backdrop.Build(_board.area.center, new Vector2(_board.area.width, _board.area.height));
+        }
+
+        void ApplyThemeNow()
+        {
+            ThemeConfig.Load(SaveService.Data.theme);
+            if (_cam != null) _cam.backgroundColor = ThemeConfig.BgBot;
+            _hud.ApplyTheme();
+            if (_backdrop != null && _board != null)
+                _backdrop.Build(_board.area.center, new Vector2(_board.area.width, _board.area.height));
+            if (_mode == Mode.Play && _g != null)
+            {
+                _board.Build(_g);
+                _backdrop.Build(_board.area.center, new Vector2(_board.area.width, _board.area.height));
+                RefreshAll();
+                PlaceHand();
+            }
         }
 
         T Child<T>(string name) where T : Component
@@ -352,6 +371,15 @@ namespace Rugtopia.View
                 SaveService.Save();
                 _hud.ApplyLanguage();
                 _hud.ShowLangChoice(false);
+                return;
+            }
+            if (id == "theme")
+            {
+                SaveService.Data.theme = ThemeConfig.IsLight ? "dark" : "light";
+                SaveService.Save();
+                ApplyThemeNow();
+                if (_mode == Mode.Menu) ShowMenu();
+                else if (_mode == Mode.Map) ShowMap();
                 return;
             }
             if (id == "lang")

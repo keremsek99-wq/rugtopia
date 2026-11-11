@@ -19,6 +19,7 @@ namespace Rugtopia.Meta
         public List<string> seenIntros = new List<string>();
         public List<float> bestSeconds = new List<float>();
         public bool pickedLang;
+        public string theme = "light";
         public string freeContinueDay = "";
         public long firstPlayUtc;
     }
