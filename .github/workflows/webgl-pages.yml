@@ -1,6 +1,7 @@
 name: webgl-pages
 
 # Browser playtest. Skips green when the Unity license secrets are missing.
+# Shares the rugtopia-unity-license concurrency group with unity-build.
 # Deploys to GitHub Pages on this public repo: https://keremsek99-wq.github.io/rugtopia/
 on:
   push:
