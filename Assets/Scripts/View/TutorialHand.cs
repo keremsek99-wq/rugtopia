@@ -29,7 +29,7 @@ namespace Rugtopia.View
             _at = local;
             _on = true;
             if (transform.childCount == 0)
-                ViewKit.Quad(transform, "Pointer", Vector2.zero, new Vector2(0.72f, 1.05f), Color.white, 40, ArtKit.Hand);
+                ViewKit.Quad(transform, "Pointer", Vector2.zero, new Vector2(1.15f, 1.65f), Color.white, 40, ArtKit.Hand);
             gameObject.SetActive(true);
             transform.localPosition = _at + new Vector2(0f, 0.62f);
         }
