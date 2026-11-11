@@ -35,6 +35,8 @@ on:
 
 permissions:
   contents: read
+  # unity-test-runner publishes the EditMode result as a GitHub check.
+  checks: write
 
 concurrency:
   group: unity-build-${{ github.workflow }}-${{ github.ref }}
