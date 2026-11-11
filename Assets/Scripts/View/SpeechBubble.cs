@@ -17,9 +17,9 @@ namespace Rugtopia.View
             // TextMesh advance is wider than characterSize, so the pill is sized from that.
             float width = Mathf.Clamp(longest * 0.155f + 0.9f, 4.4f, 8.5f);
             float height = lines == 2 ? 1.35f : 0.95f;
-            ViewKit.Quad(transform, "Edge", Vector2.zero, new Vector2(width + 0.16f, height + 0.16f), ViewKit.Gold, 12, ArtKit.UiRound);
-            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, height), new Color(0.08f, 0.04f, 0.02f, 0.92f), 13, ArtKit.UiRound);
-            ViewKit.Label(transform, "Caption", Vector2.zero, shown, 0.085f, Color.white, 14);
+            ViewKit.Quad(transform, "Edge", Vector2.zero, new Vector2(width + 0.16f, height + 0.16f), ThemeConfig.BubbleEdge, 12, ArtKit.UiRound);
+            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, height), ThemeConfig.Bubble, 13, ArtKit.UiRound);
+            ViewKit.Label(transform, "Caption", Vector2.zero, shown, 0.085f, ThemeConfig.BubbleText, 14);
         }
 
         public void Hide()

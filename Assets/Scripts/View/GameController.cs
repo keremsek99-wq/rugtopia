@@ -56,7 +56,7 @@ namespace Rugtopia.View
             _cam.orthographicSize = 10f;
             _cam.transform.position = new Vector3(0, 0, -10);
             _cam.clearFlags = CameraClearFlags.SolidColor;
-            _cam.backgroundColor = ViewKit.Hex("#22140F");
+            _cam.backgroundColor = ThemeConfig.BgBot;
             if (_cam.GetComponent<AudioListener>() == null) _cam.gameObject.AddComponent<AudioListener>();
             _frame = _cam.GetComponent<PortraitFrame>();
             if (_frame == null) _frame = _cam.gameObject.AddComponent<PortraitFrame>();
@@ -86,9 +86,13 @@ namespace Rugtopia.View
         void Start()
         {
             SaveService.Load();
+            Analytics.Track("session_start");
             if (levelIndex >= 0) StartLevel(levelIndex);
+            else if (SaveService.Data.maxLevel <= 0) StartLevel(0);
             else ShowMenu();
         }
+
+        void OnApplicationQuit() { Analytics.Track("session_end"); }
 
         public void ShowMenu()
         {
@@ -139,11 +143,22 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
-            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.15f));
+            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -2.55f));
             _hud.SetBoosters(levelIndex >= 3);
             RefreshAll();
             PlaceHand();
-            if (intro != null) _hud.ShowIntro(Copy.Get(intro));
+            ShowDifficultyBadge();
+            Analytics.Track("level_start", ("level", (levelIndex + 1).ToString()), ("tag", _g.Level.tag));
+            if (levelIndex == 0) Analytics.Track("ftue_step", ("step", "hand"));
+            if (intro != null && levelIndex > 0) _hud.ShowIntro(Copy.Get(intro));
+        }
+
+        void ShowDifficultyBadge()
+        {
+            var tag = _g.Level.tag;
+            if (tag == "veryhard") _hud.ShowBadge(Copy.Get("bannerVeryhard"), ViewKit.Hex("#8E44AD"));
+            else if (tag == "hard") _hud.ShowBadge(Copy.Get("bannerHard"), ViewKit.Hex("#C0392B"));
+            else _hud.HideBadge();
         }
 
         string IntroKey()
@@ -162,7 +177,7 @@ namespace Rugtopia.View
             if (level.hidden > 0 && level.index == 5) return Copy.Get("ftueHidden");
             switch (level.index)
             {
-                case 0: return Copy.Get("ftueWeft");
+                case 0: return "";
                 case 1: return Copy.Get("ftueBelt");
                 case 2: return Copy.Get("ftueTip");
                 case 3: return Copy.Get("ftueNext");
@@ -287,6 +302,9 @@ namespace Rugtopia.View
                 yield return new WaitForSeconds(0.25f);
                 float secs = Time.time - _t0;
                 int reward = Economy.OnWin(levelIndex, _g.Level.tag, secs);
+                Analytics.Track("level_win", ("level", (levelIndex + 1).ToString()), ("stitches_left", "0"), ("reward", reward.ToString()));
+                if (levelIndex == 0) Analytics.Track("ftue_step", ("step", "win"));
+                if (Economy.AllowInterstitial(levelIndex)) Analytics.Track("interstitial_stub", ("level", (levelIndex + 1).ToString()));
                 Feel.Play("win");
                 _fx.Confetti();
                 int shown = 0;
@@ -298,15 +316,19 @@ namespace Rugtopia.View
                     yield return new WaitForSeconds(0.04f);
                 }
                 RefreshTop();
+                if (levelIndex == 0 && !SaveService.Data.pickedLang) _hud.ShowLangChoice(true);
             }
             else if (_g.Status == GameStatus.Failed)
             {
                 Feel.Play("fail");
                 if (_bubble != null) _bubble.Hide();
-                _hud.ShowFail(
-                    Copy.Get(_g.FreeSlots <= 0 ? "failTitle" : "failSpools"),
-                    Copy.Get("failSub"),
-                    EconomyConfig.ContinuePrice(_g.Continues));
+                int left = _g.StitchesLeft;
+                float prog = 1f - left / (float)Mathf.Max(1, _g.Grid.Length);
+                bool free = Economy.FreeContinueToday();
+                int price = free ? 0 : EconomyConfig.ContinuePrice(_g.Continues);
+                Analytics.Track("level_fail", ("level", (levelIndex + 1).ToString()), ("stitches_left", left.ToString()));
+                Analytics.Track("continue_offer_shown", ("level", (levelIndex + 1).ToString()), ("free", free ? "1" : "0"), ("price", price.ToString()));
+                _hud.ShowFail(Copy.Get("failTitle"), left, prog, free ? Copy.Get("contFree") : (Copy.Get("contPay") + " · " + price));
             }
             _busy = false;
         }
@@ -322,9 +344,19 @@ namespace Rugtopia.View
 
         void OnHud(string id)
         {
+            if (id == "langEn" || id == "langTr")
+            {
+                SaveService.Data.lang = id == "langTr" ? "tr" : "en";
+                SaveService.Data.pickedLang = true;
+                SaveService.Save();
+                _hud.ApplyLanguage();
+                _hud.ShowLangChoice(false);
+                return;
+            }
             if (id == "lang")
             {
                 SaveService.Data.lang = SaveService.Data.lang == "tr" ? "en" : "tr";
+                SaveService.Data.pickedLang = true;
                 SaveService.Save();
                 _hud.ApplyLanguage();
                 if (_mode == Mode.Menu) ShowMenu();
@@ -332,7 +364,7 @@ namespace Rugtopia.View
                 else if (_g != null)
                 {
                     RefreshAll();
-                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.15f));
+                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -2.55f));
                 }
                 return;
             }
@@ -349,7 +381,10 @@ namespace Rugtopia.View
             {
                 case "slot":
                     if (_g.Status == GameStatus.Playing && Economy.Consume(Booster.Slot))
+                    {
+                        Analytics.Track("booster_used", ("booster", "slot"), ("level", (levelIndex + 1).ToString()));
                         Commit(() => _g.AddSlot(), new Vector2(0f, _belt.y));
+                    }
                     break;
                 case "comb":
                     if (_g.Status != GameStatus.Playing) break;
@@ -363,6 +398,7 @@ namespace Rugtopia.View
                         if (_g.UseShuttle())
                         {
                             Economy.Consume(Booster.Shuttle);
+                            Analytics.Track("booster_used", ("booster", "shuttle"), ("level", (levelIndex + 1).ToString()));
                             StartCoroutine(Animate(CopyEvents(), new Vector2(0f, _belt.y), hpBefore));
                         }
                     }
@@ -373,6 +409,7 @@ namespace Rugtopia.View
                         int hpBefore = _g.Hp;
                         if (Economy.TryContinue(_g))
                         {
+                            Analytics.Track("continue_offer_accepted", ("level", (levelIndex + 1).ToString()));
                             _hud.HidePanels();
                             StartCoroutine(Animate(CopyEvents(), new Vector2(0f, _belt.y), hpBefore));
                         }
@@ -420,10 +457,7 @@ namespace Rugtopia.View
         {
             var d = _g.Level;
             string name = SaveService.Data.lang == "tr" ? d.nameTr : d.nameEn;
-            int rows = _g.Grid.Rows;
-            int active = _g.Grid.RowOf(_g.Hp);
-            int row = active < 0 ? rows : Mathf.Clamp(rows - active, 1, rows);
-            _hud.SetTop("Level " + (levelIndex + 1) + "   ·   Row " + row + "/" + rows, SaveService.Data.coins, Economy.Lives);
+            _hud.SetTop("Level " + (levelIndex + 1), SaveService.Data.coins, Economy.Lives);
             _hud.SetStatus(name);
         }
 

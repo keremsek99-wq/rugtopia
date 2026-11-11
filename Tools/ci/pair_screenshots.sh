@@ -34,3 +34,19 @@ pair() {
 pair "$src/js-playing.png" "$out/01-playing.png" "$out/compare-playing.png"
 pair "$src/js-mid.png" "$out/02-mid.png" "$out/compare-mid.png"
 pair "$src/js-win.png" "$out/03-win.png" "$out/compare-win.png"
+theme() {
+  local dark="$1" light="$2" dest="$3"
+  if [[ ! -f "$dark" || ! -f "$light" ]]; then
+    echo "skip $dest"
+    return 0
+  fi
+  local tmp
+  tmp=$(mktemp -d)
+  column "$dark" "Koyu" "$tmp/l.png"
+  column "$light" "Açık" "$tmp/r.png"
+  img "$tmp/l.png" \( -size 36x964 xc:'#22140f' \) "$tmp/r.png" +append "$dest"
+  rm -rf "$tmp"
+  echo "wrote $dest"
+}
+theme "$out/theme-dark-playing.png" "$out/theme-light-playing.png" "$out/theme-compare-playing.png"
+theme "$out/theme-dark-win.png" "$out/theme-light-win.png" "$out/theme-compare-win.png"

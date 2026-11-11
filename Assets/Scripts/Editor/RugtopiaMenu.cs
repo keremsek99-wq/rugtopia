@@ -128,6 +128,21 @@ namespace Rugtopia.EditorTools
                     for (int i = mid; i < d.solution.Length; i++) g.Take(d.solution[i]);
                     Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "03-win.png", g, d, w, h, false, true);
                 }
+                var ftue = LevelBuilder.Build(d);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-ftue.png", ftue, d, w, h, true, false);
+                var midGame = LevelBuilder.Build(d);
+                if (d.solution != null && d.solution.Length > 1) midGame.Take(d.solution[0]);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-playing.png", midGame, d, w, h, false, false);
+                var hard = LevelLoader.Get(8);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER HARD");
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-fail.png", midGame, d, w, h, false, false, null, true);
+                ThemeConfig.Current = ThemeConfig.Theme.Dark;
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-playing.png", ftue, d, w, h, true, false);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-win.png", ftue, d, w, h, false, true);
+                ThemeConfig.Current = ThemeConfig.Theme.Light;
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-playing.png", ftue, d, w, h, true, false);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-win.png", ftue, d, w, h, false, true);
+                ThemeConfig.Current = ThemeConfig.Theme.Dark;
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
             catch (System.Exception ex)
@@ -136,7 +151,7 @@ namespace Rugtopia.EditorTools
             }
         }
 
-        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, TutorialHand hand, SpeechBubble bubble, Backdrop backdrop, string dir, string name, GameState g, LevelData level, int w, int h, bool showHand, bool winCard)
+        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, TutorialHand hand, SpeechBubble bubble, Backdrop backdrop, string dir, string name, GameState g, LevelData level, int w, int h, bool showHand, bool winCard, string badge = null, bool failCard = false)
         {
             board.SetVisualHp(-1);
             board.Build(g);
@@ -144,13 +159,11 @@ namespace Rugtopia.EditorTools
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
-            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch!", new Vector2(0f, -4.15f));
+            if (!winCard && level.index > 0 && !string.IsNullOrEmpty(level.tag) && level.index < 5) bubble.Show("Tap the spool that matches the glowing stitch!", new Vector2(0f, -2.55f));
             else bubble.Hide();
-            int rows = g.Grid.Rows;
-            int active = g.Grid.RowOf(g.Hp);
-            int row = active < 0 ? rows : Mathf.Clamp(rows - active, 1, rows);
-            hud.SetTop("Level " + (level.index + 1) + "   ·   Row " + row + "/" + rows, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
-            hud.SetStatus(level.nameEn);
+            hud.SetTop("Level " + (level.index + 1), EconomyConfig.StartCoins, EconomyConfig.MaxLives);
+            hud.SetStatus("");
+            cam.backgroundColor = ThemeConfig.BgBot;
             hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);
             hud.SetBooster("comb", true, 2, EconomyConfig.PriceComb, false);
             hud.SetBooster("shuttle", true, 2, EconomyConfig.PriceShuttle, false);
@@ -158,6 +171,10 @@ namespace Rugtopia.EditorTools
             int hint = TutorialHand.LaneFor(g);
             if (showHand && hint >= 0) hand.Show(lanes.FrontLocal(hint));
             else hand.Hide();
+            hud.ApplyTheme();
+            if (!string.IsNullOrEmpty(badge)) hud.ShowBadge(badge, ViewKit.Hex("#8E44AD"));
+            else hud.HideBadge();
+            if (failCard) hud.ShowFail("Belt Jammed", g.StitchesLeft, 1f - g.StitchesLeft / (float)System.Math.Max(1, g.Grid.Length), "Free · +1 slot & continue");
             if (winCard)
             {
                 hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));

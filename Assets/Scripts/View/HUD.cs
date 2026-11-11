@@ -1,4 +1,5 @@
 using System;
+using Rugtopia.Meta;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,8 +17,11 @@ namespace Rugtopia.View
         Canvas _canvas;
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
-        Text _winTitle, _winCoins, _failTitle, _failBody, _continueLabel, _menuBody, _introText;
-        Text _playLabel, _langLabel, _mapTitle, _menuSub, _skip, _chipText;
+        Text _winTitle, _winCoins, _failTitle, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
+        Image _failFill;
+        GameObject _badge;
+        Button _langEn, _langTr;
+        Text _playLabel, _langLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
         GameObject _dim, _chip;
         Text[] _stars;
         GameObject _intro;
@@ -94,12 +98,24 @@ namespace Rugtopia.View
             _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.42f, 0.36f), new Vector2(0.78f, 0.54f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
             var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.38f), "Continue", "next", true);
             _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.12f, 0.04f), new Vector2(0.88f, 0.14f), "", 26, TextAnchor.MiddleCenter, ViewKit.Wool);
+            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.1f, 0.40f), new Vector2(0.46f, 0.52f), "English", "langEn");
+            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.54f, 0.40f), new Vector2(0.9f, 0.52f), "Türkçe", "langTr", true);
+            _langEn.gameObject.SetActive(false);
+            _langTr.gameObject.SetActive(false);
+            _badge = Panel(root, "Badge", new Vector2(0.18f, 0.80f), new Vector2(0.82f, 0.88f), ViewKit.Hex("#8E44AD")).gameObject;
+            _badge.GetComponent<Image>().sprite = ArtKit.UiRound;
+            _badge.GetComponent<Image>().type = Image.Type.Sliced;
+            _badgeText = Txt(_badge.transform, "Label", Vector2.zero, Vector2.one, "", 40, TextAnchor.MiddleCenter, Color.white);
+            _badge.SetActive(false);
             _playLabel = null;
             Remember(winNext, "winNext");
 
             _failPanel = Card(root, "FailPanel", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.7f), ViewKit.Hex("#C0392B"));
-            _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.72f), new Vector2(0.92f, 0.96f), "", 44, TextAnchor.MiddleCenter, ViewKit.Ink);
-            _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.50f), new Vector2(0.92f, 0.72f), "", 30, TextAnchor.MiddleCenter, ViewKit.Wool);
+            _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.78f), new Vector2(0.92f, 0.96f), "", 48, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _failLeft = Txt(_failPanel.transform, "Left", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.78f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var bar = Panel(_failPanel.transform, "Bar", new Vector2(0.12f, 0.54f), new Vector2(0.88f, 0.62f), new Color(0.2f, 0.14f, 0.1f, 0.25f));
+            _failFill = Panel(bar, "Fill", Vector2.zero, new Vector2(0.4f, 1f), ViewKit.Green).GetComponent<Image>();
+            _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.42f), new Vector2(0.92f, 0.54f), "", 28, TextAnchor.MiddleCenter, ViewKit.Wool);
             _continueLabel = Btn(_failPanel.transform, "ContinueBtn", new Vector2(0.1f, 0.28f), new Vector2(0.9f, 0.46f), "Continue", "continue", true).GetComponentInChildren<Text>();
             Btn(_failPanel.transform, "RetryBtn", new Vector2(0.08f, 0.06f), new Vector2(0.46f, 0.24f), "Retry", "retry");
             Btn(_failPanel.transform, "MapBtn", new Vector2(0.54f, 0.06f), new Vector2(0.92f, 0.24f), "Map", "map");
@@ -119,6 +135,7 @@ namespace Rugtopia.View
             _map = Panel(root, "Map", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
             _mapTitle = Txt(_map.transform, "Title", new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.98f), "Levels", 64, TextAnchor.MiddleCenter, ViewKit.Cream);
             Btn(_map.transform, "Back", new Vector2(0.04f, 0.91f), new Vector2(0.22f, 0.98f), "Back", "home");
+            _mapMeta = Txt(_map.transform, "Meta", new Vector2(0.22f, 0.90f), new Vector2(0.98f, 0.98f), "", 28, TextAnchor.MiddleRight, ViewKit.Cream);
             int n = 30;
             _levels = new Button[n];
             _levelLabels = new Text[n];
@@ -178,7 +195,7 @@ namespace Rugtopia.View
             _menu.SetActive(true);
             _map.SetActive(false);
             HidePanels();
-            _menuBody.text = coins + " " + Copy.Get("coins") + " · " + reached;
+            _menuBody.text = "♥ " + Economy.Lives + "   ·   " + coins + " " + Copy.Get("coins");
         }
 
         public void ShowMap(int unlockedIndex, int count)
@@ -189,6 +206,7 @@ namespace Rugtopia.View
             _menu.SetActive(false);
             _map.SetActive(true);
             HidePanels();
+            if (_mapMeta != null) _mapMeta.text = "♥ " + Economy.Lives + "   ·   " + SaveService.Data.coins;
             int n = _levels == null ? 0 : _levels.Length;
             for (int i = 0; i < n; i++)
             {
@@ -214,6 +232,9 @@ namespace Rugtopia.View
             SetPlayChrome(true);
             if (_menu != null) _menu.SetActive(false);
             if (_map != null) _map.SetActive(false);
+            if (_lives != null) _lives.gameObject.SetActive(false);
+            if (_coins != null) _coins.gameObject.SetActive(false);
+            if (_status != null) _status.gameObject.SetActive(false);
         }
 
         void SetPlayChrome(bool on)
@@ -280,14 +301,47 @@ namespace Rugtopia.View
             l.text = !unlocked ? name : name + (inventory > 0 ? "  x" + inventory : "  " + price) + (armed ? "  ON" : "");
         }
 
+        public void ShowLangChoice(bool on)
+        {
+            if (_langEn != null) _langEn.gameObject.SetActive(on);
+            if (_langTr != null) _langTr.gameObject.SetActive(on);
+        }
+
+        public void ShowBadge(string text, Color color)
+        {
+            if (_badge == null) return;
+            _badge.SetActive(true);
+            var img = _badge.GetComponent<Image>();
+            if (img != null) img.color = color;
+            if (_badgeText != null) _badgeText.text = text;
+            _badge.transform.SetAsLastSibling();
+        }
+
+        public void HideBadge() { if (_badge != null) _badge.SetActive(false); }
+
+        public void ApplyTheme()
+        {
+            if (_title != null) _title.color = ThemeConfig.Ink;
+            if (_status != null) _status.color = ThemeConfig.Muted;
+        }
+
         public void ShowWin(string text) { ShowLevelComplete(0); if (_winTitle != null) _winTitle.text = text; }
-        public void ShowFail(string title, string body, int continuePrice)
+        public void ShowFail(string title, int stitchesLeft, float progress, string continueLabel)
         {
             HidePanels();
             ApplyLanguage();
             _failTitle.text = title;
-            _failBody.text = body;
-            _continueLabel.text = Copy.Get("bSlot") + "  " + continuePrice;
+            if (_failLeft != null) _failLeft.text = stitchesLeft + " " + Copy.Get(stitchesLeft == 1 ? "left1" : "leftN");
+            if (_failFill != null)
+            {
+                var rt = _failFill.rectTransform;
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = new Vector2(Mathf.Clamp01(progress), 1f);
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+            }
+            _failBody.text = "";
+            _continueLabel.text = continueLabel;
             ShowDim(false);
             _failPanel.SetActive(true);
             _failPanel.transform.SetAsLastSibling();

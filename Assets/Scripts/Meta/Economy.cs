@@ -51,11 +51,33 @@ namespace Rugtopia.Meta
             SaveService.Save();
         }
 
+        public static bool FreeContinueToday()
+        {
+            return S.freeContinueDay != DateTime.UtcNow.ToString("yyyyMMdd");
+        }
+
+        public static int ContinueCost()
+        {
+            return FreeContinueToday() ? 0 : EconomyConfig.ContinuePrice(0);
+        }
+
+        /// <summary>Interstitial stub: level 30 or later, and never on the first calendar day.</summary>
+        public static bool AllowInterstitial(int levelIndex)
+        {
+            if (levelIndex < EconomyConfig.UnlockInterstitial) return false;
+            if (S.firstPlayUtc == 0) return false;
+            var first = new DateTime(S.firstPlayUtc, DateTimeKind.Utc).Date;
+            return first != DateTime.UtcNow.Date;
+        }
+
         public static bool TryContinue(GameState g)
         {
-            int price = EconomyConfig.ContinuePrice(g.Continues);
-            if (S.coins < price || !g.Continue()) return false;
-            S.coins -= price; S.invComb += 1; // continue = +1 slot (Core) + 1 free comb (inventory)
+            bool free = FreeContinueToday();
+            int price = free ? 0 : EconomyConfig.ContinuePrice(g.Continues);
+            if (!free && S.coins < price) return false;
+            if (!g.Continue()) return false;
+            if (free) S.freeContinueDay = DateTime.UtcNow.ToString("yyyyMMdd");
+            else { S.coins -= price; S.invComb += 1; }
             SaveService.Save();
             return true;
         }

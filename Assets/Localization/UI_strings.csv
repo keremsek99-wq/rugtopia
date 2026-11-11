@@ -148,3 +148,5 @@ Key,English(en),Turkish(tr)
 "langToEn","English","English"
 "failSpools","Out of spools","Makara kalmadı"
 "nextLevel","Next","Sonraki"
+"contFree","Free · +1 slot & continue","Bedava · +1 yuva ve devam"
+"contPay","+1 slot & continue","+1 yuva ve devam"

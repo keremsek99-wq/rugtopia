@@ -8,8 +8,8 @@ namespace Rugtopia.View
     /// plus the NEXT preview strip under the rug. Snaps to state (no animation yet — week 2).</summary>
     public class BoardView : MonoBehaviour
     {
-        public Rect area = new Rect(-3.7f, 1.85f, 7.4f, 5.9f);   // world rect for the rug
-        public float stripY = 1.05f;
+        public Rect area = new Rect(-4.2f, -3.2f, 8.4f, 10.6f);
+        public float stripY = 0.4f;
 
         SpriteRenderer[,] _cells;
         SpriteRenderer[,] _marks;
@@ -27,10 +27,11 @@ namespace Rugtopia.View
         {
             ViewKit.Clear(transform);
             int rows = g.Grid.Rows, cols = g.Grid.Cols;
-            _cs = Mathf.Min(area.width / cols, area.height / rows);
-            _origin = new Vector2(area.center.x - _cs * cols / 2f + _cs / 2f, area.center.y + _cs * rows / 2f - _cs / 2f);
+            _cs = Mathf.Min(area.width / cols, (area.height - 0.7f) / rows);
+            _origin = new Vector2(area.center.x - _cs * cols / 2f + _cs / 2f, area.yMax - _cs * 0.5f);
             var rug = new Vector2(_cs * cols, _cs * rows);
-            var origin = new Vector2(area.center.x, area.center.y);
+            var origin = new Vector2(area.center.x, area.yMax - rug.y * 0.5f);
+            stripY = origin.y - rug.y * 0.5f - 0.48f;
             ViewKit.Quad(transform, "Frame", origin, rug + new Vector2(0.36f, 0.42f), ViewKit.Hex("#1A0F0B"), 0, ArtKit.UiRound);
             float left = _origin.x - _cs * 0.5f, right = _origin.x + (cols - 0.5f) * _cs;
             float top = origin.y + rug.y * 0.5f + 0.18f;
@@ -115,7 +116,7 @@ namespace Rugtopia.View
                 _ring.transform.localPosition = pos;
                 _ring.transform.localScale = Vector3.one * _cs * 0.98f;
                 _ring.color = ViewKit.Gold;
-                var boat = pos + new Vector2(0f, _cs * 0.72f);
+                var boat = pos + new Vector2(0f, _cs * 0.62f);
                 _tip.transform.localPosition = boat;
                 _tip.transform.localScale = new Vector3(_cs * 0.5f, _cs * 0.16f, 1f);
                 _tip.color = ViewKit.Hex("#C9A36B");
