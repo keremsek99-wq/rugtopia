@@ -8,8 +8,8 @@ namespace Rugtopia.View
     /// plus the NEXT preview strip under the rug. Snaps to state (no animation yet — week 2).</summary>
     public class BoardView : MonoBehaviour
     {
-        public Rect area = new Rect(-4.05f, 2.35f, 8.1f, 6.05f);   // world rect for the rug
-        public float stripY = 0.02f;
+        public Rect area = new Rect(-3.7f, 1.85f, 7.4f, 5.9f);   // world rect for the rug
+        public float stripY = 1.05f;
 
         SpriteRenderer[,] _cells;
         SpriteRenderer _tip;
@@ -28,16 +28,23 @@ namespace Rugtopia.View
             _cs = Mathf.Min(area.width / cols, area.height / rows);
             _origin = new Vector2(area.center.x - _cs * cols / 2f + _cs / 2f, area.center.y + _cs * rows / 2f - _cs / 2f);
             var rug = new Vector2(_cs * cols, _cs * rows);
-            ViewKit.Quad(transform, "Kilim", area.center, rug + new Vector2(0.85f, 0.95f), Color.white, 0, ArtKit.KilimFrame);
-            ViewKit.Quad(transform, "Backing", area.center, rug + new Vector2(0.08f, 0.08f), ViewKit.Hex("#C4A27A"), 1);
-            float fringeY = area.center.y - rug.y * 0.5f - 0.22f;
+            var origin = new Vector2(area.center.x, area.center.y);
+            ViewKit.Quad(transform, "Frame", origin, rug + new Vector2(0.36f, 0.42f), ViewKit.Hex("#1A0F0B"), 0, ArtKit.UiRound);
+            float top = origin.y + rug.y * 0.5f + 0.16f;
+            float bot = origin.y - rug.y * 0.5f - 0.16f;
             for (int c = 0; c < cols; c++)
-                ViewKit.Quad(transform, "Fringe" + c, new Vector2(CellPos(rows - 1, c).x, fringeY), new Vector2(_cs * 0.18f, 0.38f), ViewKit.Hex("#E7D3AE"), 1);
+            {
+                float x = CellPos(0, c).x;
+                ViewKit.Quad(transform, "FringeT" + c, new Vector2(x, top), new Vector2(0.06f, 0.22f), ViewKit.Hex("#D8C3A0"), 1);
+                ViewKit.Quad(transform, "FringeB" + c, new Vector2(x, bot), new Vector2(0.06f, 0.22f), ViewKit.Hex("#D8C3A0"), 1);
+            }
+            ViewKit.Quad(transform, "Backing", origin, rug + new Vector2(0.08f, 0.08f), ViewKit.Hex("#EFE2C8"), 1);
+            ViewKit.Quad(transform, "WarpBed", origin, rug, ViewKit.Hex("#6E5A4C"), 1);
             _cells = new SpriteRenderer[rows, cols];
-            var cell = Vector2.one * _cs * 1.02f;
+            var cell = Vector2.one * (_cs + 0.02f);
             for (int r = 0; r < rows; r++)
                 for (int c = 0; c < cols; c++)
-                    _cells[r, c] = ViewKit.Quad(transform, "Cell" + r + "_" + c, CellPos(r, c), cell, ViewKit.Unwoven, 2, ViewKit.Warp);
+                    _cells[r, c] = ViewKit.Quad(transform, "Cell" + r + "_" + c, CellPos(r, c), cell, ViewKit.Unwoven, 2);
             _ring = ViewKit.Quad(transform, "TipRing", Vector2.zero, Vector2.one * _cs * 1.35f, new Color(1f, 0.92f, 0.55f), 4, ViewKit.Ring);
             _tip = ViewKit.Quad(transform, "ShuttleTip", Vector2.zero, Vector2.one * _cs * 0.72f, Color.white, 5, ViewKit.Fill);
             _arrow = ViewKit.Quad(transform, "ShuttleArrow", Vector2.zero, new Vector2(_cs * 0.55f, _cs * 0.4f), new Color(1f, 0.95f, 0.7f), 6, ViewKit.Arrow);
@@ -62,21 +69,10 @@ namespace Rugtopia.View
                 {
                     char col = g.Grid.Color[r, c];
                     var cellSr = _cells[r, c];
-                    if (woven[r, c])
-                    {
-                        cellSr.sprite = ViewKit.Fill;
-                        cellSr.color = ViewKit.Of(col);
-                    }
-                    else if (!visible)
-                    {
-                        cellSr.sprite = ViewKit.Warp;
-                        cellSr.color = ViewKit.Veil;
-                    }
-                    else
-                    {
-                        cellSr.sprite = ViewKit.Warp;
-                        cellSr.color = Color.Lerp(ViewKit.Unwoven, ViewKit.Of(col), 0.55f);
-                    }
+                    var tint = ViewKit.Of(col);
+                    if (woven[r, c]) cellSr.color = tint;
+                    else if (!visible) cellSr.color = ViewKit.Hex("#5A4A40");
+                    else { tint.a = 0.38f; cellSr.color = tint; }
                 }
             }
             if (hp < g.Grid.Length)
@@ -87,13 +83,16 @@ namespace Rugtopia.View
                 _tip.enabled = true;
                 _ring.enabled = true;
                 _arrow.enabled = true;
-                _tip.transform.localPosition = pos;
                 _ring.transform.localPosition = pos;
-                _arrow.transform.localPosition = pos + new Vector2(dir * _cs * 0.05f, _cs * 0.62f);
-                _arrow.transform.localScale = new Vector3(dir * _cs * 0.55f, _cs * 0.38f, 1f);
-                _tip.color = Color.Lerp(tc, Color.white, 0.35f);
-                _ring.color = new Color(1f, 0.92f, 0.45f, 1f);
-                _ring.transform.localScale = Vector3.one * _cs * 1.42f;
+                _ring.transform.localScale = Vector3.one * _cs * 1.08f;
+                _ring.color = new Color(1f, 0.91f, 0.66f, 0.95f);
+                _tip.transform.localPosition = pos + new Vector2(-dir * _cs * 0.02f, _cs * 0.58f);
+                _tip.transform.localScale = new Vector3(_cs * 0.7f, _cs * 0.22f, 1f);
+                _tip.color = Color.Lerp(ViewKit.Hex("#C9A36B"), tc, 0.25f);
+                float edge = dir > 0 ? area.xMin - 0.28f : area.xMax + 0.28f;
+                _arrow.transform.localPosition = new Vector3(edge, pos.y, -0.2f);
+                _arrow.transform.localScale = new Vector3(dir * 0.38f, 0.28f, 1f);
+                _arrow.color = ViewKit.Gold;
             }
             else
             {
@@ -108,15 +107,16 @@ namespace Rugtopia.View
         {
             ViewKit.Clear(_strip);
             var runs = g.PreviewRuns();
-            ViewKit.Label(_strip, "Next", new Vector2(area.center.x, stripY + 0.48f), "NEXT", 0.08f, ViewKit.Ink, 5);
-            float x = area.xMin + 0.15f, h = 0.42f;
+            ViewKit.Quad(_strip, "Bar", new Vector2(area.center.x, stripY), new Vector2(area.width, 0.55f), new Color(0f, 0f, 0f, 0.28f), 3, ArtKit.UiRound);
+            ViewKit.Label(_strip, "Next", new Vector2(area.xMin + 0.45f, stripY), "NEXT", 0.045f, new Color(0.96f, 0.91f, 0.81f, 0.75f), 5);
+            float x = area.xMin + 1.2f, h = 0.36f;
             foreach (var run in runs)
             {
                 if (x > area.xMax - 0.25f) break;
-                if (run.Key == '|') { ViewKit.Quad(_strip, "Sep", new Vector2(x + 0.06f, stripY), new Vector2(0.05f, h), ViewKit.Ink, 4); x += 0.24f; continue; }
+                if (run.Key == '|') { ViewKit.Quad(_strip, "Sep", new Vector2(x + 0.06f, stripY), new Vector2(0.05f, h * 0.7f), ViewKit.Gold, 4); x += 0.24f; continue; }
                 if (run.Key == '?') { ViewKit.Label(_strip, "Veiled", new Vector2(x + 0.25f, stripY), "?", 0.1f, ViewKit.Ink, 5); break; }
                 float w = Mathf.Clamp(0.38f * run.Value, 0.42f, 1.8f);
-                ViewKit.Quad(_strip, "Chip", new Vector2(x + w / 2f, stripY), new Vector2(w, h), ViewKit.Of(run.Key), 4, ViewKit.Fill);
+                ViewKit.Quad(_strip, "Chip", new Vector2(x + w / 2f, stripY), new Vector2(w, h), ViewKit.Of(run.Key), 4, ArtKit.UiRound);
                 ViewKit.Label(_strip, "N", new Vector2(x + w / 2f, stripY), run.Value.ToString(), 0.06f, ViewKit.InkFor(run.Key), 6);
                 x += w + 0.16f;
             }

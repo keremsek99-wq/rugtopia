@@ -9,7 +9,6 @@ namespace Rugtopia.View
         Vector2 _at;
         bool _on;
 
-        /// <summary>Lane index, or -1 when no front spool is the correct colour.</summary>
         public static int LaneFor(GameState g)
         {
             if (g == null || g.Status != GameStatus.Playing) return -1;
@@ -29,9 +28,14 @@ namespace Rugtopia.View
             _at = local;
             _on = true;
             if (transform.childCount == 0)
-                ViewKit.Quad(transform, "Pointer", Vector2.zero, new Vector2(1.15f, 1.65f), Color.white, 40, ArtKit.Hand);
+            {
+                ViewKit.Quad(transform, "PalmBack", new Vector2(0.12f, 0.22f), new Vector2(0.42f, 0.36f), ViewKit.Hex("#5B3A29"), 40, ArtKit.UiRound);
+                ViewKit.Quad(transform, "Palm", new Vector2(0.12f, 0.24f), new Vector2(0.34f, 0.28f), ViewKit.Hex("#FFE2C4"), 41, ArtKit.UiRound);
+                ViewKit.Quad(transform, "FingerBack", new Vector2(0f, 0.42f), new Vector2(0.2f, 0.48f), ViewKit.Hex("#5B3A29"), 40, ArtKit.UiRound);
+                ViewKit.Quad(transform, "Finger", new Vector2(0f, 0.44f), new Vector2(0.14f, 0.4f), ViewKit.Hex("#FFE2C4"), 41, ArtKit.UiRound);
+            }
             gameObject.SetActive(true);
-            transform.localPosition = _at + new Vector2(0f, 0.62f);
+            transform.localPosition = _at + new Vector2(0.15f, 0.15f);
         }
 
         public void Hide()
@@ -43,8 +47,8 @@ namespace Rugtopia.View
         void Update()
         {
             if (!_on) return;
-            float b = 0.5f + 0.5f * Mathf.Sin(Time.time * 5f);
-            transform.localPosition = _at + new Vector2(0f, 0.55f + b * 0.16f);
+            float b = Mathf.Sin(Time.time * 6f) * 0.06f;
+            transform.localPosition = _at + new Vector2(0.15f, 0.2f + b);
         }
     }
 }

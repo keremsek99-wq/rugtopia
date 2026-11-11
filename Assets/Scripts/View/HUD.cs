@@ -50,10 +50,10 @@ namespace Rugtopia.View
 #endif
             }
 
-            _top = Panel(root, "TopBar", new Vector2(0, 0.905f), new Vector2(1, 1), new Color(0.29f, 0.17f, 0.12f, 0.96f)).gameObject;
+            _top = Panel(root, "TopBar", new Vector2(0, 0.915f), new Vector2(1, 1), new Color(0.12f, 0.07f, 0.05f, 0.0f)).gameObject;
             var top = _top.transform;
-            _title = Txt(top, "Title", new Vector2(0.32f, 0.46f), new Vector2(0.70f, 1f), "", 36, TextAnchor.MiddleCenter, Color.white);
-            _status = Txt(top, "Status", new Vector2(0.30f, 0.02f), new Vector2(0.72f, 0.48f), "", 28, TextAnchor.MiddleCenter, ViewKit.Hex("#F5B700"));
+            _title = Txt(top, "Title", new Vector2(0.28f, 0.46f), new Vector2(0.74f, 1f), "", 36, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _status = Txt(top, "Status", new Vector2(0.28f, 0.02f), new Vector2(0.74f, 0.48f), "", 26, TextAnchor.MiddleCenter, ViewKit.Gold);
             _coins = Txt(top, "Coins", new Vector2(0.76f, 0), new Vector2(0.98f, 1), "", 34, TextAnchor.MiddleRight, ViewKit.Hex("#F5B700"));
             _lives = Txt(top, "Lives", new Vector2(0.02f, 0), new Vector2(0.18f, 1), "", 34, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
             Btn(top, "Home", new Vector2(0.18f, 0.18f), new Vector2(0.31f, 0.82f), "Menu", "home");
@@ -63,7 +63,7 @@ namespace Rugtopia.View
             _comb = Btn(root, "Comb", new Vector2(0.36f, 0.355f), new Vector2(0.64f, 0.425f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
             _shuttle = Btn(root, "Shuttle", new Vector2(0.67f, 0.355f), new Vector2(0.95f, 0.425f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
 
-            _winPanel = Card(root, "WinPanel", new Vector2(0.08f, 0.40f), new Vector2(0.92f, 0.64f));
+            _winPanel = Card(root, "WinPanel", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.68f), ViewKit.Green);
             _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.08f, 0.72f), new Vector2(0.92f, 0.96f), "", 46, TextAnchor.MiddleCenter, ViewKit.Ink);
             _stars = new Text[3];
             for (int i = 0; i < 3; i++)
@@ -83,7 +83,7 @@ namespace Rugtopia.View
             Remember(winMap, "winMap");
             Remember(winNext, "winNext");
 
-            _failPanel = Card(root, "FailPanel", new Vector2(0.08f, 0.36f), new Vector2(0.92f, 0.66f));
+            _failPanel = Card(root, "FailPanel", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.7f), ViewKit.Hex("#C0392B"));
             _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.72f), new Vector2(0.92f, 0.96f), "", 44, TextAnchor.MiddleCenter, ViewKit.Ink);
             _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.50f), new Vector2(0.92f, 0.72f), "", 30, TextAnchor.MiddleCenter, ViewKit.Wool);
             _continueLabel = Btn(_failPanel.transform, "ContinueBtn", new Vector2(0.1f, 0.28f), new Vector2(0.9f, 0.46f), "Continue", "continue", true).GetComponentInChildren<Text>();
@@ -91,19 +91,19 @@ namespace Rugtopia.View
             Btn(_failPanel.transform, "MapBtn", new Vector2(0.54f, 0.06f), new Vector2(0.92f, 0.24f), "Map", "map");
 
             _menu = Panel(root, "Menu", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
-            Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Ink);
-            _menuSub = Txt(_menu.transform, "Sub", new Vector2(0.1f, 0.52f), new Vector2(0.9f, 0.62f), "", 40, TextAnchor.MiddleCenter, ViewKit.Wool);
-            _menuBody = Txt(_menu.transform, "Body", new Vector2(0.1f, 0.42f), new Vector2(0.9f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Ink);
+            Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _menuSub = Txt(_menu.transform, "Sub", new Vector2(0.1f, 0.52f), new Vector2(0.9f, 0.62f), "", 40, TextAnchor.MiddleCenter, ViewKit.Gold);
+            _menuBody = Txt(_menu.transform, "Body", new Vector2(0.1f, 0.42f), new Vector2(0.9f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Cream);
             _playLabel = Btn(_menu.transform, "Play", new Vector2(0.18f, 0.24f), new Vector2(0.82f, 0.36f), "Play", "play", true).GetComponentInChildren<Text>();
             _langLabel = Btn(_menu.transform, "Lang", new Vector2(0.28f, 0.12f), new Vector2(0.72f, 0.21f), "Türkçe", "lang").GetComponentInChildren<Text>();
 
-            _intro = Card(root, "Intro", new Vector2(0.08f, 0.36f), new Vector2(0.92f, 0.64f));
+            _intro = Card(root, "Intro", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.66f), ViewKit.Gold);
             _introText = Txt(_intro.transform, "Body", new Vector2(0.08f, 0.38f), new Vector2(0.92f, 0.92f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
             Btn(_intro.transform, "Ok", new Vector2(0.22f, 0.08f), new Vector2(0.78f, 0.30f), "OK", "introOk", true);
             _intro.SetActive(false);
 
             _map = Panel(root, "Map", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
-            _mapTitle = Txt(_map.transform, "Title", new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.98f), "Levels", 64, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _mapTitle = Txt(_map.transform, "Title", new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.98f), "Levels", 64, TextAnchor.MiddleCenter, ViewKit.Cream);
             Btn(_map.transform, "Back", new Vector2(0.04f, 0.91f), new Vector2(0.22f, 0.98f), "Back", "home");
             int n = 30;
             _levels = new Button[n];
@@ -133,11 +133,9 @@ namespace Rugtopia.View
             if (_playLabel != null) _playLabel.text = Copy.Get("play");
             if (_langLabel != null) _langLabel.text = Copy.Get(LangIsTr() ? "langToEn" : "langToTr");
             if (_mapTitle != null) _mapTitle.text = Copy.Get("levels");
-            if (_winTitle != null) _winTitle.text = Copy.Get("levelComplete");
+            if (_winTitle != null) _winTitle.text = Copy.Get("winTitle");
             SetChildLabel(_winPanel, "winMap", Copy.Get("levels"));
-            string next = Copy.Get("nextLevel");
-            if (next == "nextLevel") next = LangIsTr() ? "Sonraki" : "Next";
-            SetChildLabel(_winPanel, "winNext", next);
+            SetChildLabel(_winPanel, "winNext", Copy.Get("next"));
             SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
             SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
         }
@@ -207,6 +205,11 @@ namespace Rugtopia.View
         void SetPlayChrome(bool on)
         {
             if (_top != null) _top.SetActive(on);
+            SetBoosters(on);
+        }
+
+        public void SetBoosters(bool on)
+        {
             if (_slot != null) _slot.gameObject.SetActive(on);
             if (_comb != null) _comb.gameObject.SetActive(on);
             if (_shuttle != null) _shuttle.gameObject.SetActive(on);
@@ -287,13 +290,18 @@ namespace Rugtopia.View
         {
             var rt = Rect(parent, name, aMin, aMax); rt.gameObject.AddComponent<Image>().color = c; return rt;
         }
-        GameObject Card(Transform parent, string name, Vector2 aMin, Vector2 aMax)
+        GameObject Card(Transform parent, string name, Vector2 aMin, Vector2 aMax, Color border)
         {
-            var rt = Panel(parent, name, aMin, aMax, ViewKit.Hex("#FFF8EE"));
-            var image = rt.GetComponent<Image>();
-            image.sprite = ArtKit.UiRound;
-            image.type = Image.Type.Sliced;
-            return rt.gameObject;
+            var edge = Panel(parent, name, aMin, aMax, border);
+            var edgeImg = edge.GetComponent<Image>();
+            edgeImg.sprite = ArtKit.UiRound;
+            edgeImg.type = Image.Type.Sliced;
+            var fill = Panel(edge, "Fill", new Vector2(0.025f, 0.02f), new Vector2(0.975f, 0.98f), ViewKit.Hex("#F3E6CF"));
+            var fillImg = fill.GetComponent<Image>();
+            fillImg.sprite = ArtKit.UiRound;
+            fillImg.type = Image.Type.Sliced;
+            fillImg.raycastTarget = false;
+            return edge.gameObject;
         }
         static Text Txt(Transform parent, string name, Vector2 aMin, Vector2 aMax, string s, int size, TextAnchor anchor, Color c)
         {
@@ -311,12 +319,12 @@ namespace Rugtopia.View
 
         Button Btn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id, bool primary)
         {
-            var rt = Panel(parent, name, aMin, aMax, primary ? ViewKit.Hex("#C9343F") : ViewKit.Hex("#E7C99A"));
+            var rt = Panel(parent, name, aMin, aMax, primary ? ViewKit.Green : ViewKit.Hex("#3D2A20"));
             var image = rt.GetComponent<Image>();
             image.sprite = ArtKit.UiRound;
             image.type = Image.Type.Sliced;
             var b = rt.gameObject.AddComponent<Button>();
-            var ink = primary ? Color.white : ViewKit.Ink;
+            var ink = primary ? Color.white : ViewKit.Cream;
             var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 32, TextAnchor.MiddleCenter, ink);
             var lrt = text.rectTransform;
             lrt.anchorMin = new Vector2(0.06f, 0.5f);

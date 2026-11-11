@@ -80,6 +80,13 @@ jobs:
         if: always() && steps.gate.outputs.ready == 'true'
         run: sudo chown -R "$(id -u):$(id -g)" build Screenshots Library 2>/dev/null || true
 
+      - name: Pair with the HTML prototype
+        if: always() && steps.gate.outputs.ready == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          bash Tools/ci/pair_screenshots.sh
+
       - name: Upload portrait screenshots
         if: always() && steps.gate.outputs.ready == 'true'
         uses: actions/upload-artifact@v7

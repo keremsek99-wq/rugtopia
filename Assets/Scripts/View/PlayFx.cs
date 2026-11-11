@@ -15,7 +15,7 @@ namespace Rugtopia.View
                 t += Time.deltaTime;
                 float k = EaseOut(t / duration);
                 var p = Vector2.Lerp(from, to, k);
-                p.y += Mathf.Sin(k * Mathf.PI) * 0.85f;
+                p.y += Mathf.Sin(k * Mathf.PI) * 0.35f;
                 sr.transform.localPosition = p;
                 float squash = 1f + 0.18f * Mathf.Sin(k * Mathf.PI);
                 sr.transform.localScale = new Vector3(0.85f / squash, 0.85f * squash, 1f);

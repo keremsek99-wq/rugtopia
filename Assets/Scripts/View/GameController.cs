@@ -56,7 +56,7 @@ namespace Rugtopia.View
             _cam.orthographicSize = 10f;
             _cam.transform.position = new Vector3(0, 0, -10);
             _cam.clearFlags = CameraClearFlags.SolidColor;
-            _cam.backgroundColor = ViewKit.Hex("#C4785A");
+            _cam.backgroundColor = ViewKit.Hex("#22140F");
             if (_cam.GetComponent<AudioListener>() == null) _cam.gameObject.AddComponent<AudioListener>();
             _frame = _cam.GetComponent<PortraitFrame>();
             if (_frame == null) _frame = _cam.gameObject.AddComponent<PortraitFrame>();
@@ -139,7 +139,8 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
-            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.82f));
+            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.45f));
+            _hud.SetBoosters(levelIndex >= 3);
             RefreshAll();
             PlaceHand();
             if (intro != null) _hud.ShowIntro(Copy.Get(intro));
@@ -273,8 +274,7 @@ namespace Rugtopia.View
                     _board.PopRow(e.Row);
                     Feel.Play("row");
                     Feel.Tap();
-                    StartCoroutine(PunchCamera());
-                    yield return new WaitForSeconds(0.18f);
+                    yield return new WaitForSeconds(0.12f);
                 }
             }
             _board.SetVisualHp(-1);
@@ -284,8 +284,7 @@ namespace Rugtopia.View
                 _rewardedFor = levelIndex;
                 if (_hand != null) _hand.Hide();
                 if (_bubble != null) _bubble.Hide();
-                _board.Shine();
-                yield return new WaitForSeconds(0.55f);
+                yield return new WaitForSeconds(0.25f);
                 float secs = Time.time - _t0;
                 int reward = Economy.OnWin(levelIndex, _g.Level.tag, secs);
                 Feel.Play("win");
@@ -333,7 +332,7 @@ namespace Rugtopia.View
                 else if (_g != null)
                 {
                     RefreshAll();
-                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.82f));
+                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.45f));
                 }
                 return;
             }

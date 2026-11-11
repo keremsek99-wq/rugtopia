@@ -101,7 +101,7 @@ namespace Rugtopia.EditorTools
                 cam.orthographicSize = 10f;
                 cam.transform.position = new Vector3(0, 0, -10);
                 cam.clearFlags = CameraClearFlags.SolidColor;
-                cam.backgroundColor = ViewKit.Hex("#C4785A");
+                cam.backgroundColor = ViewKit.Hex("#22140F");
                 cam.aspect = 9f / 19.5f;
                 cam.nearClipPlane = 0.01f;
                 cam.farClipPlane = 30f;
@@ -144,13 +144,14 @@ namespace Rugtopia.EditorTools
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
-            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, 1.82f));
+            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, -4.45f));
             else bubble.Hide();
             hud.SetTop("Lv " + (level.index + 1) + " · " + level.nameEn, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
             hud.SetStatus(g.Status == GameStatus.Won ? "Rug woven" : "Weave " + g.StitchesLeft);
             hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);
             hud.SetBooster("comb", true, 2, EconomyConfig.PriceComb, false);
             hud.SetBooster("shuttle", true, 2, EconomyConfig.PriceShuttle, false);
+            hud.SetBoosters(level.index >= 3);
             int hint = TutorialHand.LaneFor(g);
             if (showHand && hint >= 0) hand.Show(lanes.FrontLocal(hint));
             else hand.Hide();

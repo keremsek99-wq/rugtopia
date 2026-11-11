@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Rugtopia.View
 {
-    /// <summary>One-line tutorial caption in a bubble under the rug, not on top of the weave.</summary>
+    /// <summary>Dark caption pill with a gold edge, placed under the belt so it never covers the rug.</summary>
     public class SpeechBubble : MonoBehaviour
     {
         public void Show(string text, Vector2 pos)
@@ -11,11 +11,10 @@ namespace Rugtopia.View
             if (string.IsNullOrEmpty(text)) { gameObject.SetActive(false); return; }
             gameObject.SetActive(true);
             transform.localPosition = pos;
-            float width = Mathf.Clamp(2.2f + text.Length * 0.105f, 4.2f, 8.3f);
-            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, 0.78f), ViewKit.Hex("#FFF8EE"), 12, ArtKit.UiRound);
-            var tail = ViewKit.Quad(transform, "Tail", new Vector2(0f, 0.42f), new Vector2(0.28f, 0.28f), ViewKit.Hex("#FFF8EE"), 12, ArtKit.Card);
-            tail.transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
-            ViewKit.Label(transform, "Caption", Vector2.zero, text, 0.034f, ViewKit.Ink, 13);
+            float width = Mathf.Clamp(3.4f + text.Length * 0.07f, 4.6f, 8.2f);
+            ViewKit.Quad(transform, "Edge", Vector2.zero, new Vector2(width + 0.08f, 0.78f), ViewKit.Gold, 12, ArtKit.UiRound);
+            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, 0.66f), new Color(0.08f, 0.04f, 0.02f, 0.9f), 13, ArtKit.UiRound);
+            ViewKit.Label(transform, "Caption", Vector2.zero, text, 0.032f, Color.white, 14);
         }
 
         public void Hide()
