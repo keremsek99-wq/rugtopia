@@ -13,7 +13,7 @@ permissions:
   pages: read
 
 concurrency:
-  group: webgl-pages-${{ github.ref }}
+  group: webgl-pages-run-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

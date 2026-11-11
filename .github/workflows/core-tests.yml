@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: core-tests-${{ github.workflow }}-${{ github.ref }}
+  group: core-tests-run-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
