@@ -35,7 +35,7 @@ namespace Rugtopia.View
                 ViewKit.Quad(transform, "Finger", new Vector2(0f, 0.44f), new Vector2(0.14f, 0.4f), ViewKit.Hex("#FFE2C4"), 41, ArtKit.UiRound);
             }
             gameObject.SetActive(true);
-            transform.localPosition = _at + new Vector2(0.15f, 0.15f);
+            transform.localPosition = _at + new Vector2(0.28f, -0.05f);
         }
 
         public void Hide()
@@ -48,7 +48,7 @@ namespace Rugtopia.View
         {
             if (!_on) return;
             float b = Mathf.Sin(Time.time * 6f) * 0.06f;
-            transform.localPosition = _at + new Vector2(0.15f, 0.2f + b);
+            transform.localPosition = _at + new Vector2(0.28f, -0.02f + b);
         }
     }
 }

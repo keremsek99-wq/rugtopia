@@ -139,7 +139,7 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
-            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.45f));
+            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.15f));
             _hud.SetBoosters(levelIndex >= 3);
             RefreshAll();
             PlaceHand();
@@ -332,7 +332,7 @@ namespace Rugtopia.View
                 else if (_g != null)
                 {
                     RefreshAll();
-                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.45f));
+                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, -4.15f));
                 }
                 return;
             }
@@ -383,6 +383,9 @@ namespace Rugtopia.View
                     Economy.OnFailExit(levelIndex);
                     StartLevel(levelIndex);
                     break;
+                case "restart":
+                    StartLevel(levelIndex);
+                    break;
                 case "next":
                     StartLevel(levelIndex + 1);
                     break;
@@ -417,7 +420,10 @@ namespace Rugtopia.View
         {
             var d = _g.Level;
             string name = SaveService.Data.lang == "tr" ? d.nameTr : d.nameEn;
-            _hud.SetTop("Lv " + (levelIndex + 1) + " · " + name + (d.tag == "ftue" || d.tag == "normal" ? "" : " (" + d.tag + ")"), SaveService.Data.coins, Economy.Lives);
+            int rows = _g.Grid.Rows;
+            int row = _g.Hp >= _g.Grid.Length ? rows : Mathf.Clamp(_g.Grid.RowOf(_g.Hp) + 1, 1, rows);
+            _hud.SetTop("Level " + (levelIndex + 1) + "   ·   Row " + row + "/" + rows, SaveService.Data.coins, Economy.Lives);
+            _hud.SetStatus(name);
         }
 
         void RefreshAll()
@@ -426,7 +432,7 @@ namespace Rugtopia.View
             _belt.Refresh(_g);
             _lanes.Refresh(_g);
             RefreshTop();
-            _hud.SetStatus(_g.CombArmed ? Copy.Get("combMode") : Copy.Get("weave") + " " + _g.StitchesLeft);
+            if (_g.CombArmed) _hud.SetStatus(Copy.Get("combMode"));
             _hud.SetBooster("slot", Economy.IsUnlocked(Booster.Slot, levelIndex), Economy.Inventory(Booster.Slot), Economy.Price(Booster.Slot), false);
             _hud.SetBooster("comb", Economy.IsUnlocked(Booster.Comb, levelIndex), Economy.Inventory(Booster.Comb), Economy.Price(Booster.Comb), _g.CombArmed);
             _hud.SetBooster("shuttle", Economy.IsUnlocked(Booster.Shuttle, levelIndex), Economy.Inventory(Booster.Shuttle), Economy.Price(Booster.Shuttle), false);

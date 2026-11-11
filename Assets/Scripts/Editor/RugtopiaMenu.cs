@@ -144,10 +144,12 @@ namespace Rugtopia.EditorTools
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
-            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, -4.45f));
+            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch!", new Vector2(0f, -4.15f));
             else bubble.Hide();
-            hud.SetTop("Lv " + (level.index + 1) + " · " + level.nameEn, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
-            hud.SetStatus(g.Status == GameStatus.Won ? "Rug woven" : "Weave " + g.StitchesLeft);
+            int rows = g.Grid.Rows;
+            int row = g.Hp >= g.Grid.Length ? rows : Mathf.Clamp(g.Grid.RowOf(Mathf.Min(g.Hp, g.Grid.Length - 1)) + 1, 1, rows);
+            hud.SetTop("Level " + (level.index + 1) + "   ·   Row " + row + "/" + rows, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
+            hud.SetStatus(level.nameEn);
             hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);
             hud.SetBooster("comb", true, 2, EconomyConfig.PriceComb, false);
             hud.SetBooster("shuttle", true, 2, EconomyConfig.PriceShuttle, false);
@@ -155,7 +157,12 @@ namespace Rugtopia.EditorTools
             int hint = TutorialHand.LaneFor(g);
             if (showHand && hint >= 0) hand.Show(lanes.FrontLocal(hint));
             else hand.Hide();
-            if (winCard) hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
+            if (winCard)
+            {
+                hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
+                var fx = new GameObject("ShotFx").AddComponent<PlayFx>();
+                fx.StampConfetti();
+            }
             // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this
             // camera, then we render once the layout has settled (the captured end of frame).
             hud.Bind(cam);

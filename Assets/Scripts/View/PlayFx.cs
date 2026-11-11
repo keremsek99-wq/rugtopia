@@ -57,6 +57,18 @@ namespace Rugtopia.View
             StartCoroutine(ConfettiCo());
         }
 
+        /// <summary>Places confetti immediately so a single captured frame shows it.</summary>
+        public void StampConfetti()
+        {
+            for (int i = 0; i < 36; i++)
+            {
+                var c = Color.HSVToRGB((i * 0.17f) % 1f, 0.65f, 1f);
+                float x = Random.Range(-3.6f, 3.6f);
+                float y = Random.Range(-1.5f, 6.5f);
+                ViewKit.Quad(transform, "Bit", new Vector2(x, y), Vector2.one * Random.Range(0.12f, 0.28f), c, 45);
+            }
+        }
+
         IEnumerator ConfettiCo()
         {
             const int n = 28;

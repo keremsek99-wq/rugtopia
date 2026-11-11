@@ -49,6 +49,8 @@ namespace Rugtopia.View
         {
             get
             {
+                if (_font == null) _font = Resources.Load<Font>("Fonts/Fredoka-Bold");
+                if (_font == null) _font = Resources.Load<Font>("Fonts/Fredoka-SemiBold");
                 if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 return _font;
             }
@@ -166,7 +168,7 @@ namespace Rugtopia.View
             go.transform.SetParent(parent, false);
             go.transform.localPosition = new Vector3(pos.x, pos.y, -0.1f);
             var tm = go.AddComponent<TextMesh>();
-            tm.font = Font; tm.text = text; tm.characterSize = size; tm.fontSize = 48;
+            tm.font = Font; tm.text = text; tm.characterSize = size; tm.fontSize = 64; tm.fontStyle = FontStyle.Bold;
             tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.color = color;
             var mr = go.GetComponent<MeshRenderer>();
             mr.sharedMaterial = Font.material; mr.sortingOrder = order;
@@ -180,17 +182,27 @@ namespace Rugtopia.View
                 Object.DestroyImmediate(t.GetChild(i).gameObject);
         }
 
-        /// <summary>One bobbin: wooden flanges and a single thread barrel. The count label is the caller's job, once.</summary>
-        public static void Bobbin(Transform parent, string name, Vector2 pos, float height, Color thread, int order, float brightness)
+        /// <summary>Prototype spool: thread barrel, wood caps, motif, and a count badge.</summary>
+        public static void SpoolIcon(Transform parent, string name, Vector2 pos, float height, char color, string count, bool hidden, int order, float brightness)
         {
             float b = Mathf.Clamp01(brightness);
-            var wood = Color.Lerp(Hex("#4A3020"), Hex("#E7D3AE"), b);
-            var yarn = Color.Lerp(Hex("#2A1C16"), thread, b);
-            yarn.a = 1f;
-            float w = height * 0.72f;
-            Quad(parent, name + "Yarn", pos, new Vector2(w * 0.62f, height * 0.72f), yarn, order, ArtKit.UiRound);
-            Quad(parent, name + "Top", pos + new Vector2(0f, height * 0.38f), new Vector2(w, height * 0.14f), wood, order + 1);
-            Quad(parent, name + "Bot", pos + new Vector2(0f, -height * 0.38f), new Vector2(w, height * 0.14f), wood, order + 1);
+            var thread = hidden ? Hex("#7A6A60") : Color.Lerp(Hex("#2A1C16"), Of(color), b);
+            var wood = Color.Lerp(Hex("#8A5A32"), Hex("#C99256"), b);
+            float w = height * 0.78f;
+            Quad(parent, name + "Yarn", pos, new Vector2(w * 0.72f, height * 0.78f), thread, order, ArtKit.UiRound);
+            Quad(parent, name + "Top", pos + new Vector2(0f, height * 0.4f), new Vector2(w, height * 0.16f), wood, order + 1, ArtKit.UiRound);
+            Quad(parent, name + "Bot", pos + new Vector2(0f, -height * 0.4f), new Vector2(w, height * 0.16f), wood, order + 1, ArtKit.UiRound);
+            if (!hidden)
+                Quad(parent, name + "Mark", pos + new Vector2(0f, height * 0.06f), Vector2.one * height * 0.34f, InkFor(color), order + 2, Glyphs.Of(color));
+            var badge = pos + new Vector2(w * 0.42f, -height * 0.32f);
+            float br = Mathf.Max(0.16f, height * 0.22f);
+            Quad(parent, name + "Badge", badge, Vector2.one * br * 2f, Ink, order + 3, Glyphs.Circle);
+            Label(parent, name + "Num", badge, count, br * 0.85f, Color.white, order + 4);
+        }
+
+        public static void Bobbin(Transform parent, string name, Vector2 pos, float height, Color thread, int order, float brightness)
+        {
+            SpoolIcon(parent, name, pos, height, 'R', "", true, order, brightness);
         }
     }
 }

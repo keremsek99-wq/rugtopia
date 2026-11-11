@@ -3,42 +3,40 @@ using UnityEngine;
 
 namespace Rugtopia.View
 {
-    /// <summary>Dark lane columns, matching the prototype: a large front spool and up to three behind it.</summary>
+    /// <summary>Large rounded lane cards. The hinted lane gets a gold edge and a big front spool.</summary>
     public class LaneView : MonoBehaviour
     {
-        public Rect area = new Rect(-4.05f, -9.55f, 8.1f, 3.35f);
+        public Rect area = new Rect(-4.15f, -9.85f, 8.3f, 3.85f);
         public const int VisibleDepth = 4;
-        const float Step = 0.62f;
+        const float Step = 0.72f;
         int _lanes;
 
         float LaneW { get { return area.width / Mathf.Max(1, _lanes); } }
-        float RowY(int depth) { return area.yMax - 0.55f - depth * Step; }
+        float RowY(int depth) { return area.yMax - 0.85f - depth * Step; }
 
         public void Refresh(GameState g)
         {
             ViewKit.Clear(transform);
             _lanes = g.Lanes.Count;
+            int hint = TutorialHand.LaneFor(g);
             for (int i = 0; i < _lanes; i++)
             {
                 float cx = area.xMin + LaneW * (i + 0.5f);
+                float cardW = LaneW * 0.9f;
                 var lane = g.Lanes[i];
-                var back = new Color(0f, 0f, 0f, 0.28f);
-                ViewKit.Quad(transform, "Lane" + i, new Vector2(cx, area.center.y), new Vector2(LaneW * 0.9f, area.height), back, 0, ArtKit.UiRound);
+                bool hot = i == hint;
+                if (hot) ViewKit.Quad(transform, "Gold" + i, new Vector2(cx, area.center.y), new Vector2(cardW + 0.12f, area.height + 0.1f), ViewKit.Gold, 0, ArtKit.UiRound);
+                ViewKit.Quad(transform, "Lane" + i, new Vector2(cx, area.center.y), new Vector2(cardW, area.height), new Color(0.08f, 0.04f, 0.03f, 0.72f), 1, ArtKit.UiRound);
                 int shown = Mathf.Min(VisibleDepth, lane.Count);
                 for (int d = shown - 1; d >= 0; d--)
                 {
                     var s = lane[d];
-                    float size = d == 0 ? 1.2f : 0.72f - d * 0.04f;
+                    float size = d == 0 ? 1.45f : 0.78f;
                     var p = new Vector2(cx, RowY(d));
-                    var col = s.Hidden ? ViewKit.Hex("#7A6A60") : ViewKit.Of(s.Color);
-                    float bright = d == 0 ? 1f : 0.72f;
-                    ViewKit.Bobbin(transform, "Spool" + s.Id, p, size, col, 2, bright);
-                    if (d != 0) continue;
-                    ViewKit.Label(transform, "Count" + s.Id, p + new Vector2(size * 0.28f, -size * 0.28f), s.Hidden ? "?" : s.Left.ToString(), 0.045f, Color.white, 6);
-                    if (s.Knot > 0 && !s.Hidden) ViewKit.Label(transform, "Knot" + s.Id, p + new Vector2(-size * 0.3f, size * 0.3f), "k", 0.04f, ViewKit.Gold, 7);
+                    ViewKit.SpoolIcon(transform, "Spool" + s.Id, p, size, s.Color, s.Hidden ? "?" : s.Left.ToString(), s.Hidden, 2, d == 0 ? 1f : 0.8f);
                 }
-                if (lane.Count > VisibleDepth) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.18f), "+" + (lane.Count - VisibleDepth), 0.045f, ViewKit.Cream, 3);
-                if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", 0.04f, new Color(1f, 0.9f, 0.78f, 0.35f), 3);
+                if (lane.Count > VisibleDepth) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.22f), "+" + (lane.Count - VisibleDepth), 0.1f, ViewKit.Cream, 3);
+                if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", 0.1f, new Color(1f, 0.9f, 0.78f, 0.35f), 3);
             }
         }
 
@@ -47,7 +45,7 @@ namespace Rugtopia.View
             lane = -1; depth = 0;
             if (_lanes == 0 || !area.Contains(world)) return false;
             lane = Mathf.Clamp(Mathf.FloorToInt((world.x - area.xMin) / LaneW), 0, _lanes - 1);
-            depth = Mathf.Clamp(Mathf.RoundToInt((area.yMax - 0.55f - world.y) / Step), 0, VisibleDepth - 1);
+            depth = Mathf.Clamp(Mathf.RoundToInt((area.yMax - 0.85f - world.y) / Step), 0, VisibleDepth - 1);
             return true;
         }
 

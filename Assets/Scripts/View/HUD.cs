@@ -17,7 +17,7 @@ namespace Rugtopia.View
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winTitle, _winCoins, _failTitle, _failBody, _continueLabel, _menuBody, _introText;
-        Text _playLabel, _langLabel, _mapTitle, _menuSub;
+        Text _playLabel, _langLabel, _mapTitle, _menuSub, _skip;
         Text[] _stars;
         GameObject _intro;
         Button _slot, _comb, _shuttle;
@@ -50,37 +50,36 @@ namespace Rugtopia.View
 #endif
             }
 
-            _top = Panel(root, "TopBar", new Vector2(0, 0.915f), new Vector2(1, 1), new Color(0.12f, 0.07f, 0.05f, 0.0f)).gameObject;
+            _top = Panel(root, "TopBar", new Vector2(0, 0.885f), new Vector2(1, 1), new Color(0.12f, 0.07f, 0.05f, 0.0f)).gameObject;
             var top = _top.transform;
-            _title = Txt(top, "Title", new Vector2(0.28f, 0.46f), new Vector2(0.74f, 1f), "", 36, TextAnchor.MiddleCenter, ViewKit.Cream);
-            _status = Txt(top, "Status", new Vector2(0.28f, 0.02f), new Vector2(0.74f, 0.48f), "", 26, TextAnchor.MiddleCenter, ViewKit.Gold);
-            _coins = Txt(top, "Coins", new Vector2(0.76f, 0), new Vector2(0.98f, 1), "", 34, TextAnchor.MiddleRight, ViewKit.Hex("#F5B700"));
-            _lives = Txt(top, "Lives", new Vector2(0.02f, 0), new Vector2(0.18f, 1), "", 34, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
-            Btn(top, "Home", new Vector2(0.18f, 0.18f), new Vector2(0.31f, 0.82f), "Menu", "home");
-            Btn(top, "Next", new Vector2(0.70f, 0.18f), new Vector2(0.76f, 0.82f), ">", "next");
+            Btn(top, "Home", new Vector2(0.03f, 0.42f), new Vector2(0.15f, 0.96f), "‹", "home");
+            Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "↻", "restart");
+            _title = Txt(top, "Title", new Vector2(0.16f, 0.5f), new Vector2(0.84f, 1f), "", 58, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _status = Txt(top, "Status", new Vector2(0.2f, 0.16f), new Vector2(0.8f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Gold);
+            _lives = Txt(top, "Lives", new Vector2(0.03f, 0.0f), new Vector2(0.2f, 0.38f), "", 28, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
+            _coins = Txt(top, "Coins", new Vector2(0.8f, 0.0f), new Vector2(0.97f, 0.38f), "", 28, TextAnchor.MiddleRight, ViewKit.Gold);
 
-            _slot = Btn(root, "Slot", new Vector2(0.05f, 0.355f), new Vector2(0.33f, 0.425f), "+  Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
-            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.355f), new Vector2(0.64f, 0.425f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
-            _shuttle = Btn(root, "Shuttle", new Vector2(0.67f, 0.355f), new Vector2(0.95f, 0.425f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+            _slot = Btn(root, "Slot", new Vector2(0.04f, 0.225f), new Vector2(0.32f, 0.305f), "+  Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
+            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.225f), new Vector2(0.64f, 0.305f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
+            _shuttle = Btn(root, "Shuttle", new Vector2(0.68f, 0.225f), new Vector2(0.96f, 0.305f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
 
             _winPanel = Card(root, "WinPanel", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.68f), ViewKit.Green);
-            _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.08f, 0.72f), new Vector2(0.92f, 0.96f), "", 46, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.06f, 0.74f), new Vector2(0.94f, 0.96f), "", 72, TextAnchor.MiddleCenter, ViewKit.Ink);
             _stars = new Text[3];
             for (int i = 0; i < 3; i++)
             {
-                float x = 0.30f + i * 0.16f;
-                _stars[i] = Txt(_winPanel.transform, "Star" + i, new Vector2(x, 0.50f), new Vector2(x + 0.12f, 0.72f), "★", 64, TextAnchor.MiddleCenter, ViewKit.Hex("#F5B700"));
+                float x = 0.26f + i * 0.18f;
+                _stars[i] = Txt(_winPanel.transform, "Star" + i, new Vector2(x, 0.52f), new Vector2(x + 0.16f, 0.74f), "★", 110, TextAnchor.MiddleCenter, ViewKit.Gold);
             }
-            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.28f, 0.34f), new Vector2(0.40f, 0.50f), Color.white);
+            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.3f, 0.38f), new Vector2(0.42f, 0.52f), Color.white);
             var coinImg = coin.GetComponent<Image>();
             coinImg.sprite = ArtKit.Coin;
             coinImg.color = Color.white;
             coinImg.raycastTarget = false;
-            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.40f, 0.32f), new Vector2(0.82f, 0.52f), "", 36, TextAnchor.MiddleLeft, ViewKit.Ink);
-            var winMap = Btn(_winPanel.transform, "MapBtn", new Vector2(0.08f, 0.07f), new Vector2(0.46f, 0.28f), "Map", "map");
-            var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.54f, 0.07f), new Vector2(0.92f, 0.28f), "Next", "next", true);
+            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.42f, 0.36f), new Vector2(0.78f, 0.54f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
+            var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.38f), "Continue", "next", true);
+            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.12f, 0.04f), new Vector2(0.88f, 0.14f), "", 26, TextAnchor.MiddleCenter, ViewKit.Wool);
             _playLabel = null;
-            Remember(winMap, "winMap");
             Remember(winNext, "winNext");
 
             _failPanel = Card(root, "FailPanel", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.7f), ViewKit.Hex("#C0392B"));
@@ -134,8 +133,8 @@ namespace Rugtopia.View
             if (_langLabel != null) _langLabel.text = Copy.Get(LangIsTr() ? "langToEn" : "langToTr");
             if (_mapTitle != null) _mapTitle.text = Copy.Get("levels");
             if (_winTitle != null) _winTitle.text = Copy.Get("winTitle");
-            SetChildLabel(_winPanel, "winMap", Copy.Get("levels"));
             SetChildLabel(_winPanel, "winNext", Copy.Get("next"));
+            if (_skip != null) _skip.text = Copy.Get("tapSkip");
             SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
             SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
         }
@@ -306,9 +305,9 @@ namespace Rugtopia.View
         static Text Txt(Transform parent, string name, Vector2 aMin, Vector2 aMax, string s, int size, TextAnchor anchor, Color c)
         {
             var t = Rect(parent, name, aMin, aMax).gameObject.AddComponent<Text>();
-            t.font = ViewKit.Font; t.text = s; t.fontSize = size; t.alignment = anchor; t.color = c;
+            t.font = ViewKit.Font; t.text = s; t.fontSize = size; t.fontStyle = FontStyle.Bold; t.alignment = anchor; t.color = c;
             t.alignByGeometry = true; t.raycastTarget = false;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
             t.verticalOverflow = VerticalWrapMode.Truncate;
             return t;
         }
@@ -325,12 +324,12 @@ namespace Rugtopia.View
             image.type = Image.Type.Sliced;
             var b = rt.gameObject.AddComponent<Button>();
             var ink = primary ? Color.white : ViewKit.Cream;
-            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 32, TextAnchor.MiddleCenter, ink);
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 44, TextAnchor.MiddleCenter, ink);
             var lrt = text.rectTransform;
             lrt.anchorMin = new Vector2(0.06f, 0.5f);
             lrt.anchorMax = new Vector2(0.94f, 0.5f);
             lrt.pivot = new Vector2(0.5f, 0.5f);
-            lrt.sizeDelta = new Vector2(0f, 48f);
+            lrt.sizeDelta = new Vector2(0f, 72f);
             lrt.anchoredPosition = Vector2.zero;
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
