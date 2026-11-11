@@ -1,0 +1,14 @@
+{
+    "name": "Rugtopia.View",
+    "rootNamespace": "Rugtopia.View",
+    "references": ["Rugtopia.Core", "Rugtopia.Meta", "Unity.InputSystem"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

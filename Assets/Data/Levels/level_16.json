@@ -1,0 +1,268 @@
+{
+ "index": 15,
+ "id": 16,
+ "nameEn": "Lattice",
+ "nameTr": "Kafes",
+ "tag": "normal",
+ "pattern": {
+  "t": "lattice",
+  "w": 9,
+  "h": 9,
+  "c": "CTR",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "TCCTCCTCC",
+  "CTTCTTCTT",
+  "CTTCTTCTT",
+  "TCCTCCTCC",
+  "CTTCTTCTT",
+  "CTTCTTCTT",
+  "TCCTCCTCC",
+  "CTTCTTCTT",
+  "CTTCTTCTT"
+ ],
+ "belt": 3,
+ "lanes": 3,
+ "cap": 3,
+ "shuffle": 1,
+ "seed": 3,
+ "hidden": 0,
+ "covered": "alt",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 25
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 26
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 22
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     },
+     {
+      "c": "T",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 24
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  2,
+  0,
+  1,
+  2,
+  0,
+  0,
+  2,
+  0,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  0,
+  2,
+  2,
+  2,
+  2,
+  2,
+  2,
+  2,
+  2,
+  1
+ ]
+}

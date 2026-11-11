@@ -1,0 +1,183 @@
+{
+ "index": 12,
+ "id": 13,
+ "nameEn": "Comb Stripes",
+ "nameTr": "Tarak Şeritleri",
+ "tag": "normal",
+ "pattern": {
+  "t": "vstripes",
+  "w": 9,
+  "h": 8,
+  "c": "RYNC",
+  "k": 2,
+  "b": ""
+ },
+ "rows": [
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR",
+  "RRYYNNCCR"
+ ],
+ "belt": 5,
+ "lanes": 2,
+ "cap": 5,
+ "shuffle": 1,
+ "seed": 1,
+ "hidden": 0.25,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": true,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "Y",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "N",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "Y",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  1,
+  0,
+  1,
+  0,
+  0,
+  1,
+  1,
+  1,
+  0,
+  1,
+  1,
+  1,
+  0,
+  0,
+  0,
+  1,
+  1
+ ]
+}

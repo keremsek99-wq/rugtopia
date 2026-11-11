@@ -1,0 +1,243 @@
+{
+ "index": 8,
+ "id": 9,
+ "nameEn": "Arrowheads",
+ "nameTr": "Ok Uçları",
+ "tag": "ftue",
+ "pattern": {
+  "t": "chevron",
+  "w": 8,
+  "h": 8,
+  "c": "RCN",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "RNCRRCNR",
+  "CRNCCNRC",
+  "NCRNNRCN",
+  "RNCRRCNR",
+  "CRNCCNRC",
+  "NCRNNRCN",
+  "RNCRRCNR",
+  "CRNCCNRC"
+ ],
+ "belt": 3,
+ "lanes": 5,
+ "cap": 3,
+ "shuffle": 0.3,
+ "seed": 4,
+ "hidden": 0.25,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "N",
+      "n": 2,
+      "hidden": true,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": true,
+      "knot": 0,
+      "seq": 22
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "C",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  2,
+  1,
+  0,
+  1,
+  4,
+  0,
+  1,
+  0,
+  2,
+  1,
+  4,
+  0,
+  3,
+  3,
+  4,
+  3,
+  0,
+  0,
+  2,
+  2,
+  2,
+  4,
+  4
+ ]
+}

@@ -1,0 +1,217 @@
+{
+ "index": 22,
+ "id": 23,
+ "nameEn": "Trellis",
+ "nameTr": "Çardak",
+ "tag": "normal",
+ "pattern": {
+  "t": "lattice",
+  "w": 10,
+  "h": 10,
+  "c": "GCK",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CGGCGGCGGC",
+  "GCCGCCGCCG",
+  "GCCGCCGCCG",
+  "CGGCGGCGGC",
+  "GCCGCCGCCG",
+  "GCCGCCGCCG",
+  "CGGCGGCGGC",
+  "GCCGCCGCCG",
+  "GCCGCCGCCG",
+  "CGGCGGCGGC"
+ ],
+ "belt": 3,
+ "lanes": 2,
+ "cap": 5,
+ "shuffle": 0.3,
+ "seed": 7,
+ "hidden": 0,
+ "covered": "top",
+ "knots": 1,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 1,
+      "seq": 11
+     },
+     {
+      "c": "G",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "C",
+      "n": 5,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "G",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  1,
+  0,
+  1,
+  0,
+  1,
+  0,
+  1,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1,
+  0,
+  0,
+  1,
+  0,
+  1,
+  0
+ ]
+}

@@ -1,0 +1,268 @@
+{
+ "index": 13,
+ "id": 14,
+ "nameEn": "Hourglass",
+ "nameTr": "Kum Saati",
+ "tag": "normal",
+ "pattern": {
+  "t": "hourglass",
+  "w": 9,
+  "h": 9,
+  "c": "CRN",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CRRRNRRRC",
+  "CCRRNRRCC",
+  "CCCRNRCCC",
+  "CCCCNCCCC",
+  "CCCCNCCCC",
+  "CCCCNCCCC",
+  "CCCRNRCCC",
+  "CCRRNRRCC",
+  "CRRRNRRRC"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 3,
+ "shuffle": 0.3,
+ "seed": 5,
+ "hidden": 0.2,
+ "covered": "top",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 21
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 24
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 16
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 22
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 23
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 25
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 26
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "N",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  0,
+  2,
+  0,
+  0,
+  1,
+  2,
+  2,
+  0,
+  0,
+  0,
+  2,
+  0,
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  2,
+  2,
+  1,
+  1,
+  1,
+  1
+ ]
+}

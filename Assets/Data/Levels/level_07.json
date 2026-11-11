@@ -1,0 +1,194 @@
+{
+ "index": 6,
+ "id": 7,
+ "nameEn": "Chevron Steps",
+ "nameTr": "Zikzak Basamak",
+ "tag": "ftue",
+ "pattern": {
+  "t": "chevron",
+  "w": 7,
+  "h": 7,
+  "c": "CRK",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "CKRCRKC",
+  "RCKRKCR",
+  "KRCKCRK",
+  "CKRCRKC",
+  "RCKRKCR",
+  "KRCKCRK",
+  "CKRCRKC"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 3,
+ "shuffle": 0.3,
+ "seed": 2,
+ "hidden": 0.2,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "K",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "K",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "K",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "K",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "K",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "K",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  0,
+  0,
+  0,
+  2,
+  1,
+  0,
+  2,
+  0,
+  0,
+  1,
+  1,
+  2,
+  1,
+  2,
+  2,
+  2
+ ]
+}

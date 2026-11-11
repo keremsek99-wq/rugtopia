@@ -1,0 +1,220 @@
+{
+ "index": 11,
+ "id": 12,
+ "nameEn": "Veiled Diamond",
+ "nameTr": "Örtülü Elmas",
+ "tag": "normal",
+ "pattern": {
+  "t": "rings",
+  "w": 9,
+  "h": 9,
+  "c": "RCN",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "NCRNCNRCN",
+  "CRNCRCNRC",
+  "RNCRNRCNR",
+  "NCRNCNRCN",
+  "CRNCRCNRC",
+  "NCRNCNRCN",
+  "RNCRNRCNR",
+  "CRNCRCNRC",
+  "NCRNCNRCN"
+ ],
+ "belt": 4,
+ "lanes": 3,
+ "cap": 4,
+ "shuffle": 0.6,
+ "seed": 1,
+ "hidden": 0,
+ "covered": "top",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 11
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 19
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "N",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     },
+     {
+      "c": "R",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 17
+     },
+     {
+      "c": "C",
+      "n": 4,
+      "hidden": false,
+      "knot": 0,
+      "seq": 18
+     },
+     {
+      "c": "R",
+      "n": 1,
+      "hidden": false,
+      "knot": 0,
+      "seq": 20
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  2,
+  1,
+  0,
+  0,
+  2,
+  1,
+  0,
+  2,
+  1,
+  0,
+  0,
+  0,
+  0,
+  2,
+  2,
+  1,
+  2,
+  2,
+  0,
+  2
+ ]
+}

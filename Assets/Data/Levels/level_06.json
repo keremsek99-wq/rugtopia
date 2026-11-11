@@ -1,0 +1,186 @@
+{
+ "index": 5,
+ "id": 6,
+ "nameEn": "Hidden Gold",
+ "nameTr": "Saklı Altın",
+ "tag": "ftue",
+ "pattern": {
+  "t": "diamond",
+  "w": 7,
+  "h": 7,
+  "c": "RYC",
+  "k": 0,
+  "b": ""
+ },
+ "rows": [
+  "RRRYRRR",
+  "RRYYYRR",
+  "RYYCYYR",
+  "YYCCCYY",
+  "RYYCYYR",
+  "RRYYYRR",
+  "RRRYRRR"
+ ],
+ "belt": 3,
+ "lanes": 3,
+ "cap": 3,
+ "shuffle": 0.6,
+ "seed": 7,
+ "hidden": 0.3,
+ "covered": "",
+ "knots": 0,
+ "generated": {
+  "lanes": [
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 0
+     },
+     {
+      "c": "C",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 6
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 7
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 12
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 13
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 15
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 16
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 1
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 3
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 4
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 5
+     },
+     {
+      "c": "C",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 9
+     },
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 10
+     },
+     {
+      "c": "Y",
+      "n": 2,
+      "hidden": false,
+      "knot": 0,
+      "seq": 14
+     }
+    ]
+   },
+   {
+    "spools": [
+     {
+      "c": "R",
+      "n": 3,
+      "hidden": false,
+      "knot": 0,
+      "seq": 2
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 8
+     },
+     {
+      "c": "Y",
+      "n": 3,
+      "hidden": true,
+      "knot": 0,
+      "seq": 11
+     }
+    ]
+   }
+  ]
+ },
+ "solution": [
+  0,
+  1,
+  1,
+  2,
+  1,
+  1,
+  0,
+  0,
+  0,
+  1,
+  0,
+  2,
+  2,
+  0,
+  1,
+  1,
+  0
+ ]
+}
