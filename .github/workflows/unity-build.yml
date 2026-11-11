@@ -38,10 +38,9 @@ permissions:
   # unity-test-runner publishes the EditMode result as a GitHub check.
   checks: write
 
-# One Unity seat at a time. WebGL pages uses the same group so the two builds queue.
 concurrency:
-  group: rugtopia-unity-license
-  cancel-in-progress: false
+  group: unity-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
