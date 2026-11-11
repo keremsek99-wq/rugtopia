@@ -24,10 +24,10 @@ namespace Rugtopia.View
         public static Sprite Diamond { get { if (_diamond == null) _diamond = Poly(4, 0.78f, true); return _diamond; } }
         public static Sprite Cross { get { if (_cross == null) _cross = Plus(); return _cross; } }
         public static Sprite Circle { get { if (_circle == null) _circle = Disc(false); return _circle; } }
-        public static Sprite Square { get { if (_square == null) _square = Box(true); return _square; } }
+        public static Sprite Square { get { if (_square == null) _square = Frame(true); return _square; } }
         public static Sprite Star { get { if (_star == null) _star = Poly(5, 0.45f, true); return _star; } }
         public static Sprite Chevron { get { if (_chevron == null) _chevron = Chevrons(); return _chevron; } }
-        public static Sprite Box { get { if (_box == null) _box = Box(false); return _box; } }
+        public static Sprite Box { get { if (_box == null) _box = Frame(false); return _box; } }
         public static Sprite Ring { get { if (_ring == null) _ring = Disc(true); return _ring; } }
         public static Sprite Dot { get { if (_dot == null) _dot = Disc(false); return _dot; } }
 
@@ -48,7 +48,7 @@ namespace Rugtopia.View
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
 
-        static Sprite Box(bool fill)
+        static Sprite Frame(bool fill)
         {
             const int n = 64;
             var t = Tex(n);
