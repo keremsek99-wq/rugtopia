@@ -159,6 +159,9 @@ namespace Rugtopia.EditorTools
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
+            hud.HidePanels();
+            hud.HideBadge();
+            hud.ShowLangChoice(false);
             if (!winCard && level.index > 0 && !string.IsNullOrEmpty(level.tag) && level.index < 5) bubble.Show("Tap the spool that matches the glowing stitch!", new Vector2(0f, -2.55f));
             else bubble.Hide();
             hud.SetTop("Level " + (level.index + 1), EconomyConfig.StartCoins, EconomyConfig.MaxLives);
