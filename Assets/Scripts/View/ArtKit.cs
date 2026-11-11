@@ -248,19 +248,26 @@ namespace Rugtopia.View
             return SpriteOf(t, n, Vector4.zero);
         }
 
+        static bool InEllipse(float x, float y, float cx, float cy, float rx, float ry)
+        {
+            float dx = (x - cx) / rx, dy = (y - cy) / ry;
+            return dx * dx + dy * dy <= 1f;
+        }
+
         static Sprite MakeHand()
         {
-            const int w = 80, h = 120;
+            const int w = 96, h = 140;
             var mask = new bool[w * h];
             for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
             {
                 float u = x + 0.5f, v = y + 0.5f;
-                bool finger = Mathf.Abs(u - 40f) < 9f && v > 8f && v < 78f;
-                bool tip = (u - 40f) * (u - 40f) + (v - 16f) * (v - 16f) < 110f;
-                bool palm = (u - 46f) * (u - 46f) / 520f + (v - 90f) * (v - 90f) / 400f < 1f;
-                bool thumb = (u - 24f) * (u - 24f) / 130f + (v - 76f) * (v - 76f) / 210f < 1f;
-                mask[y * w + x] = finger || tip || palm || thumb;
+                bool index = Mathf.Abs(u - 46f) < 11f && v > 6f && v < 92f;
+                bool tip = InEllipse(u, v, 46f, 16f, 13f, 16f);
+                bool palm = InEllipse(u, v, 52f, 102f, 30f, 26f);
+                bool thumb = InEllipse(u, v, 22f, 96f, 16f, 12f);
+                bool knuckle = InEllipse(u, v, 70f, 78f, 12f, 16f) || InEllipse(u, v, 78f, 96f, 10f, 14f);
+                mask[y * w + x] = index || tip || palm || thumb || knuckle;
             }
             var t = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
             var px = new Color[w * h];
