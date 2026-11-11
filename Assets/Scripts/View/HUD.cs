@@ -17,7 +17,8 @@ namespace Rugtopia.View
         Canvas _canvas;
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
-        Text _winText, _failText, _continueLabel, _menuBody;
+        Text _winText, _failText, _continueLabel, _menuBody, _caption, _introText;
+        GameObject _intro;
         Button _slot, _comb, _shuttle;
         Text _slotL, _combL, _shuttleL;
         Button[] _levels;
@@ -56,14 +57,16 @@ namespace Rugtopia.View
             Btn(top, "Next", new Vector2(0.7f, 0.15f), new Vector2(0.76f, 0.85f), ">", "next");
             _status = Txt(root, "Status", new Vector2(0.05f, 0.885f), new Vector2(0.95f, 0.925f), "", 32, TextAnchor.MiddleCenter, new Color(0.17f, 0.1f, 0.08f));
 
-            _slot = Btn(root, "Slot", new Vector2(0.06f, 0.365f), new Vector2(0.34f, 0.41f), "+1 Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
-            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.365f), new Vector2(0.64f, 0.41f), "Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
-            _shuttle = Btn(root, "Shuttle", new Vector2(0.66f, 0.365f), new Vector2(0.94f, 0.41f), "Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+            _slot = Btn(root, "Slot", new Vector2(0.05f, 0.355f), new Vector2(0.33f, 0.425f), "+  Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
+            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.355f), new Vector2(0.64f, 0.425f), "#  Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
+            _shuttle = Btn(root, "Shuttle", new Vector2(0.67f, 0.355f), new Vector2(0.95f, 0.425f), ">  Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
 
-            _winPanel = Panel(root, "WinPanel", new Vector2(0.1f, 0.35f), new Vector2(0.9f, 0.65f), new Color(0.2f, 0.45f, 0.3f, 0.96f)).gameObject;
-            _winText = Txt(_winPanel.transform, "Text", new Vector2(0.05f, 0.45f), new Vector2(0.95f, 0.95f), "", 52, TextAnchor.MiddleCenter, Color.white);
-            Btn(_winPanel.transform, "MapBtn", new Vector2(0.08f, 0.08f), new Vector2(0.46f, 0.38f), "Map", "map");
-            Btn(_winPanel.transform, "NextBtn", new Vector2(0.54f, 0.08f), new Vector2(0.92f, 0.38f), "Next", "next");
+            _winPanel = Panel(root, "WinPanel", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.72f), ViewKit.Hex("#F6ECD9")).gameObject;
+            _winPanel.GetComponent<Image>().sprite = ArtKit.UiRound;
+            _winPanel.GetComponent<Image>().type = Image.Type.Sliced;
+            _winText = Txt(_winPanel.transform, "Text", new Vector2(0.06f, 0.42f), new Vector2(0.94f, 0.95f), "", 48, TextAnchor.MiddleCenter, ViewKit.Ink);
+            Btn(_winPanel.transform, "MapBtn", new Vector2(0.08f, 0.08f), new Vector2(0.42f, 0.28f), "Map", "map", false);
+            Btn(_winPanel.transform, "NextBtn", new Vector2(0.48f, 0.08f), new Vector2(0.92f, 0.28f), "Next", "next", true);
             _failPanel = Panel(root, "FailPanel", new Vector2(0.1f, 0.33f), new Vector2(0.9f, 0.67f), new Color(0.55f, 0.18f, 0.2f, 0.96f)).gameObject;
             _failText = Txt(_failPanel.transform, "Text", new Vector2(0.05f, 0.6f), new Vector2(0.95f, 0.95f), "", 48, TextAnchor.MiddleCenter, Color.white);
             _continueLabel = Btn(_failPanel.transform, "ContinueBtn", new Vector2(0.15f, 0.33f), new Vector2(0.85f, 0.55f), "Continue", "continue").GetComponentInChildren<Text>();
@@ -74,7 +77,14 @@ namespace Rugtopia.View
             Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Ink);
             Txt(_menu.transform, "Sub", new Vector2(0.1f, 0.52f), new Vector2(0.9f, 0.62f), "Weave the rug", 40, TextAnchor.MiddleCenter, ViewKit.Wool);
             _menuBody = Txt(_menu.transform, "Body", new Vector2(0.1f, 0.4f), new Vector2(0.9f, 0.5f), "", 34, TextAnchor.MiddleCenter, ViewKit.Ink);
-            Btn(_menu.transform, "Play", new Vector2(0.18f, 0.22f), new Vector2(0.82f, 0.34f), "Play", "play");
+            Btn(_menu.transform, "Play", new Vector2(0.18f, 0.22f), new Vector2(0.82f, 0.34f), "Play", "play", true);
+            _caption = Txt(root, "Caption", new Vector2(0.06f, 0.80f), new Vector2(0.94f, 0.875f), "", 30, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _intro = Panel(root, "Intro", new Vector2(0.08f, 0.32f), new Vector2(0.92f, 0.68f), ViewKit.Hex("#F6ECD9")).gameObject;
+            _intro.GetComponent<Image>().sprite = ArtKit.UiRound;
+            _intro.GetComponent<Image>().type = Image.Type.Sliced;
+            _introText = Txt(_intro.transform, "Body", new Vector2(0.08f, 0.38f), new Vector2(0.92f, 0.92f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
+            Btn(_intro.transform, "Ok", new Vector2(0.22f, 0.08f), new Vector2(0.78f, 0.30f), "OK", "introOk", true);
+            _intro.SetActive(false);
 
             _map = Panel(root, "Map", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
             Txt(_map.transform, "Title", new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.98f), "Levels", 64, TextAnchor.MiddleCenter, ViewKit.Ink);
@@ -97,6 +107,7 @@ namespace Rugtopia.View
         public void ShowMenu(int coins, int reached)
         {
             SetPlayChrome(false);
+            HideIntro();
             _menu.SetActive(true);
             _map.SetActive(false);
             HidePanels();
@@ -106,6 +117,7 @@ namespace Rugtopia.View
         public void ShowMap(int unlockedIndex, int count)
         {
             SetPlayChrome(false);
+            HideIntro();
             _menu.SetActive(false);
             _map.SetActive(true);
             HidePanels();
@@ -144,6 +156,36 @@ namespace Rugtopia.View
             if (_slot != null) _slot.gameObject.SetActive(on);
             if (_comb != null) _comb.gameObject.SetActive(on);
             if (_shuttle != null) _shuttle.gameObject.SetActive(on);
+            if (_caption != null) _caption.gameObject.SetActive(on);
+        }
+
+        public void SetCaption(string text)
+        {
+            if (_caption == null) return;
+            _caption.text = text ?? "";
+            _caption.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        }
+
+        public void ShowIntro(string text)
+        {
+            if (_intro == null) return;
+            _introText.text = text;
+            _intro.SetActive(true);
+            _intro.transform.SetAsLastSibling();
+        }
+
+        public void HideIntro()
+        {
+            if (_intro != null) _intro.SetActive(false);
+        }
+
+        public void ShowLevelComplete(int coins)
+        {
+            HidePanels();
+            HideIntro();
+            _winText.text = Copy.Get("levelComplete") + "\n★  ★  ★\n+" + coins + " " + Copy.Get("coins");
+            _winPanel.SetActive(true);
+            _winPanel.transform.SetAsLastSibling();
         }
 
         public void SetTop(string title, int coins, int lives) { _title.text = title; _coins.text = coins + " ¢"; _lives.text = "♥ " + lives; }
@@ -153,9 +195,9 @@ namespace Rugtopia.View
         {
             Button b = id == "slot" ? _slot : id == "comb" ? _comb : _shuttle;
             Text l = id == "slot" ? _slotL : id == "comb" ? _combL : _shuttleL;
-            string name = id == "slot" ? "+1 Slot" : id == "comb" ? "Comb" : "Shuttle";
+            string name = id == "slot" ? "+  Slot" : id == "comb" ? "#  Comb" : ">  Shuttle";
             b.interactable = unlocked;
-            l.text = !unlocked ? name + " (locked)" : name + (inventory > 0 ? " x" + inventory : " " + price + "¢") + (armed ? " ON" : "");
+            l.text = !unlocked ? name : name + (inventory > 0 ? "  x" + inventory : "  " + price) + (armed ? "  ON" : "");
         }
 
         public void ShowWin(string text) { HidePanels(); _winText.text = text; _winPanel.SetActive(true); }
@@ -183,9 +225,18 @@ namespace Rugtopia.View
         }
         Button Btn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id)
         {
-            var rt = Panel(parent, name, aMin, aMax, new Color(0.96f, 0.9f, 0.78f));
+            return Btn(parent, name, aMin, aMax, label, id, false);
+        }
+
+        Button Btn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id, bool primary)
+        {
+            var rt = Panel(parent, name, aMin, aMax, primary ? ViewKit.Hex("#C9343F") : ViewKit.Hex("#F6ECD9"));
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
             var b = rt.gameObject.AddComponent<Button>();
-            Txt(rt, "Label", Vector2.zero, Vector2.one, label, 34, TextAnchor.MiddleCenter, new Color(0.17f, 0.1f, 0.08f));
+            var ink = primary ? Color.white : ViewKit.Ink;
+            Txt(rt, "Label", new Vector2(0.08f, 0.08f), new Vector2(0.92f, 0.92f), label, 32, TextAnchor.MiddleCenter, ink);
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
         }

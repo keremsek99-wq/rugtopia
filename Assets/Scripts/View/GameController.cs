@@ -26,6 +26,8 @@ namespace Rugtopia.View
         HUD _hud;
         PlayFx _fx;
         PortraitFrame _frame;
+        Backdrop _backdrop;
+        TutorialHand _hand;
         Camera _cam;
         Mode _mode = Mode.Menu;
         bool _busy;
@@ -62,9 +64,12 @@ namespace Rugtopia.View
             _lanes = Child<LaneView>("Lanes");
             _hud = Child<HUD>("HUD");
             _fx = Child<PlayFx>("Fx");
+            _backdrop = Child<Backdrop>("Backdrop");
+            _hand = Child<TutorialHand>("Hand");
             _hud.Build();
             _hud.Bind(_cam);
             _hud.Clicked += OnHud;
+            _backdrop.Build(_board.area.center, new Vector2(_board.area.width, _board.area.height));
         }
 
         T Child<T>(string name) where T : Component
@@ -88,6 +93,7 @@ namespace Rugtopia.View
             StopAllCoroutines();
             _busy = false;
             _fx.Clear();
+            if (_hand != null) _hand.Hide();
             _mode = Mode.Menu;
             _g = null;
             _hud.ShowMenu(SaveService.Data.coins, SaveService.Data.maxLevel + 1);
@@ -98,6 +104,7 @@ namespace Rugtopia.View
             StopAllCoroutines();
             _busy = false;
             _fx.Clear();
+            if (_hand != null) _hand.Hide();
             _mode = Mode.Map;
             _g = null;
             _hud.ShowMap(SaveService.Data.maxLevel, LevelLoader.Count);
@@ -119,6 +126,7 @@ namespace Rugtopia.View
             _rewardedFor = -1;
             _g = LevelLoader.NewGame(levelIndex);
             if (SaveService.Data.streak >= EconomyConfig.StreakForBonusSlot && levelIndex >= EconomyConfig.UnlockStreak) _g.AddSlot();
+            string intro = IntroKey();
             if (levelIndex == Economy.UnlockLevel(Booster.Slot)) Economy.GrantIntroBooster(Booster.Slot);
             if (levelIndex == Economy.UnlockLevel(Booster.Comb)) Economy.GrantIntroBooster(Booster.Comb);
             if (levelIndex == Economy.UnlockLevel(Booster.Shuttle)) Economy.GrantIntroBooster(Booster.Shuttle);
@@ -127,11 +135,50 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
+            _hud.SetCaption(CaptionFor(_g.Level));
             RefreshAll();
+            PlaceHand();
+            if (intro != null) _hud.ShowIntro(Copy.Get(intro));
+        }
+
+        string IntroKey()
+        {
+            var seen = SaveService.Data.seenIntros;
+            if (levelIndex == Economy.UnlockLevel(Booster.Slot) && (seen == null || !seen.Contains("Slot"))) return "introSlot";
+            if (levelIndex == Economy.UnlockLevel(Booster.Comb) && (seen == null || !seen.Contains("Comb"))) return "introComb";
+            if (levelIndex == Economy.UnlockLevel(Booster.Shuttle) && (seen == null || !seen.Contains("Shuttle"))) return "introShuttle";
+            return null;
+        }
+
+        static string CaptionFor(LevelData level)
+        {
+            if (level.knots > 0 && level.index == 20) return Copy.Get("ftueKnot");
+            if (!string.IsNullOrEmpty(level.covered) && level.index == 11) return Copy.Get("ftueCovered");
+            if (level.hidden > 0 && level.index == 5) return Copy.Get("ftueHidden");
+            switch (level.index)
+            {
+                case 0: return Copy.Get("ftueWeft");
+                case 1: return Copy.Get("ftueBelt");
+                case 2: return Copy.Get("ftueTip");
+                case 3: return Copy.Get("ftueNext");
+                case 4: return Copy.Get("ftueOrder");
+                default: return "";
+            }
+        }
+
+        void PlaceHand()
+        {
+            if (_hand == null || _g == null || levelIndex > 4 || _busy || _g.Status != GameStatus.Playing)
+            {
+                if (_hand != null) _hand.Hide();
+                return;
+            }
+            _hand.Show(_lanes.FrontLocal(TutorialHand.LaneFor(_g)));
         }
 
         void Update()
         {
+            PlaceHand();
             if (_mode != Mode.Play || _busy || _g == null || _g.Status != GameStatus.Playing) return;
             Vector2 screen;
             if (!PointerDown(out screen)) return;
@@ -221,7 +268,8 @@ namespace Rugtopia.View
                     _board.PopRow(e.Row);
                     Feel.Play("row");
                     Feel.Tap();
-                    yield return new WaitForSeconds(0.16f);
+                    StartCoroutine(PunchCamera());
+                    yield return new WaitForSeconds(0.18f);
                 }
             }
             _board.SetVisualHp(-1);
@@ -229,11 +277,21 @@ namespace Rugtopia.View
             if (_g.Status == GameStatus.Won && _rewardedFor != levelIndex)
             {
                 _rewardedFor = levelIndex;
+                if (_hand != null) _hand.Hide();
+                _board.Shine();
+                yield return new WaitForSeconds(0.55f);
                 float secs = Time.time - _t0;
                 int reward = Economy.OnWin(levelIndex, _g.Level.tag, secs);
                 Feel.Play("win");
                 _fx.Confetti();
-                _hud.ShowWin("Rug woven!\n+" + reward + " coins · " + _g.Taps + " taps · " + secs.ToString("0") + " s");
+                int shown = 0;
+                _hud.ShowLevelComplete(0);
+                while (shown < reward)
+                {
+                    shown = Mathf.Min(reward, shown + Mathf.Max(1, reward / 12));
+                    _hud.ShowLevelComplete(shown);
+                    yield return new WaitForSeconds(0.04f);
+                }
                 RefreshTop();
             }
             else if (_g.Status == GameStatus.Failed)
@@ -255,6 +313,7 @@ namespace Rugtopia.View
 
         void OnHud(string id)
         {
+            if (id == "introOk") { _hud.HideIntro(); return; }
             if (id == "play" || id == "map") { ShowMap(); return; }
             if (id == "home") { ShowMenu(); return; }
             if (id.Length > 2 && id.StartsWith("lv") && int.TryParse(id.Substring(2), out int li))
@@ -308,6 +367,20 @@ namespace Rugtopia.View
                     StartLevel(levelIndex - 1);
                     break;
             }
+        }
+
+        IEnumerator PunchCamera()
+        {
+            const float baseSize = 10f;
+            float t = 0f;
+            while (t < 0.28f)
+            {
+                t += Time.deltaTime;
+                float k = Mathf.Sin(Mathf.Clamp01(t / 0.28f) * Mathf.PI);
+                if (_cam != null) _cam.orthographicSize = baseSize - 0.28f * k;
+                yield return null;
+            }
+            if (_cam != null) _cam.orthographicSize = baseSize;
         }
 
         void Commit(System.Action mutate, Vector2 from)

@@ -13,7 +13,7 @@ namespace Rugtopia.View
             while (t < duration)
             {
                 t += Time.deltaTime;
-                float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / duration));
+                float k = EaseOut(t / duration);
                 var p = Vector2.Lerp(from, to, k);
                 p.y += Mathf.Sin(k * Mathf.PI) * 0.85f;
                 sr.transform.localPosition = p;
@@ -37,12 +37,19 @@ namespace Rugtopia.View
             while (t < dur)
             {
                 t += Time.deltaTime;
-                float k = Mathf.Clamp01(t / dur);
+                float k = EaseOut(t / dur);
                 sr.transform.localPosition = Vector2.Lerp(from, to, k);
                 sr.transform.localScale = new Vector3(Mathf.Lerp(0.18f, 0.55f, Mathf.Sin(k * Mathf.PI)), 0.14f, 1f);
                 yield return null;
             }
             if (sr != null) Destroy(sr.gameObject);
+        }
+
+        static float EaseOut(float t)
+        {
+            t = Mathf.Clamp01(t);
+            float k = 1f - t;
+            return 1f - k * k * k;
         }
 
         public void Confetti()

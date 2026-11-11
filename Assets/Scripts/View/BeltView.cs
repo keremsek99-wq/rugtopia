@@ -16,11 +16,11 @@ namespace Rugtopia.View
             int n = g.BeltSlots;
             float step = Mathf.Min(1.3f, width / Mathf.Max(1, n));
             float x0 = -step * (n - 1) / 2f;
-            ViewKit.Quad(transform, "Track", new Vector2(0, y), new Vector2(step * n + 0.3f, 1.3f), ViewKit.Hex("#6B4A35"), 0);
+            ViewKit.Quad(transform, "Track", new Vector2(0, y), new Vector2(step * n + 0.55f, 1.55f), ViewKit.Hex("#6A432C"), 0, ArtKit.Wood);
             for (int i = 0; i < n; i++)
             {
                 var p = new Vector2(x0 + i * step, y);
-                ViewKit.Quad(transform, "Slot" + i, p, Vector2.one * step * 0.8f, ViewKit.Hex("#8C6A52"), 1);
+                ViewKit.Quad(transform, "Slot" + i, p, new Vector2(step * 0.78f, 1.05f), ViewKit.Hex("#3E2618"), 1, ArtKit.Wood);
                 if (i >= g.Belt.Count) continue;
                 var s = g.Belt[i];
                 float h = step * 0.85f;

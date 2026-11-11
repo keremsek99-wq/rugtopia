@@ -56,7 +56,12 @@ namespace Rugtopia.View
 
         public static Font Font
         {
-            get { if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); return _font; }
+            get
+            {
+                if (_font == null) _font = Resources.Load<Font>("Fonts/Fredoka-SemiBold");
+                if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                return _font;
+            }
         }
 
         public static Sprite Warp
@@ -193,9 +198,9 @@ namespace Rugtopia.View
             var yarn = Color.Lerp(Hex("#2A1C16"), thread, b);
             yarn.a = 1f;
             float w = height * 0.82f;
-            Quad(parent, name + "Yarn", pos, new Vector2(w * 0.58f, height * 0.62f), yarn, order);
-            Quad(parent, name + "Top", pos + new Vector2(0f, height * 0.34f), new Vector2(w, height * 0.16f), wood, order + 1);
-            Quad(parent, name + "Bot", pos + new Vector2(0f, -height * 0.34f), new Vector2(w, height * 0.16f), wood, order + 1);
+            Quad(parent, name + "Yarn", pos, new Vector2(w * 0.58f, height * 0.62f), yarn, order, ArtKit.Wound);
+            Quad(parent, name + "Top", pos + new Vector2(0f, height * 0.34f), new Vector2(w, height * 0.18f), wood, order + 1, ArtKit.Wood);
+            Quad(parent, name + "Bot", pos + new Vector2(0f, -height * 0.34f), new Vector2(w, height * 0.18f), wood, order + 1, ArtKit.Wood);
         }
     }
 }

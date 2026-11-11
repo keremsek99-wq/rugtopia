@@ -1,3 +1,4 @@
+using System.Collections;
 using Rugtopia.Core;
 using UnityEngine;
 
@@ -27,8 +28,8 @@ namespace Rugtopia.View
             _cs = Mathf.Min(area.width / cols, area.height / rows);
             _origin = new Vector2(area.center.x - _cs * cols / 2f + _cs / 2f, area.center.y + _cs * rows / 2f - _cs / 2f);
             var rug = new Vector2(_cs * cols, _cs * rows);
-            ViewKit.Quad(transform, "Border", area.center, rug + new Vector2(0.55f, 0.7f), ViewKit.Hex("#5C3A28"), 0);
-            ViewKit.Quad(transform, "Backing", area.center, rug + new Vector2(0.16f, 0.16f), ViewKit.Hex("#C4A27A"), 0);
+            ViewKit.Quad(transform, "Kilim", area.center, rug + new Vector2(0.85f, 0.95f), Color.white, 0, ArtKit.KilimFrame);
+            ViewKit.Quad(transform, "Backing", area.center, rug + new Vector2(0.08f, 0.08f), ViewKit.Hex("#C4A27A"), 1);
             float fringeY = area.center.y - rug.y * 0.5f - 0.22f;
             for (int c = 0; c < cols; c++)
                 ViewKit.Quad(transform, "Fringe" + c, new Vector2(CellPos(rows - 1, c).x, fringeY), new Vector2(_cs * 0.18f, 0.38f), ViewKit.Hex("#E7D3AE"), 1);
@@ -125,6 +126,23 @@ namespace Rugtopia.View
         public void SetVisualHp(int hp) { _visualHp = hp; }
 
         public void PopRow(int row) { _popRow = row; _popUntil = Time.time + 0.32f; }
+
+        public void Shine() { StartCoroutine(ShineCo()); }
+
+        IEnumerator ShineCo()
+        {
+            var sweep = ViewKit.Quad(transform, "Shine", new Vector2(area.xMin, area.center.y), new Vector2(0.35f, area.height * 0.92f), new Color(1f, 0.97f, 0.85f, 0.55f), 8);
+            float t = 0f;
+            while (t < 0.5f)
+            {
+                t += Time.deltaTime;
+                float k = 1f - (1f - Mathf.Clamp01(t / 0.5f));
+                k = 1f - (1f - k) * (1f - k);
+                sweep.transform.localPosition = new Vector3(Mathf.Lerp(area.xMin, area.xMax, k), area.center.y, -0.2f);
+                yield return null;
+            }
+            if (sweep != null) Destroy(sweep.gameObject);
+        }
 
         void Update()
         {
