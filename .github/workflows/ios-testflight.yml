@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ready: ${{ steps.gate.outputs.ready }}
+      bundle_id: ${{ steps.ids.outputs.bundle_id }}
+      marketing_version: ${{ steps.ids.outputs.marketing_version }}
     steps:
       - uses: actions/checkout@v7
 
@@ -45,6 +47,25 @@ jobs:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
         run: bash Tools/ci/check_secrets.sh testflight "$GITHUB_OUTPUT"
 
+      - name: Resolve bundle id and marketing version
+        id: ids
+        env:
+          INPUT_BUNDLE: ${{ inputs.bundle_id }}
+          VAR_BUNDLE: ${{ vars.IOS_BUNDLE_ID }}
+        run: |
+          set -euo pipefail
+          bundle="${INPUT_BUNDLE}"
+          if [ -z "$bundle" ]; then bundle="${VAR_BUNDLE}"; fi
+          if [ -z "$bundle" ]; then bundle="com.rugtopia.game"; fi
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            marketing="${GITHUB_REF_NAME#v}"
+          else
+            marketing="0.1.0"
+          fi
+          echo "bundle_id=$bundle" >> "$GITHUB_OUTPUT"
+          echo "marketing_version=$marketing" >> "$GITHUB_OUTPUT"
+          echo "bundle $bundle version $marketing"
+
       - name: Explain skip
         if: steps.gate.outputs.ready != 'true'
         run: |
@@ -61,8 +82,8 @@ jobs:
     uses: ./.github/workflows/unity-build.yml
     secrets: inherit
     with:
-      bundle_id: ${{ inputs.bundle_id || vars.IOS_BUNDLE_ID || 'com.rugtopia.game' }}
-      marketing_version: ${{ startsWith(github.ref, 'refs/tags/v') && replace(github.ref_name, 'v', '') || '0.1.0' }}
+      bundle_id: ${{ needs.gate.outputs.bundle_id }}
+      marketing_version: ${{ needs.gate.outputs.marketing_version }}
 
   upload:
     name: Sign and upload to TestFlight
@@ -73,7 +94,7 @@ jobs:
     env:
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
-      IOS_BUNDLE_ID: ${{ inputs.bundle_id || vars.IOS_BUNDLE_ID || 'com.rugtopia.game' }}
+      IOS_BUNDLE_ID: ${{ needs.gate.outputs.bundle_id }}
       MATCH_READONLY_REQUESTED: ${{ vars.MATCH_READONLY }}
     steps:
       - uses: actions/checkout@v7
