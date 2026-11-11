@@ -39,11 +39,17 @@ namespace Rugtopia.View
             UnityEngine.Object.DontDestroyOnLoad(go);
             _src = go.AddComponent<AudioSource>();
             _src.playOnAwake = false;
-            _tap = Tone(520f, 0.06f);
-            _stitch = Tone(740f, 0.07f);
-            _row = Tone(980f, 0.12f);
-            _win = Tone(660f, 0.28f);
-            _fail = Tone(180f, 0.22f);
+            _tap = Clip("tap", 520f, 0.06f);
+            _stitch = Clip("stitch", 740f, 0.07f);
+            _row = Clip("row", 980f, 0.12f);
+            _win = Clip("win", 660f, 0.28f);
+            _fail = Clip("fail", 180f, 0.22f);
+        }
+
+        static AudioClip Clip(string id, float fallbackHz, float fallbackDur)
+        {
+            var clip = Resources.Load<AudioClip>("Sfx/" + id);
+            return clip != null ? clip : Tone(fallbackHz, fallbackDur);
         }
 
         static AudioClip Tone(float freq, float dur)

@@ -101,7 +101,7 @@ namespace Rugtopia.EditorTools
                 cam.orthographicSize = 10f;
                 cam.transform.position = new Vector3(0, 0, -10);
                 cam.clearFlags = CameraClearFlags.SolidColor;
-                cam.backgroundColor = ViewKit.Background;
+                cam.backgroundColor = ViewKit.Hex("#C4785A");
                 cam.aspect = 9f / 19.5f;
                 cam.nearClipPlane = 0.01f;
                 cam.farClipPlane = 30f;
@@ -112,19 +112,21 @@ namespace Rugtopia.EditorTools
                 hud.Build();
                 hud.Bind(cam);
                 var hand = new GameObject("ShotHand").AddComponent<TutorialHand>();
+                var bubble = new GameObject("ShotBubble").AddComponent<SpeechBubble>();
+                var backdrop = new GameObject("ShotBackdrop").AddComponent<Backdrop>();
                 int w = 540, h = 1170;
                 var rt = new RenderTexture(w, h, 24);
                 cam.targetTexture = rt;
                 var d = LevelLoader.Get(0);
                 var g = LevelBuilder.Build(d);
-                Shot(cam, rt, board, belt, lanes, hud, hand, dir, "01-playing.png", g, d, w, h, true, false);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "01-playing.png", g, d, w, h, true, false);
                 if (d.solution != null && d.solution.Length > 0)
                 {
                     int mid = d.solution.Length / 2;
                     for (int i = 0; i < mid; i++) g.Take(d.solution[i]);
-                    Shot(cam, rt, board, belt, lanes, hud, hand, dir, "02-mid.png", g, d, w, h, false, false);
+                    Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "02-mid.png", g, d, w, h, false, false);
                     for (int i = mid; i < d.solution.Length; i++) g.Take(d.solution[i]);
-                    Shot(cam, rt, board, belt, lanes, hud, hand, dir, "03-win.png", g, d, w, h, false, true);
+                    Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "03-win.png", g, d, w, h, false, true);
                 }
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
@@ -134,20 +136,23 @@ namespace Rugtopia.EditorTools
             }
         }
 
-        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, TutorialHand hand, string dir, string name, GameState g, LevelData level, int w, int h, bool showHand, bool winCard)
+        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, TutorialHand hand, SpeechBubble bubble, Backdrop backdrop, string dir, string name, GameState g, LevelData level, int w, int h, bool showHand, bool winCard)
         {
             board.SetVisualHp(-1);
             board.Build(g);
+            backdrop.Build(board.area.center, new Vector2(board.area.width, board.area.height));
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
-            hud.SetCaption(!winCard && level.index == 0 ? "Tap the spool that matches the glowing stitch." : "");
+            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, 1.25f));
+            else bubble.Hide();
             hud.SetTop("Lv " + (level.index + 1) + " · " + level.nameEn, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
             hud.SetStatus(g.Status == GameStatus.Won ? "Rug woven" : "Weave " + g.StitchesLeft);
             hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);
             hud.SetBooster("comb", true, 2, EconomyConfig.PriceComb, false);
             hud.SetBooster("shuttle", true, 2, EconomyConfig.PriceShuttle, false);
-            if (showHand) hand.Show(lanes.FrontLocal(TutorialHand.LaneFor(g)));
+            int hint = TutorialHand.LaneFor(g);
+            if (showHand && hint >= 0) hand.Show(lanes.FrontLocal(hint));
             else hand.Hide();
             if (winCard) hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
             // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this

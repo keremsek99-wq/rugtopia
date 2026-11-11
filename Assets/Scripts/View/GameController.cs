@@ -28,6 +28,7 @@ namespace Rugtopia.View
         PortraitFrame _frame;
         Backdrop _backdrop;
         TutorialHand _hand;
+        SpeechBubble _bubble;
         Camera _cam;
         Mode _mode = Mode.Menu;
         bool _busy;
@@ -55,7 +56,7 @@ namespace Rugtopia.View
             _cam.orthographicSize = 10f;
             _cam.transform.position = new Vector3(0, 0, -10);
             _cam.clearFlags = CameraClearFlags.SolidColor;
-            _cam.backgroundColor = ViewKit.Background;
+            _cam.backgroundColor = ViewKit.Hex("#C4785A");
             if (_cam.GetComponent<AudioListener>() == null) _cam.gameObject.AddComponent<AudioListener>();
             _frame = _cam.GetComponent<PortraitFrame>();
             if (_frame == null) _frame = _cam.gameObject.AddComponent<PortraitFrame>();
@@ -66,6 +67,7 @@ namespace Rugtopia.View
             _fx = Child<PlayFx>("Fx");
             _backdrop = Child<Backdrop>("Backdrop");
             _hand = Child<TutorialHand>("Hand");
+            _bubble = Child<SpeechBubble>("Bubble");
             _hud.Build();
             _hud.Bind(_cam);
             _hud.Clicked += OnHud;
@@ -94,6 +96,7 @@ namespace Rugtopia.View
             _busy = false;
             _fx.Clear();
             if (_hand != null) _hand.Hide();
+            if (_bubble != null) _bubble.Hide();
             _mode = Mode.Menu;
             _g = null;
             _hud.ShowMenu(SaveService.Data.coins, SaveService.Data.maxLevel + 1);
@@ -105,6 +108,7 @@ namespace Rugtopia.View
             _busy = false;
             _fx.Clear();
             if (_hand != null) _hand.Hide();
+            if (_bubble != null) _bubble.Hide();
             _mode = Mode.Map;
             _g = null;
             _hud.ShowMap(SaveService.Data.maxLevel, LevelLoader.Count);
@@ -135,7 +139,7 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
-            _hud.SetCaption(CaptionFor(_g.Level));
+            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.25f));
             RefreshAll();
             PlaceHand();
             if (intro != null) _hud.ShowIntro(Copy.Get(intro));
@@ -168,12 +172,13 @@ namespace Rugtopia.View
 
         void PlaceHand()
         {
-            if (_hand == null || _g == null || levelIndex > 4 || _busy || _g.Status != GameStatus.Playing)
+            int hint = _g == null ? -1 : TutorialHand.LaneFor(_g);
+            if (_hand == null || hint < 0 || levelIndex > 4 || _busy || _g.Status != GameStatus.Playing)
             {
                 if (_hand != null) _hand.Hide();
                 return;
             }
-            _hand.Show(_lanes.FrontLocal(TutorialHand.LaneFor(_g)));
+            _hand.Show(_lanes.FrontLocal(hint));
         }
 
         void Update()
@@ -278,6 +283,7 @@ namespace Rugtopia.View
             {
                 _rewardedFor = levelIndex;
                 if (_hand != null) _hand.Hide();
+                if (_bubble != null) _bubble.Hide();
                 _board.Shine();
                 yield return new WaitForSeconds(0.55f);
                 float secs = Time.time - _t0;
@@ -297,7 +303,11 @@ namespace Rugtopia.View
             else if (_g.Status == GameStatus.Failed)
             {
                 Feel.Play("fail");
-                _hud.ShowFail(_g.FreeSlots <= 0 ? "Belt jammed" : "Out of spools", EconomyConfig.ContinuePrice(_g.Continues));
+                if (_bubble != null) _bubble.Hide();
+                _hud.ShowFail(
+                    Copy.Get(_g.FreeSlots <= 0 ? "failTitle" : "failSpools"),
+                    Copy.Get("failSub"),
+                    EconomyConfig.ContinuePrice(_g.Continues));
             }
             _busy = false;
         }
@@ -313,6 +323,20 @@ namespace Rugtopia.View
 
         void OnHud(string id)
         {
+            if (id == "lang")
+            {
+                SaveService.Data.lang = SaveService.Data.lang == "tr" ? "en" : "tr";
+                SaveService.Save();
+                _hud.ApplyLanguage();
+                if (_mode == Mode.Menu) ShowMenu();
+                else if (_mode == Mode.Map) ShowMap();
+                else if (_g != null)
+                {
+                    RefreshAll();
+                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.25f));
+                }
+                return;
+            }
             if (id == "introOk") { _hud.HideIntro(); return; }
             if (id == "play" || id == "map") { ShowMap(); return; }
             if (id == "home") { ShowMenu(); return; }
@@ -393,7 +417,8 @@ namespace Rugtopia.View
         void RefreshTop()
         {
             var d = _g.Level;
-            _hud.SetTop("Lv " + (levelIndex + 1) + " · " + d.nameEn + (d.tag == "ftue" || d.tag == "normal" ? "" : " (" + d.tag + ")"), SaveService.Data.coins, Economy.Lives);
+            string name = SaveService.Data.lang == "tr" ? d.nameTr : d.nameEn;
+            _hud.SetTop("Lv " + (levelIndex + 1) + " · " + name + (d.tag == "ftue" || d.tag == "normal" ? "" : " (" + d.tag + ")"), SaveService.Data.coins, Economy.Lives);
         }
 
         void RefreshAll()
@@ -402,7 +427,7 @@ namespace Rugtopia.View
             _belt.Refresh(_g);
             _lanes.Refresh(_g);
             RefreshTop();
-            _hud.SetStatus(_g.CombArmed ? "Comb: tap any of the top 4" : "Weave " + _g.StitchesLeft + " · belt " + _g.Belt.Count + "/" + _g.BeltSlots);
+            _hud.SetStatus(_g.CombArmed ? Copy.Get("combMode") : Copy.Get("weave") + " " + _g.StitchesLeft);
             _hud.SetBooster("slot", Economy.IsUnlocked(Booster.Slot, levelIndex), Economy.Inventory(Booster.Slot), Economy.Price(Booster.Slot), false);
             _hud.SetBooster("comb", Economy.IsUnlocked(Booster.Comb, levelIndex), Economy.Inventory(Booster.Comb), Economy.Price(Booster.Comb), _g.CombArmed);
             _hud.SetBooster("shuttle", Economy.IsUnlocked(Booster.Shuttle, levelIndex), Economy.Inventory(Booster.Shuttle), Economy.Price(Booster.Shuttle), false);

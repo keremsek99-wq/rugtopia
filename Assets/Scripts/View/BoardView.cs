@@ -8,8 +8,8 @@ namespace Rugtopia.View
     /// plus the NEXT preview strip under the rug. Snaps to state (no animation yet — week 2).</summary>
     public class BoardView : MonoBehaviour
     {
-        public Rect area = new Rect(-4.3f, 1.2f, 8.6f, 7.4f);   // world rect for the rug
-        public float stripY = 0.4f;
+        public Rect area = new Rect(-4.05f, 2.35f, 8.1f, 6.05f);   // world rect for the rug
+        public float stripY = 0.02f;
 
         SpriteRenderer[,] _cells;
         SpriteRenderer _tip;

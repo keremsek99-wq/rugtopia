@@ -1,0 +1,17 @@
+Interface Sounds (1.0)
+Created/distributed by Kenney (www.kenney.nl)
+https://opengameart.org/content/interface-sounds
+https://kenney.nl/assets/interface-sounds
+
+License: Creative Commons Zero, CC0
+http://creativecommons.org/publicdomain/zero/1.0/
+
+This content is free to use in personal, educational and commercial projects.
+Credit to Kenney or www.kenney.nl is appreciated and not required.
+
+Files used in Assets/Resources/Sfx:
+  tap.ogg    from click_001.ogg
+  stitch.ogg from drop_002.ogg
+  row.ogg    from confirmation_001.ogg
+  win.ogg    from confirmation_004.ogg
+  fail.ogg   from error_001.ogg
