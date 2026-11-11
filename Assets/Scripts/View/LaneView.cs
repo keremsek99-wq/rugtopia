@@ -25,12 +25,14 @@ namespace Rugtopia.View
                 for (int d = 0; d < Mathf.Min(VisibleDepth, lane.Count); d++)
                 {
                     var s = lane[d];
-                    float size = (d == 0 ? 1.0f : 0.75f) * Mathf.Min(1.1f, LaneW * 0.75f);
+                    float size = (d == 0 ? 1.05f : 0.72f) * Mathf.Min(1.15f, LaneW * 0.82f);
                     var p = new Vector2(cx, RowY(d));
                     var col = s.Hidden ? ViewKit.Hex("#9C8F80") : ViewKit.Of(s.Color);
-                    ViewKit.Quad(transform, "Spool" + s.Id, p, Vector2.one * size, col, 2);
-                    ViewKit.Label(transform, "Count", p, s.Hidden ? "?" : s.Left.ToString(), 0.1f, s.Hidden ? Color.white : ViewKit.InkFor(s.Color), 3);
-                    if (s.Knot > 0 && !s.Hidden) ViewKit.Label(transform, "Knot", p + new Vector2(size * 0.4f, size * 0.4f), "k", 0.08f, Color.red, 4);
+                    float bright = d == 0 ? 1f : 0.42f;
+                    ViewKit.Bobbin(transform, "Spool" + s.Id, p, size, col, 2, bright);
+                    if (d != 0) continue;
+                    ViewKit.Label(transform, "Count" + s.Id, p, s.Hidden ? "?" : s.Left.ToString(), 0.07f, s.Hidden ? Color.white : ViewKit.InkFor(s.Color), 6);
+                    if (s.Knot > 0 && !s.Hidden) ViewKit.Label(transform, "Knot" + s.Id, p + new Vector2(size * 0.42f, size * 0.42f), "k", 0.05f, Color.red, 7);
                 }
                 if (lane.Count > VisibleDepth) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.3f), "+" + (lane.Count - VisibleDepth), 0.08f, ViewKit.Ink, 3);
             }

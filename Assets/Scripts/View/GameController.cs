@@ -63,6 +63,7 @@ namespace Rugtopia.View
             _hud = Child<HUD>("HUD");
             _fx = Child<PlayFx>("Fx");
             _hud.Build();
+            _hud.Bind(_cam);
             _hud.Clicked += OnHud;
         }
 

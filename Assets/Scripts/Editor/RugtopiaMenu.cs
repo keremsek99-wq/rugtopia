@@ -103,22 +103,27 @@ namespace Rugtopia.EditorTools
                 cam.clearFlags = CameraClearFlags.SolidColor;
                 cam.backgroundColor = ViewKit.Background;
                 cam.aspect = 9f / 19.5f;
+                cam.nearClipPlane = 0.01f;
+                cam.farClipPlane = 30f;
                 var board = new GameObject("ShotBoard").AddComponent<BoardView>();
                 var belt = new GameObject("ShotBelt").AddComponent<BeltView>();
                 var lanes = new GameObject("ShotLanes").AddComponent<LaneView>();
+                var hud = new GameObject("ShotHUD").AddComponent<HUD>();
+                hud.Build();
+                hud.Bind(cam);
                 int w = 540, h = 1170;
                 var rt = new RenderTexture(w, h, 24);
                 cam.targetTexture = rt;
                 var d = LevelLoader.Get(0);
                 var g = LevelBuilder.Build(d);
-                Shot(cam, rt, board, belt, lanes, dir, "01-playing.png", g, w, h);
+                Shot(cam, rt, board, belt, lanes, hud, dir, "01-playing.png", g, d, w, h);
                 if (d.solution != null && d.solution.Length > 0)
                 {
                     int mid = d.solution.Length / 2;
                     for (int i = 0; i < mid; i++) g.Take(d.solution[i]);
-                    Shot(cam, rt, board, belt, lanes, dir, "02-mid.png", g, w, h);
+                    Shot(cam, rt, board, belt, lanes, hud, dir, "02-mid.png", g, d, w, h);
                     for (int i = mid; i < d.solution.Length; i++) g.Take(d.solution[i]);
-                    Shot(cam, rt, board, belt, lanes, dir, "03-win.png", g, w, h);
+                    Shot(cam, rt, board, belt, lanes, hud, dir, "03-win.png", g, d, w, h);
                 }
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
@@ -128,12 +133,22 @@ namespace Rugtopia.EditorTools
             }
         }
 
-        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, string dir, string name, GameState g, int w, int h)
+        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, string dir, string name, GameState g, LevelData level, int w, int h)
         {
             board.SetVisualHp(-1);
             board.Build(g);
             belt.Refresh(g);
             lanes.Refresh(g);
+            hud.ShowPlay();
+            hud.SetTop("Lv " + (level.index + 1) + " · " + level.nameEn, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
+            hud.SetStatus(g.Status == GameStatus.Won ? "Rug woven" : "Weave " + g.StitchesLeft);
+            hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);
+            hud.SetBooster("comb", true, 2, EconomyConfig.PriceComb, false);
+            hud.SetBooster("shuttle", true, 2, EconomyConfig.PriceShuttle, false);
+            // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this
+            // camera, then we render once the layout has settled (the captured end of frame).
+            hud.Bind(cam);
+            Canvas.ForceUpdateCanvases();
             cam.Render();
             var prev = RenderTexture.active;
             RenderTexture.active = rt;

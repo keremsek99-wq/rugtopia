@@ -14,6 +14,7 @@ namespace Rugtopia.View
     {
         public event Action<string> Clicked;   // ids: slot, comb, shuttle, continue, retry, next, prev, menu
 
+        Canvas _canvas;
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winText, _failText, _continueLabel, _menuBody;
@@ -26,8 +27,9 @@ namespace Rugtopia.View
         {
             var canvasGo = new GameObject("HUD Canvas");
             canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 10;
+            _canvas = canvasGo.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _canvas.sortingOrder = 100;
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1080, 2340); scaler.matchWidthOrHeight = 0.5f;
@@ -117,6 +119,15 @@ namespace Rugtopia.View
                 if (img != null) img.color = open ? new Color(0.96f, 0.9f, 0.78f) : new Color(0.72f, 0.66f, 0.58f);
                 if (_levelLabels[i] != null) _levelLabels[i].text = open ? (i + 1).ToString() : "·";
             }
+        }
+
+        /// <summary>Draws this HUD inside a camera, so a portrait capture and the letterboxed WebGL view include the top bar and boosters.</summary>
+        public void Bind(Camera cam)
+        {
+            if (_canvas == null || cam == null) return;
+            _canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            _canvas.worldCamera = cam;
+            _canvas.planeDistance = 2f;
         }
 
         public void ShowPlay()

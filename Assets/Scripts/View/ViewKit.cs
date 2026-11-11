@@ -59,14 +59,109 @@ namespace Rugtopia.View
             get { if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); return _font; }
         }
 
+        public static Sprite Warp
+        {
+            get
+            {
+                if (_warp != null) return _warp;
+                const int n = 32;
+                var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Repeat };
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    bool thread = (x % 4) == 0;
+                    px[y * n + x] = thread ? new Color(1f, 1f, 1f, 0.85f) : new Color(1f, 1f, 1f, 0.12f);
+                }
+                t.SetPixels(px); t.Apply();
+                _warp = Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+                return _warp;
+            }
+        }
+
+        public static Sprite Fill
+        {
+            get
+            {
+                if (_fill != null) return _fill;
+                const int n = 32;
+                var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float weave = ((y / 2) % 2 == 0) ? 1f : 0.9f;
+                    px[y * n + x] = new Color(weave, weave, weave, 1f);
+                }
+                t.SetPixels(px); t.Apply();
+                _fill = Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+                return _fill;
+            }
+        }
+
+        public static Sprite Ring
+        {
+            get
+            {
+                if (_ring != null) return _ring;
+                const int n = 64;
+                var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+                var px = new Color[n * n];
+                float mid = (n - 1) * 0.5f;
+                for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = Mathf.Abs(x - mid), dy = Mathf.Abs(y - mid);
+                    float ax = Mathf.Max(dx - mid + 8f, 0f), ay = Mathf.Max(dy - mid + 8f, 0f);
+                    float d = Mathf.Sqrt(ax * ax + ay * ay);
+                    float a = Mathf.Clamp01(1f - Mathf.Abs(d - 5.5f) / 2.2f);
+                    px[y * n + x] = new Color(1f, 1f, 1f, a);
+                }
+                t.SetPixels(px); t.Apply();
+                _ring = Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+                return _ring;
+            }
+        }
+
+        public static Sprite Arrow
+        {
+            get
+            {
+                if (_arrow != null) return _arrow;
+                const int n = 32;
+                var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float ny = (y + 0.5f) / n;
+                    float tip = Mathf.Abs(ny - 0.5f) * 2f;
+                    float a = x > n * tip && x < n * 0.92f ? 1f : 0f;
+                    px[y * n + x] = new Color(1f, 1f, 1f, a);
+                }
+                t.SetPixels(px); t.Apply();
+                _arrow = Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.15f, 0.5f), n);
+                return _arrow;
+            }
+        }
+
+        static Sprite _warp, _fill, _ring, _arrow;
+
         public static SpriteRenderer Quad(Transform parent, string name, Vector2 pos, Vector2 size, Color color, int order)
+        {
+            return Quad(parent, name, pos, size, color, order, null);
+        }
+
+        public static SpriteRenderer Quad(Transform parent, string name, Vector2 pos, Vector2 size, Color color, int order, Sprite sprite)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             go.transform.localPosition = pos;
             go.transform.localScale = new Vector3(size.x, size.y, 1);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = Square; sr.color = color; sr.sortingOrder = order;
+            sr.sprite = sprite != null ? sprite : Square;
+            sr.color = color;
+            sr.sortingOrder = order;
             return sr;
         }
 
@@ -83,6 +178,24 @@ namespace Rugtopia.View
             return tm;
         }
 
-        public static void Clear(Transform t) { for (int i = t.childCount - 1; i >= 0; i--) Object.Destroy(t.GetChild(i).gameObject); }
+        public static void Clear(Transform t)
+        {
+            // DestroyImmediate so a second Refresh in the same frame cannot leave the previous count label behind.
+            for (int i = t.childCount - 1; i >= 0; i--)
+                Object.DestroyImmediate(t.GetChild(i).gameObject);
+        }
+
+        /// <summary>One bobbin: wooden flanges and a single thread barrel. The count label is the caller's job, once.</summary>
+        public static void Bobbin(Transform parent, string name, Vector2 pos, float height, Color thread, int order, float brightness)
+        {
+            float b = Mathf.Clamp01(brightness);
+            var wood = Color.Lerp(Hex("#4A3020"), Hex("#E7D3AE"), b);
+            var yarn = Color.Lerp(Hex("#2A1C16"), thread, b);
+            yarn.a = 1f;
+            float w = height * 0.82f;
+            Quad(parent, name + "Yarn", pos, new Vector2(w * 0.58f, height * 0.62f), yarn, order);
+            Quad(parent, name + "Top", pos + new Vector2(0f, height * 0.34f), new Vector2(w, height * 0.16f), wood, order + 1);
+            Quad(parent, name + "Bot", pos + new Vector2(0f, -height * 0.34f), new Vector2(w, height * 0.16f), wood, order + 1);
+        }
     }
 }

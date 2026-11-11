@@ -23,9 +23,10 @@ namespace Rugtopia.View
                 ViewKit.Quad(transform, "Slot" + i, p, Vector2.one * step * 0.8f, ViewKit.Hex("#8C6A52"), 1);
                 if (i >= g.Belt.Count) continue;
                 var s = g.Belt[i];
-                ViewKit.Quad(transform, "Spool" + s.Id, p, Vector2.one * step * 0.7f, ViewKit.Of(s.Color), 2);
-                ViewKit.Label(transform, "Count", p, s.Left.ToString(), 0.1f, ViewKit.InkFor(s.Color), 3);
-                if (s.Knot > 0) ViewKit.Label(transform, "Knot", p + new Vector2(step * 0.3f, step * 0.3f), "k", 0.08f, Color.red, 4);
+                float h = step * 0.85f;
+                ViewKit.Bobbin(transform, "Spool" + s.Id, p, h, ViewKit.Of(s.Color), 2, 1f);
+                ViewKit.Label(transform, "Count" + s.Id, p, s.Left.ToString(), 0.07f, ViewKit.InkFor(s.Color), 6);
+                if (s.Knot > 0) ViewKit.Label(transform, "Knot" + s.Id, p + new Vector2(h * 0.4f, h * 0.4f), "k", 0.05f, Color.red, 7);
             }
         }
 
