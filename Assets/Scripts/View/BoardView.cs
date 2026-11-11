@@ -8,8 +8,8 @@ namespace Rugtopia.View
     /// plus the NEXT preview strip under the rug. Snaps to state (no animation yet — week 2).</summary>
     public class BoardView : MonoBehaviour
     {
-        public Rect area = new Rect(-4.2f, -3.2f, 8.4f, 10.6f);
-        public float stripY = 0.4f;
+        public Rect area = new Rect(-4.45f, -2.2f, 8.9f, 9.05f);
+        public float stripY = -2.82f;
 
         SpriteRenderer[,] _cells;
         SpriteRenderer[,] _marks;
@@ -27,11 +27,22 @@ namespace Rugtopia.View
         {
             ViewKit.Clear(transform);
             int rows = g.Grid.Rows, cols = g.Grid.Cols;
-            _cs = Mathf.Min(area.width / cols, (area.height - 0.7f) / rows);
-            _origin = new Vector2(area.center.x - _cs * cols / 2f + _cs / 2f, area.yMax - _cs * 0.5f);
-            var rug = new Vector2(_cs * cols, _cs * rows);
-            var origin = new Vector2(area.center.x, area.yMax - rug.y * 0.5f);
-            stripY = origin.y - rug.y * 0.5f - 0.48f;
+            // Camera is ±10 tall. The header owns the top, the belt owns y ≈ -3.6 and up.
+            // Short rugs sit on the NEXT bar so the gap under the pattern is used by the rug.
+            const float safeTop = 6.85f;
+            const float cellBottom = -2.2f;
+            const float availW = 8.9f;
+            _cs = Mathf.Min(availW / cols, (safeTop - cellBottom) / rows);
+            float rugW = _cs * cols;
+            float rugH = _cs * rows;
+            float bottom = cellBottom;
+            float topCells = bottom + rugH;
+            if (topCells > safeTop) { topCells = safeTop; bottom = topCells - rugH; }
+            area = new Rect(-rugW * 0.5f, bottom, rugW, rugH);
+            _origin = new Vector2(area.xMin + _cs * 0.5f, topCells - _cs * 0.5f);
+            var rug = new Vector2(rugW, rugH);
+            var origin = new Vector2(0f, (topCells + bottom) * 0.5f);
+            stripY = bottom - 0.62f;
             ViewKit.Quad(transform, "Frame", origin, rug + new Vector2(0.36f, 0.42f), ViewKit.Hex("#1A0F0B"), 0, ArtKit.UiRound);
             float left = _origin.x - _cs * 0.5f, right = _origin.x + (cols - 0.5f) * _cs;
             float top = origin.y + rug.y * 0.5f + 0.18f;

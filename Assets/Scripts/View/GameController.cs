@@ -15,7 +15,7 @@ namespace Rugtopia.View
     public class GameController : MonoBehaviour
     {
         public int levelIndex = -1;
-        public bool ignoreLives = true;
+        public bool ignoreLives = false;
 
         enum Mode { Menu, Map, Play }
 
@@ -210,6 +210,7 @@ namespace Rugtopia.View
             Vector2 from = _lanes.FrontLocal(lane);
             bool comb = _g.CombArmed;
             if (comb && !Economy.Consume(Booster.Comb)) { _g.ToggleComb(); RefreshAll(); return; }
+            if (comb) Analytics.Track("booster_used", ("booster", "comb"), ("level", (levelIndex + 1).ToString()));
             int hpBefore = _g.Hp;
             if (!_g.Take(lane, depth))
             {

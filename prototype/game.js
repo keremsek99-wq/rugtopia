@@ -174,7 +174,7 @@
     ['Shuttle Run', 'Mekik Yolu', { t: 'diag', w: 10, h: 10, c: 'NRYC', k: 2 }, 'hard', { knots: 2, hidden: 0.3 }],
     ['Mosaic', 'Mozaik', { t: 'checker', w: 10, h: 10, c: 'TCRY' }, 'normal', { knots: 1, covered: 'alt' }],
     ['Zigzag Border', 'Zikzak Kenar', { t: 'zigzag', w: 10, h: 10, c: 'CRN', b: 'K' }, 'normal', { knots: 2, hidden: 0.2 }],
-    ['Grand Lattice', 'Büyük Kafes', { t: 'lattice', w: 10, h: 11, c: 'RNY' }, 'veryhard', { knots: 2, hidden: 0.3, covered: 'alt' }],
+    ['Grand Lattice', 'Büyük Kafes', { t: 'lattice', w: 10, h: 11, c: 'RNY' }, 'normal', { knots: 2, hidden: 0.3, covered: 'alt' }],
     ['Twilight Bands', 'Alacakaranlık', { t: 'diag', w: 10, h: 10, c: 'NTYRC', k: 3 }, 'normal', { knots: 1, hidden: 0.2 }],
     ['Anatolian Grand Rug', 'Büyük Anadolu Halısı', { t: 'medallion', w: 12, h: 14, c: 'CRNYT', b: 'K' }, 'boss', { knots: 3, hidden: 0.3, covered: 'top' }]
   ];

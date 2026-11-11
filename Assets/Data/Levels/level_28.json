@@ -3,7 +3,7 @@
  "id": 28,
  "nameEn": "Grand Lattice",
  "nameTr": "Büyük Kafes",
- "tag": "veryhard",
+ "tag": "normal",
  "pattern": {
   "t": "lattice",
   "w": 10,
