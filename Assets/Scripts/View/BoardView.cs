@@ -159,7 +159,7 @@ namespace Rugtopia.View
             var runs = g.PreviewRuns();
             var bar = ThemeConfig.IsLight ? new Color(0.28f, 0.16f, 0.1f, 0.55f) : new Color(0f, 0f, 0f, 0.35f);
             ViewKit.Quad(_strip, "Bar", new Vector2(0f, stripY), new Vector2(8.9f, 0.72f), bar, 3, ArtKit.UiRound);
-            ViewKit.Label(_strip, "Next", new Vector2(-3.9f, stripY), "NEXT", 0.07f, ThemeConfig.IsLight ? ThemeConfig.Ink : new Color(0.96f, 0.91f, 0.81f, 0.85f), 5);
+            ViewKit.Label(_strip, "Next", new Vector2(-3.9f, stripY), "NEXT", 0.07f, ViewKit.Cream, 5);
             float x = area.xMin + 1.25f;
             const float h = 0.48f;
             foreach (var run in runs)
