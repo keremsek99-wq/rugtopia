@@ -67,8 +67,8 @@ namespace Rugtopia.View
             _coins = Txt(top, "Coins", new Vector2(0.8f, 0.0f), new Vector2(0.97f, 0.38f), "", 28, TextAnchor.MiddleRight, ViewKit.Gold);
 
             float dx = 0.108f, dy = 0.05f, gap = 0.028f;
-            float row = 3f * dx + 2f * gap;
-            float bx = (1f - row) * 0.5f;
+            float span = 3f * dx + 2f * gap;
+            float bx = (1f - span) * 0.5f;
             float by = 0.046f;
             _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), "+", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
             bx += dx + gap;
