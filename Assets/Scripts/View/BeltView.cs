@@ -28,5 +28,13 @@ namespace Rugtopia.View
                 if (s.Knot > 0) ViewKit.Label(transform, "Knot", p + new Vector2(step * 0.3f, step * 0.3f), "k", 0.08f, Color.red, 4);
             }
         }
+
+        public Vector2 SlotLocal(int index, int slots)
+        {
+            int n = Mathf.Max(1, slots);
+            float step = Mathf.Min(1.3f, width / n);
+            float x0 = -step * (n - 1) / 2f;
+            return new Vector2(x0 + Mathf.Clamp(index, 0, n - 1) * step, y);
+        }
     }
 }

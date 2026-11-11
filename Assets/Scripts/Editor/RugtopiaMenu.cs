@@ -60,7 +60,89 @@ namespace Rugtopia.EditorTools
         {
             if (EditorBuildSettings.scenes == null || EditorBuildSettings.scenes.Length == 0) CreateMainScene();
             ApplyPlayerSettings(null, null, null);
-            BuildPlayerAt("Builds/iOS");
+            BuildPlayerAt("Builds/iOS", BuildTarget.iOS);
+        }
+
+        /// <summary>GameCI WebGL playtest. Prints "Build succeeded!" so the builder accepts the output.</summary>
+        public static void BuildWebGLBatch()
+        {
+            int code = 1;
+            try
+            {
+                ApplyPlayerSettings(null, Arg("marketingVersion"), null);
+                PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+                PlayerSettings.WebGL.nameFilesAsHashes = false;
+                TryCapture();
+                if (EditorBuildSettings.scenes == null || EditorBuildSettings.scenes.Length == 0) CreateMainScene();
+                string path = Arg("customBuildPath");
+                if (string.IsNullOrEmpty(path)) path = "Builds/WebGL";
+                var report = BuildPlayerAt(path, BuildTarget.WebGL);
+                code = report.summary.result == BuildResult.Succeeded ? 0 : 1;
+                if (code != 0)
+                    Debug.LogError("Rugtopia WebGL build failed: " + report.summary.result + " errors=" + report.summary.totalErrors);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogException(ex);
+                code = 1;
+            }
+            EditorApplication.Exit(code);
+        }
+
+        static void TryCapture()
+        {
+            try
+            {
+                const string dir = "Screenshots";
+                System.IO.Directory.CreateDirectory(dir);
+                var camGo = new GameObject("ShotCam");
+                var cam = camGo.AddComponent<Camera>();
+                cam.orthographic = true;
+                cam.orthographicSize = 10f;
+                cam.transform.position = new Vector3(0, 0, -10);
+                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.backgroundColor = ViewKit.Background;
+                cam.aspect = 9f / 19.5f;
+                var board = new GameObject("ShotBoard").AddComponent<BoardView>();
+                var belt = new GameObject("ShotBelt").AddComponent<BeltView>();
+                var lanes = new GameObject("ShotLanes").AddComponent<LaneView>();
+                int w = 540, h = 1170;
+                var rt = new RenderTexture(w, h, 24);
+                cam.targetTexture = rt;
+                var d = LevelLoader.Get(0);
+                var g = LevelBuilder.Build(d);
+                Shot(cam, rt, board, belt, lanes, dir, "01-playing.png", g, w, h);
+                if (d.solution != null && d.solution.Length > 0)
+                {
+                    int mid = d.solution.Length / 2;
+                    for (int i = 0; i < mid; i++) g.Take(d.solution[i]);
+                    Shot(cam, rt, board, belt, lanes, dir, "02-mid.png", g, w, h);
+                    for (int i = mid; i < d.solution.Length; i++) g.Take(d.solution[i]);
+                    Shot(cam, rt, board, belt, lanes, dir, "03-win.png", g, w, h);
+                }
+                Debug.Log("Rugtopia screenshots written to " + dir);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning("Rugtopia screenshots skipped: " + ex.Message);
+            }
+        }
+
+        static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, string dir, string name, GameState g, int w, int h)
+        {
+            board.SetVisualHp(-1);
+            board.Build(g);
+            belt.Refresh(g);
+            lanes.Refresh(g);
+            cam.Render();
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+            var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
+            tex.Apply();
+            RenderTexture.active = prev;
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name), tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
         }
 
         /// <summary>Command line / GameCI: -executeMethod Rugtopia.EditorTools.RugtopiaMenu.BuildIOSBatch</summary>
@@ -76,7 +158,7 @@ namespace Rugtopia.EditorTools
                 if (EditorBuildSettings.scenes == null || EditorBuildSettings.scenes.Length == 0) CreateMainScene();
                 string path = Arg("customBuildPath");
                 if (string.IsNullOrEmpty(path)) path = "Builds/iOS";
-                var report = BuildPlayerAt(path);
+                var report = BuildPlayerAt(path, BuildTarget.iOS);
                 code = report.summary.result == BuildResult.Succeeded ? 0 : 1;
                 if (code != 0)
                     Debug.LogError("Rugtopia iOS build failed: " + report.summary.result + " errors=" + report.summary.totalErrors);
@@ -89,17 +171,17 @@ namespace Rugtopia.EditorTools
             EditorApplication.Exit(code);
         }
 
-        static BuildReport BuildPlayerAt(string path)
+        static BuildReport BuildPlayerAt(string path, BuildTarget target)
         {
             var opts = new BuildPlayerOptions
             {
                 scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
                 locationPathName = path,
-                target = BuildTarget.iOS,
+                target = target,
                 options = BuildOptions.None
             };
             var report = BuildPipeline.BuildPlayer(opts);
-            Debug.Log("Rugtopia iOS build: " + report.summary.result + " → " + path);
+            Debug.Log("Rugtopia " + target + " build: " + report.summary.result + " → " + path);
             if (report.summary.result == BuildResult.Succeeded)
             {
                 // game-ci validateBuild fails the job unless the log contains this exact sentence.

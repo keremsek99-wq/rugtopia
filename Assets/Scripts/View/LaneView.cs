@@ -45,5 +45,12 @@ namespace Rugtopia.View
             depth = Mathf.Clamp(Mathf.RoundToInt((area.yMax - 0.8f - world.y) / 1.15f), 0, VisibleDepth - 1);
             return true;
         }
+
+        public Vector2 FrontLocal(int lane)
+        {
+            if (_lanes <= 0) return new Vector2(area.center.x, area.center.y);
+            float cx = area.xMin + LaneW * (Mathf.Clamp(lane, 0, _lanes - 1) + 0.5f);
+            return new Vector2(cx, RowY(0));
+        }
     }
 }

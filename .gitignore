@@ -50,6 +50,8 @@ AuthKey_*.p8
 .env.*
 *.keystore
 
+/Screenshots/
+
 # fastlane output
 fastlane/vendor/
 fastlane/report.xml

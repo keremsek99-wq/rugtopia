@@ -16,10 +16,12 @@ namespace Rugtopia.View
             {'T', Hex("#62C4F0")}, {'O', Hex("#F08A3C")}, {'G', Hex("#12A08F")}, {'M', Hex("#F07C9A")}, {'L', Hex("#7BB661")},
             {'W', Hex("#FFFFFF")}, {'B', Hex("#22222A")}, {'I', Hex("#1E2F66")}, {'U', Hex("#9FD8F5")}, {'S', Hex("#F7E15A")},
         };
-        public static readonly Color Background = Hex("#F3E6D3");
-        public static readonly Color Unwoven = Hex("#E2D3BD");
-        public static readonly Color Veil = Hex("#B9A88F");
+        public static readonly Color Background = Hex("#F4E4CF");
+        public static readonly Color Letterbox = Hex("#2A1C16");
+        public static readonly Color Unwoven = Hex("#E4D2B8");
+        public static readonly Color Veil = Hex("#B7A48C");
         public static readonly Color Ink = Hex("#2B1A14");
+        public static readonly Color Wool = Hex("#8C5A3C");
 
         public static Color Hex(string h) { Color c; ColorUtility.TryParseHtmlString(h, out c); return c; }
         public static Color Of(char c) { Color v; return Palette.TryGetValue(c, out v) ? v : Color.magenta; }
@@ -30,10 +32,24 @@ namespace Rugtopia.View
             get
             {
                 if (_square != null) return _square;
-                var t = new Texture2D(4, 4) { filterMode = FilterMode.Point };
-                var px = new Color[16]; for (int i = 0; i < 16; i++) px[i] = Color.white;
+                const int n = 64;
+                var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+                var px = new Color[n * n];
+                float r = n * 0.5f - 1.5f;
+                for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = Mathf.Abs(x + 0.5f - n * 0.5f);
+                    float dy = Mathf.Abs(y + 0.5f - n * 0.5f);
+                    float ax = Mathf.Max(dx - r + 6f, 0f), ay = Mathf.Max(dy - r + 6f, 0f);
+                    float corner = Mathf.Sqrt(ax * ax + ay * ay);
+                    float a = Mathf.Clamp01(6.5f - corner);
+                    float thread = 0.92f + 0.08f * Mathf.Sin((y + x * 0.15f) * 1.35f);
+                    float sheen = y > n * 0.62f ? 1.08f : 1f;
+                    px[y * n + x] = new Color(thread * sheen, thread * sheen, thread * sheen, a);
+                }
                 t.SetPixels(px); t.Apply();
-                _square = Sprite.Create(t, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 4f);
+                _square = Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
                 return _square;
             }
         }

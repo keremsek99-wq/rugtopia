@@ -1,0 +1,126 @@
+name: webgl-pages
+
+# Browser playtest. Skips green when the Unity license secrets are missing.
+# Deploys to GitHub Pages on this public repo: https://keremsek99-wq.github.io/rugtopia/
+on:
+  push:
+    branches: [cursor/webgl-playtest-51e1]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rugtopia-unity-license
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: WebGL playtest
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - name: Check Unity license secrets
+        id: gate
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        run: bash Tools/ci/check_secrets.sh unity "$GITHUB_OUTPUT"
+
+      - name: Explain skip
+        if: steps.gate.outputs.ready != 'true'
+        run: |
+          echo "::notice title=WebGL skipped::${{ steps.gate.outputs.message }}"
+          {
+            echo "## WebGL skipped"
+            echo "${{ steps.gate.outputs.message }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cache Library
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-webgl-6000.3.0f1-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-webgl-6000.3.0f1-
+
+      - name: Build WebGL
+        if: steps.gate.outputs.ready == 'true'
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_LICENSE == '' && secrets.UNITY_SERIAL || '' }}
+        with:
+          targetPlatform: WebGL
+          unityVersion: auto
+          projectPath: .
+          buildMethod: Rugtopia.EditorTools.RugtopiaMenu.BuildWebGLBatch
+          manualExit: true
+          buildsPath: build
+          buildName: WebGL
+          versioning: None
+          allowDirtyBuild: true
+          dockerWorkspacePath: ${{ github.workspace }}
+
+      - name: Fix artifact ownership
+        if: always() && steps.gate.outputs.ready == 'true'
+        run: sudo chown -R "$(id -u):$(id -g)" build Screenshots Library 2>/dev/null || true
+
+      - name: Upload portrait screenshots
+        if: always() && steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: playtest-screenshots
+          path: Screenshots
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Locate WebGL output
+        id: web
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          html=$(find build -name index.html -print -quit)
+          test -n "$html"
+          root=$(dirname "$html")
+          touch "$root/.nojekyll"
+          echo "root=$root" >> "$GITHUB_OUTPUT"
+          echo "WebGL root $root"
+          find "$root" -maxdepth 2 -type d -o -name index.html | head
+
+      - name: Configure Pages
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ steps.web.outputs.root }}
+
+  deploy:
+    name: Deploy GitHub Pages
+    needs: build
+    if: needs.build.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

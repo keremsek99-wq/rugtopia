@@ -14,6 +14,9 @@ namespace Rugtopia.View
         SpriteRenderer _tip;
         Transform _strip;
         float _cs; Vector2 _origin;
+        int _visualHp = -1;
+        int _popRow = -1;
+        float _popUntil;
 
         public void Build(GameState g)
         {
@@ -37,11 +40,13 @@ namespace Rugtopia.View
         {
             if (_cells == null) return;
             int rows = g.Grid.Rows, cols = g.Grid.Cols;
+            int hp = _visualHp >= 0 ? Mathf.Clamp(_visualHp, 0, g.Grid.Length) : g.Hp;
+            int active = g.Grid.RowOf(hp);
             var woven = new bool[rows, cols];
-            for (int i = 0; i < g.Hp; i++) woven[g.Grid.PathRow[i], g.Grid.PathCol[i]] = true;
+            for (int i = 0; i < hp; i++) woven[g.Grid.PathRow[i], g.Grid.PathCol[i]] = true;
             for (int r = 0; r < rows; r++)
             {
-                bool visible = g.IsRowVisible(r);
+                bool visible = hp >= g.Grid.Length || !g.Grid.CoveredRow[r] || (active >= 0 && r >= active);
                 for (int c = 0; c < cols; c++)
                 {
                     char col = g.Grid.Color[r, c];
@@ -52,12 +57,12 @@ namespace Rugtopia.View
                     _cells[r, c].color = k;
                 }
             }
-            if (g.Hp < g.Grid.Length)
+            if (hp < g.Grid.Length)
             {
                 _tip.enabled = true;
-                _tip.transform.localPosition = CellPos(g.Grid.PathRow[g.Hp], g.Grid.PathCol[g.Hp]);
-                var tc = ViewKit.Of(g.Grid.PathColor[g.Hp]);
-                _tip.color = Color.Lerp(tc, Color.white, 0.5f + 0.5f * Mathf.Sin(Time.time * 6f) * 0.5f);
+                _tip.transform.localPosition = CellPos(g.Grid.PathRow[hp], g.Grid.PathCol[hp]);
+                var tc = ViewKit.Of(g.Grid.PathColor[hp]);
+                _tip.color = Color.Lerp(tc, Color.white, 0.55f);
             }
             else _tip.enabled = false;
             DrawStrip(g);
@@ -82,9 +87,24 @@ namespace Rugtopia.View
             }
         }
 
+        /// <summary>While a take animates, draw the rug as of this shuttle index. Pass -1 to follow the core.</summary>
+        public void SetVisualHp(int hp) { _visualHp = hp; }
+
+        public void PopRow(int row) { _popRow = row; _popUntil = Time.time + 0.32f; }
+
         void Update()
         {
-            if (_tip != null && _tip.enabled) { var c = _tip.color; c.a = 0.65f + 0.35f * Mathf.Sin(Time.time * 6f); _tip.color = c; }
+            if (_tip != null && _tip.enabled)
+            {
+                float p = 0.5f + 0.5f * Mathf.Sin(Time.time * 6f);
+                var c = _tip.color; c.a = 0.55f + 0.45f * p; _tip.color = c;
+                _tip.transform.localScale = Vector3.one * _cs * (1.12f + 0.16f * p);
+            }
+            if (_cells == null || Time.time > _popUntil || _popRow < 0) return;
+            float s = 1f + 0.22f * Mathf.Sin((1f - (_popUntil - Time.time) / 0.32f) * Mathf.PI);
+            int cols = _cells.GetLength(1);
+            for (int c = 0; c < cols; c++)
+                if (_cells[_popRow, c] != null) _cells[_popRow, c].transform.localScale = Vector3.one * _cs * 0.94f * s;
         }
     }
 }

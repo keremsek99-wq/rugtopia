@@ -47,6 +47,8 @@ Tools/regenerate.sh
 
 Bundle id defaults to `com.rugtopia.game`. Override it with the Actions variable `IOS_BUNDLE_ID`, or with the bundle id field on a manual TestFlight run.
 
+The browser playtest is the WebGL build from `webgl-pages`, deployed to GitHub Pages at https://keremsek99-wq.github.io/rugtopia/ . The camera letterboxes to 9:19.5. Mouse and touch both start a tap.
+
 Secrets to add are listed in [docs/CI_SETUP.md](docs/CI_SETUP.md).
 
 ## Verification status
