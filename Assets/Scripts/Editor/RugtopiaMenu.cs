@@ -100,6 +100,11 @@ namespace Rugtopia.EditorTools
             };
             var report = BuildPipeline.BuildPlayer(opts);
             Debug.Log("Rugtopia iOS build: " + report.summary.result + " → " + path);
+            if (report.summary.result == BuildResult.Succeeded)
+            {
+                // game-ci validateBuild fails the job unless the log contains this exact sentence.
+                Console.WriteLine("Build succeeded!");
+            }
             return report;
         }
 
