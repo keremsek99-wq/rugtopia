@@ -6,19 +6,25 @@ namespace Rugtopia.View
     /// <summary>Compact row of large slots sitting just above the lanes.</summary>
     public class BeltView : MonoBehaviour
     {
-        public float y = -4.85f;
-        public float width = 8.4f;
+        public const float MaxSlot = 1.4f; // about two thirds of the old 2.15 holders
+        public float y = -4.35f;
+        public float width = 8.6f;
+
+        float SlotSize(int n)
+        {
+            return Mathf.Min(MaxSlot, (width - 0.16f * (n - 1)) / Mathf.Max(1, n));
+        }
 
         public void Refresh(GameState g)
         {
             ViewKit.Clear(transform);
             int n = Mathf.Max(1, g.BeltSlots);
-            float slot = Mathf.Min(2.15f, (width - 0.2f * (n - 1)) / n);
-            float gap = 0.22f;
+            float slot = SlotSize(n);
+            float gap = 0.16f;
             float total = n * slot + (n - 1) * gap;
             float x0 = -total * 0.5f + slot * 0.5f;
-            ViewKit.Quad(transform, "Track", new Vector2(0f, y), new Vector2(width, slot + 0.35f), ThemeConfig.Belt, 0, ArtKit.UiRound);
-            ViewKit.Label(transform, "Cap", new Vector2(0f, y + slot * 0.72f), "BELT  " + g.Belt.Count + "/" + n, 0.1f, ThemeConfig.Ink, 3);
+            ViewKit.Quad(transform, "Track", new Vector2(0f, y), new Vector2(width, slot + 0.22f), ThemeConfig.Belt, 0, ArtKit.UiRound);
+            ViewKit.Label(transform, "Cap", new Vector2(0f, y + slot * 0.62f), "BELT  " + g.Belt.Count + "/" + n, 0.08f, ThemeConfig.Ink, 3);
             for (int i = 0; i < n; i++)
             {
                 var p = new Vector2(x0 + i * (slot + gap), y);
@@ -35,8 +41,8 @@ namespace Rugtopia.View
         public Vector2 SlotLocal(int index, int slots)
         {
             int n = Mathf.Max(1, slots);
-            float slot = Mathf.Min(2.15f, (width - 0.2f * (n - 1)) / n);
-            float gap = 0.22f;
+            float slot = SlotSize(n);
+            float gap = 0.16f;
             float total = n * slot + (n - 1) * gap;
             float x0 = -total * 0.5f + slot * 0.5f;
             return new Vector2(x0 + Mathf.Clamp(index, 0, n - 1) * (slot + gap), y);

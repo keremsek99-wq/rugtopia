@@ -61,20 +61,21 @@ namespace Rugtopia.View
             var top = _top.transform;
             Btn(top, "Home", new Vector2(0.03f, 0.42f), new Vector2(0.15f, 0.96f), "‹", "home");
             Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "↻", "restart");
-            _title = Txt(top, "Title", new Vector2(0.16f, 0.5f), new Vector2(0.84f, 1f), "", 58, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _title = Txt(top, "Title", new Vector2(0.16f, 0.5f), new Vector2(0.54f, 1f), "", 52, TextAnchor.MiddleCenter, ViewKit.Cream);
             _status = Txt(top, "Status", new Vector2(0.2f, 0.16f), new Vector2(0.8f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Gold);
             _lives = Txt(top, "Lives", new Vector2(0.03f, 0.0f), new Vector2(0.2f, 0.38f), "", 28, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
             _coins = Txt(top, "Coins", new Vector2(0.8f, 0.0f), new Vector2(0.97f, 0.38f), "", 28, TextAnchor.MiddleRight, ViewKit.Gold);
 
-            float dx = 0.108f, dy = 0.05f, gap = 0.028f;
+            // ~48pt circles on a 9:19.5 phone. Reference canvas is 1080x2340.
+            float dy = 0.056f, dx = dy * (2340f / 1080f), gap = 0.03f;
             float span = 3f * dx + 2f * gap;
             float bx = (1f - span) * 0.5f;
-            float by = 0.046f;
-            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), "+", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
+            float by = 0.04f;
+            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.SlotIcon, "slot"); _slotL = _slot.transform.Find("Badge/Count").GetComponent<Text>();
             bx += dx + gap;
-            _comb = IconBtn(root, "Comb", new Vector2(bx, by), new Vector2(bx + dx, by + dy), "#", "comb"); _combL = _comb.GetComponentInChildren<Text>();
+            _comb = IconBtn(root, "Comb", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.CombIcon, "comb"); _combL = _comb.transform.Find("Badge/Count").GetComponent<Text>();
             bx += dx + gap;
-            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), ">", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.ShuttleIcon, "shuttle"); _shuttleL = _shuttle.transform.Find("Badge/Count").GetComponent<Text>();
 
             _dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.059f, 0.031f, 0.02f, 0.72f)).gameObject;
             _dim.SetActive(false);
@@ -110,10 +111,14 @@ namespace Rugtopia.View
             _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.54f, 0.40f), new Vector2(0.9f, 0.52f), "Türkçe", "langTr", true);
             _langEn.gameObject.SetActive(false);
             _langTr.gameObject.SetActive(false);
-            _badge = Panel(top, "Badge", new Vector2(0.62f, 0.52f), new Vector2(0.82f, 0.94f), ViewKit.Hex("#8E44AD")).gameObject;
+            _badge = Panel(top, "Badge", new Vector2(0.52f, 0.50f), new Vector2(0.83f, 0.96f), ViewKit.Hex("#8E44AD")).gameObject;
             _badge.GetComponent<Image>().sprite = ArtKit.UiRound;
             _badge.GetComponent<Image>().type = Image.Type.Sliced;
-            _badgeText = Txt(_badge.transform, "Label", Vector2.zero, Vector2.one, "", 26, TextAnchor.MiddleCenter, Color.white);
+            _badgeText = Txt(_badge.transform, "Label", new Vector2(0.06f, 0f), new Vector2(0.94f, 1f), "", 20, TextAnchor.MiddleCenter, Color.white);
+            _badgeText.resizeTextForBestFit = true;
+            _badgeText.resizeTextMinSize = 11;
+            _badgeText.resizeTextMaxSize = 20;
+            _badgeText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _badge.SetActive(false);
             _diffSplash = Card(root, "DiffSplash", new Vector2(0.14f, 0.40f), new Vector2(0.86f, 0.60f), ViewKit.Hex("#8E44AD"));
             _diffSplash.AddComponent<CanvasGroup>();
@@ -314,12 +319,18 @@ namespace Rugtopia.View
         {
             Button b = id == "slot" ? _slot : id == "comb" ? _comb : _shuttle;
             Text l = id == "slot" ? _slotL : id == "comb" ? _combL : _shuttleL;
-            string icon = id == "slot" ? "+" : id == "comb" ? "#" : ">";
             b.interactable = unlocked;
-            l.text = !unlocked ? icon : icon + "\n" + (inventory > 0 ? inventory.ToString() : price.ToString());
+            var badge = b.transform.Find("Badge");
+            if (badge != null) badge.gameObject.SetActive(unlocked);
+            if (l != null) l.text = inventory > 0 ? inventory.ToString() : price.ToString();
             var img = b.GetComponent<Image>();
-            if (img != null) img.color = armed ? ViewKit.Gold : ThemeConfig.Button;
-            l.color = armed ? ViewKit.Ink : ThemeConfig.ButtonText;
+            if (img != null) img.color = !unlocked ? new Color(ThemeConfig.Button.r, ThemeConfig.Button.g, ThemeConfig.Button.b, 0.45f) : armed ? ViewKit.Gold : ThemeConfig.Button;
+            var icon = b.transform.Find("Icon");
+            if (icon != null)
+            {
+                var ic = icon.GetComponent<Image>();
+                if (ic != null) ic.color = new Color(1f, 0.95f, 0.88f, unlocked ? 1f : 0.45f);
+            }
         }
 
         public void ShowLangChoice(bool on)
@@ -559,17 +570,25 @@ namespace Rugtopia.View
             return b;
         }
 
-        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id)
+        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, Sprite icon, string id)
         {
             var rt = Panel(parent, name, aMin, aMax, ThemeConfig.Button);
             var image = rt.GetComponent<Image>();
             image.sprite = Glyphs.Circle;
             image.preserveAspect = true;
             var b = rt.gameObject.AddComponent<Button>();
-            var text = Txt(rt, "Label", new Vector2(0.12f, 0.08f), new Vector2(0.88f, 0.92f), label, 26, TextAnchor.MiddleCenter, ThemeConfig.ButtonText);
-            text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.lineSpacing = 0.8f;
+            var mark = Panel(rt, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), new Color(1f, 0.95f, 0.88f, 1f));
+            var markImg = mark.GetComponent<Image>();
+            markImg.sprite = icon;
+            markImg.preserveAspect = true;
+            markImg.raycastTarget = false;
+            var badge = Panel(rt, "Badge", new Vector2(0.58f, 0.58f), new Vector2(1.08f, 1.08f), ViewKit.Ink);
+            var badgeImg = badge.GetComponent<Image>();
+            badgeImg.sprite = Glyphs.Circle;
+            badgeImg.raycastTarget = false;
+            var count = Txt(badge, "Count", Vector2.zero, Vector2.one, "", 22, TextAnchor.MiddleCenter, ViewKit.Cream);
+            count.horizontalOverflow = HorizontalWrapMode.Overflow;
+            count.verticalOverflow = VerticalWrapMode.Overflow;
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
         }

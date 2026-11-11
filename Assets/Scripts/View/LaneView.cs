@@ -6,7 +6,7 @@ namespace Rugtopia.View
     /// <summary>Large rounded lane cards. The hinted lane gets a gold edge and a big front spool.</summary>
     public class LaneView : MonoBehaviour
     {
-        public Rect area = new Rect(-4.4f, -9.45f, 8.8f, 3.17f);
+        public Rect area = new Rect(-4.3f, -9.35f, 8.6f, 4.03f);
         int _lanes;
         int _visible = 3;
         float _front = 1.6f;
@@ -20,9 +20,10 @@ namespace Rugtopia.View
         public void Fit(int lanes, bool boosters)
         {
             _lanes = Mathf.Max(1, lanes);
-            float yMax = -6.28f;
-            float yMin = boosters ? -7.95f : -9.45f;
-            area = new Rect(-4.4f, yMin, 8.8f, yMax - yMin);
+            // Belt holders sit higher now. Boosters own a 44pt row at the bottom.
+            float yMax = -5.32f;
+            float yMin = boosters ? -7.84f : -9.35f;
+            area = new Rect(-4.3f, yMin, 8.6f, yMax - yMin);
         }
 
         float RowY(int depth)
@@ -45,18 +46,25 @@ namespace Rugtopia.View
             _pulse = null;
             _lanes = Mathf.Max(1, g.Lanes.Count);
             int hint = TutorialHand.LaneFor(g);
-            float gap = _lanes >= 5 ? 0.14f : _lanes >= 4 ? 0.16f : 0.22f;
+            float gap = _lanes >= 5 ? 0.1f : _lanes >= 4 ? 0.14f : 0.2f;
             float cardW = Pitch - gap;
-            int maxBack = _lanes >= 5 ? 2 : 3;
+            int maxBack = 2;
             int deepest = 1;
             for (int i = 0; i < g.Lanes.Count; i++) deepest = Mathf.Max(deepest, Mathf.Min(maxBack + 1, g.Lanes[i].Count));
+            bool extra = HasExtra(g, deepest);
+            float label = extra ? 0.2f : 0.06f;
+            const float ratio = 0.3f;
+            // Front spool width is height * 0.78. 1.34 tall is about 44pt on a 9:19.5 phone.
+            float minFront = _lanes >= 5 ? 1.34f : _lanes >= 4 ? 1.5f : 1.7f;
             int backs = Mathf.Max(0, deepest - 1);
-            float usable = area.height - (backs > 0 && g.Lanes.Count > 0 && HasExtra(g, deepest) ? 0.32f : 0.16f);
-            float maxFront = (usable - backs * 0.04f) / (1f + backs * 0.46f);
-            float desired = _lanes >= 5 ? 1.15f : _lanes >= 4 ? 1.35f : _lanes >= 3 ? 1.55f : 1.75f;
-            _front = Mathf.Min(desired, cardW * 0.86f, Mathf.Max(0.01f, maxFront));
-            _back = _front * 0.46f;
-            _visible = deepest;
+            while (backs > 0 && 0.08f + minFront + backs * (minFront * ratio + 0.04f) + label > area.height) backs--;
+            float usable = area.height - 0.08f - label - backs * 0.04f;
+            float maxFront = usable / (1f + backs * ratio);
+            float badgeCap = (cardW * 0.5f) / 0.56f;
+            float desired = _lanes >= 5 ? 1.45f : _lanes >= 4 ? 1.6f : _lanes >= 3 ? 1.75f : 1.95f;
+            _front = Mathf.Min(desired, Mathf.Max(0.01f, maxFront), badgeCap);
+            _back = _front * ratio;
+            _visible = backs + 1;
             float edge = Mathf.Min(0.05f, gap * 0.35f);
             for (int i = 0; i < _lanes; i++)
             {
@@ -82,7 +90,7 @@ namespace Rugtopia.View
                         _pulseBase = _pulse.localScale;
                     }
                 }
-                if (lane.Count > shown) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.16f), "+" + (lane.Count - shown), _lanes >= 4 ? 0.055f : 0.075f, ThemeConfig.Ink, 3);
+                if (lane.Count > shown) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.16f), "+" + (lane.Count - shown), 0.09f, ThemeConfig.Ink, 3);
                 if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", _lanes >= 4 ? 0.05f : 0.08f, ThemeConfig.Muted, 3);
             }
         }

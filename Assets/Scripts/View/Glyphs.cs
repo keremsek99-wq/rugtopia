@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle;
 
         public static Sprite Of(char c)
         {
@@ -30,6 +30,9 @@ namespace Rugtopia.View
         public static Sprite Box { get { if (_box == null) _box = Frame(false); return _box; } }
         public static Sprite Ring { get { if (_ring == null) _ring = Disc(true); return _ring; } }
         public static Sprite Dot { get { if (_dot == null) _dot = Disc(false); return _dot; } }
+        public static Sprite SlotIcon { get { if (_slot == null) _slot = Pocket(); return _slot; } }
+        public static Sprite CombIcon { get { if (_comb == null) _comb = Teeth(); return _comb; } }
+        public static Sprite ShuttleIcon { get { if (_shuttle == null) _shuttle = Boat(); return _shuttle; } }
 
         static Sprite Disc(bool ring)
         {
@@ -128,6 +131,57 @@ namespace Rugtopia.View
         {
             float d = Mathf.Abs(v - (cy + Mathf.Abs(u - 0.5f) * 0.55f));
             return d < 0.045f && u > 0.12f && u < 0.88f;
+        }
+
+        static Sprite Pocket()
+        {
+            const int n = 64;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float u = (x + 0.5f) / n, v = (y + 0.5f) / n;
+                float dx = Mathf.Abs(u - 0.5f) / 0.38f, dy = Mathf.Abs(v - 0.5f) / 0.22f;
+                bool on = dx * dx + dy * dy <= 1f;
+                px[y * n + x] = on ? Color.white : Color.clear;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite Teeth()
+        {
+            const int n = 64;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                bool bar = y > 40 && y < 50 && x > 8 && x < 56;
+                int tooth = (x - 10) / 12;
+                bool tine = tooth >= 0 && tooth < 4 && x % 12 > 2 && x % 12 < 9 && y > 14 && y < 46;
+                px[y * n + x] = (bar || tine) ? Color.white : Color.clear;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite Boat()
+        {
+            const int n = 64;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float u = (x + 0.5f) / n, v = (y + 0.5f) / n;
+                float body = Mathf.Abs(v - 0.55f) / 0.16f + Mathf.Abs(u - 0.42f) / 0.28f;
+                bool nose = u > 0.55f && u < 0.88f && Mathf.Abs(v - 0.55f) < (0.88f - u) * 0.55f;
+                px[y * n + x] = (body < 1f || nose) ? Color.white : Color.clear;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
 
         static Texture2D Tex(int n)
