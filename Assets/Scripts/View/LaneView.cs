@@ -28,7 +28,7 @@ namespace Rugtopia.View
                 for (int d = shown - 1; d >= 0; d--)
                 {
                     var s = lane[d];
-                    float size = d == 0 ? 0.95f : 0.62f - d * 0.04f;
+                    float size = d == 0 ? 1.2f : 0.72f - d * 0.04f;
                     var p = new Vector2(cx, RowY(d));
                     var col = s.Hidden ? ViewKit.Hex("#7A6A60") : ViewKit.Of(s.Color);
                     float bright = d == 0 ? 1f : 0.72f;

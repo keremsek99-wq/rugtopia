@@ -46,7 +46,7 @@ namespace Rugtopia.View
                 for (int c = 0; c < cols; c++)
                     _cells[r, c] = ViewKit.Quad(transform, "Cell" + r + "_" + c, CellPos(r, c), cell, ViewKit.Unwoven, 2);
             _ring = ViewKit.Quad(transform, "TipRing", Vector2.zero, Vector2.one * _cs * 1.35f, new Color(1f, 0.92f, 0.55f), 4, ViewKit.Ring);
-            _tip = ViewKit.Quad(transform, "ShuttleTip", Vector2.zero, Vector2.one * _cs * 0.72f, Color.white, 5, ViewKit.Fill);
+            _tip = ViewKit.Quad(transform, "ShuttleTip", Vector2.zero, Vector2.one * _cs * 0.72f, Color.white, 5);
             _arrow = ViewKit.Quad(transform, "ShuttleArrow", Vector2.zero, new Vector2(_cs * 0.55f, _cs * 0.4f), new Color(1f, 0.95f, 0.7f), 6, ViewKit.Arrow);
             _strip = new GameObject("NextStrip").transform; _strip.SetParent(transform, false);
             Refresh(g);
