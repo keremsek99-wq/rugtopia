@@ -136,12 +136,15 @@ namespace Rugtopia.EditorTools
                 var hard = LevelLoader.Get(8);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-hard.png", LevelBuilder.Build(hard), hard, w, h, false, false, "SUPER HARD");
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "iter-fail.png", midGame, d, w, h, false, false, null, true);
+                var solved = LevelBuilder.Build(d);
+                if (d.solution != null)
+                    for (int i = 0; i < d.solution.Length; i++) solved.Take(d.solution[i]);
                 ThemeConfig.Current = ThemeConfig.Theme.Dark;
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-playing.png", ftue, d, w, h, true, false);
-                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-win.png", ftue, d, w, h, false, true);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-dark-win.png", solved, d, w, h, false, true);
                 ThemeConfig.Current = ThemeConfig.Theme.Light;
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-playing.png", ftue, d, w, h, true, false);
-                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-win.png", ftue, d, w, h, false, true);
+                Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-win.png", solved, d, w, h, false, true);
                 ThemeConfig.Current = ThemeConfig.Theme.Dark;
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
@@ -153,6 +156,9 @@ namespace Rugtopia.EditorTools
 
         static void Shot(Camera cam, RenderTexture rt, BoardView board, BeltView belt, LaneView lanes, HUD hud, TutorialHand hand, SpeechBubble bubble, Backdrop backdrop, string dir, string name, GameState g, LevelData level, int w, int h, bool showHand, bool winCard, string badge = null, bool failCard = false)
         {
+            var leftover = UnityEngine.Object.FindObjectsByType<PlayFx>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            for (int i = 0; i < leftover.Length; i++)
+                if (leftover[i] != null) UnityEngine.Object.DestroyImmediate(leftover[i].gameObject);
             board.SetVisualHp(-1);
             board.Build(g);
             backdrop.Build(board.area.center, new Vector2(board.area.width, board.area.height));
@@ -182,6 +188,7 @@ namespace Rugtopia.EditorTools
             {
                 hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
                 var fx = new GameObject("ShotFx").AddComponent<PlayFx>();
+                Random.InitState(7);
                 fx.StampConfetti();
             }
             // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this

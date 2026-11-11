@@ -48,5 +48,8 @@ theme() {
   rm -rf "$tmp"
   echo "wrote $dest"
 }
+mkdir -p "$root/docs/screenshots/theme-compare"
 theme "$out/theme-dark-playing.png" "$out/theme-light-playing.png" "$out/theme-compare-playing.png"
 theme "$out/theme-dark-win.png" "$out/theme-light-win.png" "$out/theme-compare-win.png"
+theme "$out/theme-dark-playing.png" "$out/theme-light-playing.png" "$root/docs/screenshots/theme-compare/compare-playing.png"
+theme "$out/theme-dark-win.png" "$out/theme-light-win.png" "$root/docs/screenshots/theme-compare/compare-win.png"
