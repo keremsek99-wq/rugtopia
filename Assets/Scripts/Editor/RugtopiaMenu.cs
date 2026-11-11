@@ -142,7 +142,7 @@ namespace Rugtopia.EditorTools
             tex.Apply();
             RenderTexture.active = prev;
             System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name), tex.EncodeToPNG());
-            Object.DestroyImmediate(tex);
+            UnityEngine.Object.DestroyImmediate(tex);
         }
 
         /// <summary>Command line / GameCI: -executeMethod Rugtopia.EditorTools.RugtopiaMenu.BuildIOSBatch</summary>
