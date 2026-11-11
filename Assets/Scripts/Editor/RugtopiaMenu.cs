@@ -147,7 +147,8 @@ namespace Rugtopia.EditorTools
             if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch!", new Vector2(0f, -4.15f));
             else bubble.Hide();
             int rows = g.Grid.Rows;
-            int row = g.Hp >= g.Grid.Length ? rows : Mathf.Clamp(g.Grid.RowOf(Mathf.Min(g.Hp, g.Grid.Length - 1)) + 1, 1, rows);
+            int active = g.Grid.RowOf(g.Hp);
+            int row = active < 0 ? rows : Mathf.Clamp(rows - active, 1, rows);
             hud.SetTop("Level " + (level.index + 1) + "   ·   Row " + row + "/" + rows, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
             hud.SetStatus(level.nameEn);
             hud.SetBooster("slot", true, 3, EconomyConfig.PriceSlot, false);

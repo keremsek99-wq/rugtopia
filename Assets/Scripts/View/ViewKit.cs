@@ -168,7 +168,7 @@ namespace Rugtopia.View
             go.transform.SetParent(parent, false);
             go.transform.localPosition = new Vector3(pos.x, pos.y, -0.1f);
             var tm = go.AddComponent<TextMesh>();
-            tm.font = Font; tm.text = text; tm.characterSize = size; tm.fontSize = 64; tm.fontStyle = FontStyle.Bold;
+            tm.font = Font; tm.text = text; tm.characterSize = size; tm.fontSize = 48; tm.fontStyle = FontStyle.Bold;
             tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.color = color;
             var mr = go.GetComponent<MeshRenderer>();
             mr.sharedMaterial = Font.material; mr.sortingOrder = order;
@@ -197,7 +197,7 @@ namespace Rugtopia.View
             var badge = pos + new Vector2(w * 0.42f, -height * 0.32f);
             float br = Mathf.Max(0.16f, height * 0.22f);
             Quad(parent, name + "Badge", badge, Vector2.one * br * 2f, Ink, order + 3, Glyphs.Circle);
-            Label(parent, name + "Num", badge, count, br * 0.85f, Color.white, order + 4);
+            Label(parent, name + "Num", badge, count, br * 0.42f, Color.white, order + 4);
         }
 
         public static void Bobbin(Transform parent, string name, Vector2 pos, float height, Color thread, int order, float brightness)

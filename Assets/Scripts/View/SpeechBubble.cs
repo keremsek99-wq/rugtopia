@@ -11,10 +11,10 @@ namespace Rugtopia.View
             if (string.IsNullOrEmpty(text)) { gameObject.SetActive(false); return; }
             gameObject.SetActive(true);
             transform.localPosition = pos;
-            float width = Mathf.Clamp(5.2f + text.Length * 0.045f, 6.4f, 8.6f);
-            ViewKit.Quad(transform, "Edge", Vector2.zero, new Vector2(width + 0.12f, 1.15f), ViewKit.Gold, 12, ArtKit.UiRound);
-            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, 0.98f), new Color(0.08f, 0.04f, 0.02f, 0.92f), 13, ArtKit.UiRound);
-            ViewKit.Label(transform, "Caption", Vector2.zero, text, 0.16f, Color.white, 14);
+            float width = 8.4f;
+            ViewKit.Quad(transform, "Edge", Vector2.zero, new Vector2(width + 0.14f, 1.05f), ViewKit.Gold, 12, ArtKit.UiRound);
+            ViewKit.Quad(transform, "Body", Vector2.zero, new Vector2(width, 0.88f), new Color(0.08f, 0.04f, 0.02f, 0.92f), 13, ArtKit.UiRound);
+            ViewKit.Label(transform, "Caption", Vector2.zero, text, 0.09f, Color.white, 14);
         }
 
         public void Hide()

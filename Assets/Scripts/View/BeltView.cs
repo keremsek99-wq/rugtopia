@@ -16,8 +16,8 @@ namespace Rugtopia.View
             float rx = width * 0.46f, ry = 1.05f;
             ViewKit.Quad(transform, "Track", new Vector2(0, y), new Vector2(rx * 2f, ry * 2f), ViewKit.Hex("#3D2A20"), 0, ArtKit.UiRound);
             ViewKit.Quad(transform, "Inner", new Vector2(0, y), new Vector2(rx * 2f - 0.7f, ry * 2f - 0.55f), ViewKit.Hex("#241610"), 1, ArtKit.UiRound);
-            ViewKit.Label(transform, "Cap", new Vector2(0, y + 0.22f), "BELT", 0.16f, new Color(1f, 0.9f, 0.78f, 0.55f), 3);
-            ViewKit.Label(transform, "Count", new Vector2(0, y - 0.28f), g.Belt.Count + " / " + n, 0.28f, ViewKit.Cream, 3);
+            ViewKit.Label(transform, "Cap", new Vector2(0, y + 0.28f), "BELT", 0.09f, new Color(1f, 0.9f, 0.78f, 0.7f), 3);
+            ViewKit.Label(transform, "Count", new Vector2(0, y - 0.22f), g.Belt.Count + " / " + n, 0.16f, ViewKit.Cream, 3);
             for (int i = 0; i < n; i++)
             {
                 float ang = -Mathf.PI * 0.5f + (i + 0.5f) / n * Mathf.PI * 2f;

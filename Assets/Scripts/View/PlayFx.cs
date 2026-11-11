@@ -65,7 +65,7 @@ namespace Rugtopia.View
                 var c = Color.HSVToRGB((i * 0.17f) % 1f, 0.65f, 1f);
                 float x = Random.Range(-3.6f, 3.6f);
                 float y = Random.Range(-1.5f, 6.5f);
-                ViewKit.Quad(transform, "Bit", new Vector2(x, y), Vector2.one * Random.Range(0.12f, 0.28f), c, 45);
+                ViewKit.Quad(transform, "Bit", new Vector2(x, y), new Vector2(Random.Range(0.16f, 0.36f), Random.Range(0.08f, 0.18f)), c, 45);
             }
         }
 

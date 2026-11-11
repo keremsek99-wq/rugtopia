@@ -143,9 +143,9 @@ namespace Rugtopia.View
             ViewKit.Clear(_strip);
             var runs = g.PreviewRuns();
             ViewKit.Quad(_strip, "Bar", new Vector2(area.center.x, stripY), new Vector2(area.width, 0.72f), new Color(0f, 0f, 0f, 0.35f), 3, ArtKit.UiRound);
-            ViewKit.Label(_strip, "Next", new Vector2(area.xMin + 0.55f, stripY), "NEXT", 0.11f, new Color(0.96f, 0.91f, 0.81f, 0.8f), 5);
-            float x = area.xMin + 1.15f;
-            const float h = 0.5f;
+            ViewKit.Label(_strip, "Next", new Vector2(area.xMin + 0.55f, stripY), "NEXT", 0.07f, new Color(0.96f, 0.91f, 0.81f, 0.85f), 5);
+            float x = area.xMin + 1.25f;
+            const float h = 0.48f;
             foreach (var run in runs)
             {
                 if (x > area.xMax - 0.3f) break;
@@ -160,7 +160,7 @@ namespace Rugtopia.View
                 var mid = new Vector2(x + w * 0.5f, stripY);
                 ViewKit.Quad(_strip, "Chip", mid, new Vector2(w, h), ViewKit.Of(run.Key), 4, ArtKit.UiRound);
                 ViewKit.Quad(_strip, "G", mid + new Vector2(-0.28f, 0f), Vector2.one * 0.26f, ViewKit.InkFor(run.Key), 5, Glyphs.Of(run.Key));
-                ViewKit.Label(_strip, "N", mid + new Vector2(0.22f, 0f), "×" + run.Value, 0.13f, ViewKit.InkFor(run.Key), 6);
+                ViewKit.Label(_strip, "N", mid + new Vector2(0.24f, 0f), "×" + run.Value, 0.08f, ViewKit.InkFor(run.Key), 6);
                 x += w + 0.12f;
             }
         }

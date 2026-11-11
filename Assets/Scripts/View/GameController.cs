@@ -421,7 +421,8 @@ namespace Rugtopia.View
             var d = _g.Level;
             string name = SaveService.Data.lang == "tr" ? d.nameTr : d.nameEn;
             int rows = _g.Grid.Rows;
-            int row = _g.Hp >= _g.Grid.Length ? rows : Mathf.Clamp(_g.Grid.RowOf(_g.Hp) + 1, 1, rows);
+            int active = _g.Grid.RowOf(_g.Hp);
+            int row = active < 0 ? rows : Mathf.Clamp(rows - active, 1, rows);
             _hud.SetTop("Level " + (levelIndex + 1) + "   ·   Row " + row + "/" + rows, SaveService.Data.coins, Economy.Lives);
             _hud.SetStatus(name);
         }
