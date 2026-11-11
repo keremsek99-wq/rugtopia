@@ -135,7 +135,9 @@ namespace Rugtopia.View
             if (_mapTitle != null) _mapTitle.text = Copy.Get("levels");
             if (_winTitle != null) _winTitle.text = Copy.Get("levelComplete");
             SetChildLabel(_winPanel, "winMap", Copy.Get("levels"));
-            SetChildLabel(_winPanel, "winNext", Copy.Get("nextLevel"));
+            string next = Copy.Get("nextLevel");
+            if (next == "nextLevel") next = LangIsTr() ? "Sonraki" : "Next";
+            SetChildLabel(_winPanel, "winNext", next);
             SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
             SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
         }

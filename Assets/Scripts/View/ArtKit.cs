@@ -170,20 +170,21 @@ namespace Rugtopia.View
             const float outer = 56f;
             if (edge >= outer + 1.2f) return Color.clear;
             float a = Mathf.Clamp01(outer + 0.8f - edge);
-            float along = (x + y) % 28f;
-            Color c = indigo;
-            if (edge < 8f) c = indigo;
-            else if (edge < 14f) c = cream;
-            else if (edge < 36f)
-            {
-                c = madder;
-                float dx = Mathf.Abs(along - 14f);
-                float dy = Mathf.Abs(edge - 24f);
-                if (dx + dy < 7f) c = saffron;
-                else if (dx + dy < 9f) c = cream;
-            }
-            else if (edge < 44f) c = indigo;
-            else c = cream;
+                float along = (x + y) % 18f;
+                Color c = indigo;
+                if (edge < 8f) c = indigo;
+                else if (edge < 13f) c = cream;
+                else if (edge < 34f)
+                {
+                    c = madder;
+                    float dx = Mathf.Abs(along - 9f);
+                    float dy = Mathf.Abs(edge - 23f);
+                    if (dx + dy < 3.2f) c = saffron;
+                    else if (dx + dy < 4.4f) c = cream;
+                }
+                else if (edge < 42f) c = indigo;
+                else if (edge < 48f) c = saffron;
+                else c = cream;
             // Soften the band boundaries.
             c.a = a;
             return c;
@@ -249,33 +250,37 @@ namespace Rugtopia.View
 
         static Sprite MakeHand()
         {
-            const int w = 64, h = 96;
+            const int w = 80, h = 120;
+            var mask = new bool[w * h];
+            for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+            {
+                float u = x + 0.5f, v = y + 0.5f;
+                bool finger = Mathf.Abs(u - 40f) < 9f && v > 8f && v < 78f;
+                bool tip = (u - 40f) * (u - 40f) + (v - 16f) * (v - 16f) < 110f;
+                bool palm = (u - 46f) * (u - 46f) / 520f + (v - 90f) * (v - 90f) / 400f < 1f;
+                bool thumb = (u - 24f) * (u - 24f) / 130f + (v - 76f) * (v - 76f) / 210f < 1f;
+                mask[y * w + x] = finger || tip || palm || thumb;
+            }
             var t = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
             var px = new Color[w * h];
-            var skin = ViewKit.Hex("#F6D7B0");
+            var skin = ViewKit.Hex("#F3C892");
             var ink = ViewKit.Hex("#2B1A14");
             for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
             {
-                float u = (x + 0.5f) / w, v = (y + 0.5f) / h;
-                bool finger = Mathf.Abs(u - 0.5f) < 0.12f && v < 0.62f;
-                bool palm = (u - 0.5f) * (u - 0.5f) / 0.12f + (v - 0.72f) * (v - 0.72f) / 0.06f < 1f;
-                float d = finger || palm ? 0f : 1f;
-                // Soft outline by sampling the shape distance roughly.
-                float du = Mathf.Abs(u - 0.5f);
-                float edge = finger ? (0.12f - du) * 8f : (palm ? 1f : 0f);
-                if (finger) edge = Mathf.Clamp01((0.12f - du) * 14f) * Mathf.Clamp01(v < 0.58f ? 1f : (0.64f - v) * 16f);
-                if (palm)
+                if (!mask[y * w + x]) { px[y * w + x] = Color.clear; continue; }
+                bool edge = false;
+                for (int oy = -2; oy <= 2 && !edge; oy++)
+                for (int ox = -2; ox <= 2 && !edge; ox++)
                 {
-                    float e = 1f - ((u - 0.5f) * (u - 0.5f) / 0.12f + (v - 0.72f) * (v - 0.72f) / 0.06f);
-                    edge = Mathf.Max(edge, Mathf.Clamp01(e * 6f));
+                    int xx = x + ox, yy = y + oy;
+                    if (xx < 0 || yy < 0 || xx >= w || yy >= h || !mask[yy * w + xx]) edge = true;
                 }
-                Color c = Color.Lerp(ink, skin, Mathf.Clamp01((edge - 0.35f) * 3f));
-                c.a = Mathf.Clamp01(edge);
-                px[y * w + x] = c;
+                px[y * w + x] = edge ? ink : skin;
             }
             t.SetPixels(px); t.Apply();
-            return Sprite.Create(t, new Rect(0, 0, w, h), new Vector2(0.5f, 0.08f), 64, 0, SpriteMeshType.FullRect, Vector4.zero);
+            return Sprite.Create(t, new Rect(0, 0, w, h), new Vector2(0.5f, 0.08f), 96, 0, SpriteMeshType.FullRect, Vector4.zero);
         }
     }
 }

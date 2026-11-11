@@ -144,7 +144,7 @@ namespace Rugtopia.EditorTools
             belt.Refresh(g);
             lanes.Refresh(g);
             hud.ShowPlay();
-            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, 1.25f));
+            if (!winCard && level.index == 0) bubble.Show("Tap the spool that matches the glowing stitch.", new Vector2(0f, 1.82f));
             else bubble.Hide();
             hud.SetTop("Lv " + (level.index + 1) + " · " + level.nameEn, EconomyConfig.StartCoins, EconomyConfig.MaxLives);
             hud.SetStatus(g.Status == GameStatus.Won ? "Rug woven" : "Weave " + g.StitchesLeft);

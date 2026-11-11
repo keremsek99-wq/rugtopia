@@ -139,7 +139,7 @@ namespace Rugtopia.View
             _board.Build(_g);
             _hud.ShowPlay();
             _hud.HidePanels();
-            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.25f));
+            if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.82f));
             RefreshAll();
             PlaceHand();
             if (intro != null) _hud.ShowIntro(Copy.Get(intro));
@@ -333,7 +333,7 @@ namespace Rugtopia.View
                 else if (_g != null)
                 {
                     RefreshAll();
-                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.25f));
+                    if (_bubble != null) _bubble.Show(CaptionFor(_g.Level), new Vector2(0f, 1.82f));
                 }
                 return;
             }
