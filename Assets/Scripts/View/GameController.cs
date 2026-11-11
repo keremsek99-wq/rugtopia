@@ -32,6 +32,7 @@ namespace Rugtopia.View
         Camera _cam;
         Mode _mode = Mode.Menu;
         bool _busy;
+        bool _zoomIn;
         float _t0;
         int _rewardedFor = -1;
 
@@ -123,6 +124,7 @@ namespace Rugtopia.View
             _mode = Mode.Menu;
             _g = null;
             _hud.ShowMenu(SaveService.Data.coins, SaveService.Data.maxLevel + 1);
+            Analytics.Track("home_shown", ("next", (SaveService.Data.maxLevel + 1).ToString()));
         }
 
         public void ShowMap()
@@ -139,6 +141,8 @@ namespace Rugtopia.View
 
         public void StartLevel(int i)
         {
+            bool zoom = _zoomIn;
+            _zoomIn = false;
             StopAllCoroutines();
             _busy = false;
             _fx.Clear();
@@ -160,6 +164,7 @@ namespace Rugtopia.View
             _t0 = Time.time;
             _board.SetVisualHp(-1);
             _board.Build(_g);
+            _lanes.suppressEmpty = false;
             _lanes.Fit(_g.Lanes.Count, levelIndex >= 3);
             _hud.ShowPlay();
             _hud.HidePanels();
@@ -171,6 +176,37 @@ namespace Rugtopia.View
             Analytics.Track("level_start", ("level", (levelIndex + 1).ToString()), ("tag", _g.Level.tag));
             if (levelIndex == 0) Analytics.Track("ftue_step", ("step", "hand"));
             if (intro != null && levelIndex > 0) _hud.ShowIntro(Copy.Get(intro));
+            if (Economy.StreakUnlocked && SaveService.Data.streak > 0) _hud.Remind(Copy.Get("streakNow") + " " + SaveService.Data.streak + "/3");
+            if (zoom) StartCoroutine(EnterBoard());
+        }
+
+        IEnumerator EnterBoard()
+        {
+            float t = 0f;
+            _hud.SetCover(1f);
+            while (t < 0.3f)
+            {
+                t += Time.deltaTime;
+                float k = 1f - (1f - Mathf.Clamp01(t / 0.3f)) * (1f - Mathf.Clamp01(t / 0.3f));
+                if (_cam != null) _cam.orthographicSize = Mathf.Lerp(11.15f, 10f, k);
+                _hud.SetCover(1f - k);
+                yield return null;
+            }
+            if (_cam != null) _cam.orthographicSize = 10f;
+            _hud.SetCover(0f);
+        }
+
+        IEnumerator BoardPop()
+        {
+            float t = 0f;
+            while (t < 0.32f)
+            {
+                t += Time.deltaTime;
+                float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.32f));
+                if (_board != null) _board.transform.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, k);
+                yield return null;
+            }
+            if (_board != null) _board.transform.localScale = Vector3.one;
         }
 
         void ShowDifficultyBadge()
@@ -337,6 +373,11 @@ namespace Rugtopia.View
                     yield return new WaitForSeconds(0.04f);
                 }
                 RefreshTop();
+                _lanes.suppressEmpty = true;
+                _lanes.Refresh(_g);
+                StartCoroutine(BoardPop());
+                _hud.TossCoins();
+                _hud.ShowHang(levelIndex >= 9 && !Economy.IsHung(levelIndex));
                 if (levelIndex == 0 && !SaveService.Data.pickedLang) _hud.ShowLangChoice(true);
             }
             else if (_g.Status == GameStatus.Failed)
@@ -349,7 +390,9 @@ namespace Rugtopia.View
                 int price = free ? 0 : EconomyConfig.ContinuePrice(_g.Continues);
                 Analytics.Track("level_fail", ("level", (levelIndex + 1).ToString()), ("stitches_left", left.ToString()));
                 Analytics.Track("continue_offer_shown", ("level", (levelIndex + 1).ToString()), ("free", free ? "1" : "0"), ("price", price.ToString()));
+                bool lostStreak = SaveService.Data.streak > 0 && levelIndex >= EconomyConfig.UnlockStreak;
                 _hud.ShowFail(Copy.Get("failTitle"), left, prog, free ? Copy.Get("contFree") : (Copy.Get("contPay") + " · " + price));
+                if (lostStreak) { Economy.BreakStreak("fail"); _hud.SetFailNote(Copy.Get("streakLost")); }
             }
             _busy = false;
         }
@@ -399,11 +442,31 @@ namespace Rugtopia.View
                 return;
             }
             if (id == "introOk") { _hud.HideIntro(); return; }
-            if (id == "play" || id == "map") { ShowMap(); return; }
+            if (id == "settings") { _hud.ShowSettings(true); return; }
+            if (id == "settingsClose") { _hud.ShowSettings(false); return; }
+            if (id == "sound")
+            {
+                SaveService.Data.muted = !SaveService.Data.muted;
+                SaveService.Save();
+                _hud.ShowSettings(true);
+                return;
+            }
+            if (id == "claim") { Economy.ClaimDaily(); _hud.ShowDaily(); return; }
+            if (id == "daily") { if (Economy.DailyUnlocked) _hud.ShowDaily(); return; }
+            if (id == "gallery") { if (Economy.GalleryUnlocked) _hud.ShowGallery(); return; }
+            if (id == "streak") { _hud.ShowStreakSheet(); return; }
+            if (id == "path" || id == "map") { ShowMap(); return; }
+            if (id == "play")
+            {
+                _zoomIn = true;
+                Feel.Tap();
+                StartLevel(Mathf.Clamp(SaveService.Data.maxLevel, 0, LevelLoader.Count - 1));
+                return;
+            }
             if (id == "home") { ShowMenu(); return; }
             if (id.Length > 2 && id.StartsWith("lv") && int.TryParse(id.Substring(2), out int li))
             {
-                if (li <= SaveService.Data.maxLevel) StartLevel(li);
+                if (li <= SaveService.Data.maxLevel) { _zoomIn = true; StartLevel(li); }
                 return;
             }
             if (_g == null || _busy) return;
@@ -453,8 +516,18 @@ namespace Rugtopia.View
                 case "restart":
                     StartLevel(levelIndex);
                     break;
+                case "hang":
+                    if (levelIndex >= 9 && !Economy.IsHung(levelIndex))
+                    {
+                        Economy.Hang(levelIndex);
+                        _hud.ShowHang(false);
+                        Feel.Tap();
+                        StartCoroutine(BoardPop());
+                    }
+                    break;
                 case "next":
-                    StartLevel(levelIndex + 1);
+                    if (levelIndex == 0) ShowMenu();
+                    else StartLevel(levelIndex + 1);
                     break;
                 case "prev":
                     StartLevel(levelIndex - 1);

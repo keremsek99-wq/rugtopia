@@ -19,6 +19,8 @@ namespace Rugtopia.View
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winTitle, _winCoins, _failTitle, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
         Image _failFill;
+        ShellUI _shell;
+        Button _hang;
         GameObject _badge, _diffSplash;
         Text _diffSplashText;
         Coroutine _splash;
@@ -106,7 +108,10 @@ namespace Rugtopia.View
             coinImg.raycastTarget = false;
             _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.42f, 0.36f), new Vector2(0.78f, 0.54f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
             var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.38f), "Continue", "next", true);
-            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.12f, 0.04f), new Vector2(0.88f, 0.14f), "", 26, TextAnchor.MiddleCenter, ViewKit.Wool);
+            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.38f, 0.02f), new Vector2(0.92f, 0.13f), "", 24, TextAnchor.MiddleCenter, ViewKit.Wool);
+            Btn(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.02f), new Vector2(0.34f, 0.13f), "Home", "home");
+            _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
+            _hang.gameObject.SetActive(false);
             _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.1f, 0.40f), new Vector2(0.46f, 0.52f), "English", "langEn");
             _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.54f, 0.40f), new Vector2(0.9f, 0.52f), "Türkçe", "langTr", true);
             _langEn.gameObject.SetActive(false);
@@ -167,7 +172,9 @@ namespace Rugtopia.View
             }
             HidePanels();
             ApplyLanguage();
-            ShowMenu(0, 1);
+            _shell = gameObject.AddComponent<ShellUI>();
+            _shell.Build(_canvas.transform);
+            _shell.Clicked += s => { if (Clicked != null) Clicked(s); };
         }
 
         void Remember(Button b, string key)
@@ -188,6 +195,8 @@ namespace Rugtopia.View
             if (_skip != null) _skip.text = Copy.Get("tapSkip");
             SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
             SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
+            SetChildLabel(_winPanel, "HomeBtn", Copy.Get("home"));
+            SetChildLabel(_winPanel, "HangBtn", Copy.Get("hang"));
         }
 
         static bool LangIsTr() { return SaveServiceLang() == "tr"; }
@@ -211,10 +220,10 @@ namespace Rugtopia.View
             SetPlayChrome(false);
             HideIntro();
             ApplyLanguage();
-            _menu.SetActive(true);
-            _map.SetActive(false);
+            if (_menu != null) _menu.SetActive(false);
+            if (_map != null) _map.SetActive(false);
             HidePanels();
-            _menuBody.text = "♥ " + Economy.Lives + "   ·   " + coins + " " + Copy.Get("coins");
+            if (_shell != null) _shell.ShowHome();
             ApplyTheme();
         }
 
@@ -223,10 +232,10 @@ namespace Rugtopia.View
             SetPlayChrome(false);
             HideIntro();
             ApplyLanguage();
-            _menu.SetActive(false);
-            _map.SetActive(true);
+            if (_menu != null) _menu.SetActive(false);
+            if (_map != null) _map.SetActive(false);
             HidePanels();
-            if (_mapMeta != null) _mapMeta.text = "♥ " + Economy.Lives + "   ·   " + SaveService.Data.coins;
+            if (_shell != null) _shell.ShowPath();
             ApplyTheme();
             int n = _levels == null ? 0 : _levels.Length;
             for (int i = 0; i < n; i++)
@@ -257,6 +266,7 @@ namespace Rugtopia.View
             if (_lives != null) _lives.gameObject.SetActive(false);
             if (_coins != null) _coins.gameObject.SetActive(false);
             if (_status != null) _status.gameObject.SetActive(false);
+            if (_shell != null) _shell.Hide();
             ApplyTheme();
         }
 
@@ -332,6 +342,75 @@ namespace Rugtopia.View
                 if (ic != null) ic.color = new Color(1f, 0.95f, 0.88f, unlocked ? 1f : 0.45f);
             }
         }
+
+        Image _cover;
+
+        public void SetCover(float a)
+        {
+            if (_canvas == null) return;
+            if (_cover == null)
+            {
+                var go = new GameObject("Cover", typeof(RectTransform));
+                go.transform.SetParent(_canvas.transform, false);
+                var rt = go.GetComponent<RectTransform>();
+                rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
+                _cover = go.AddComponent<Image>();
+                _cover.raycastTarget = false;
+            }
+            var c = ThemeConfig.BgTop; c.a = Mathf.Clamp01(a);
+            _cover.color = c;
+            _cover.gameObject.SetActive(a > 0.02f);
+            if (a > 0.02f) _cover.transform.SetAsLastSibling();
+        }
+
+        public void Remind(string s) { StartCoroutine(RemindCo(s)); }
+        System.Collections.IEnumerator RemindCo(string s)
+        {
+            if (_status == null) yield break;
+            _status.gameObject.SetActive(true);
+            _status.text = s;
+            yield return new WaitForSeconds(1.2f);
+            if (_status != null) _status.gameObject.SetActive(false);
+        }
+
+        public void TossCoins() { StartCoroutine(TossCo()); }
+        System.Collections.IEnumerator TossCo()
+        {
+            if (_canvas == null) yield break;
+            var bits = new RectTransform[6];
+            for (int i = 0; i < bits.Length; i++)
+            {
+                var go = new GameObject("CoinFly", typeof(RectTransform));
+                go.transform.SetParent(_canvas.transform, false);
+                var img = go.AddComponent<Image>();
+                img.sprite = ArtKit.Coin;
+                img.raycastTarget = false;
+                var rt = go.GetComponent<RectTransform>();
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.48f);
+                rt.sizeDelta = new Vector2(54f, 54f);
+                bits[i] = rt;
+            }
+            float t = 0f;
+            while (t < 0.42f)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(t / 0.42f);
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    float u = Mathf.Clamp01((k - i * 0.05f) / 0.75f);
+                    bits[i].anchoredPosition = Vector2.Lerp(new Vector2((i - 2.5f) * 36f, 0f), new Vector2(0f, 460f), u * u);
+                }
+                yield return null;
+            }
+            for (int i = 0; i < bits.Length; i++) if (bits[i] != null) Destroy(bits[i].gameObject);
+        }
+
+        public void ShowHang(bool on) { if (_hang != null) _hang.gameObject.SetActive(on); }
+        public void SetFailNote(string s) { if (_failBody != null) _failBody.text = s ?? ""; }
+        public void ShowDaily() { if (_shell != null) _shell.ShowDaily(); }
+        public void ShowGallery() { if (_shell != null) _shell.ShowGallery(); }
+        public void ShowStreakSheet() { if (_shell != null) _shell.ShowStreak(); }
+        public void ShowSettings(bool on) { if (_shell != null) _shell.ShowSettings(on); }
 
         public void ShowLangChoice(bool on)
         {

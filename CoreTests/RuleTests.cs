@@ -188,6 +188,7 @@ namespace Rugtopia.Core.Tests
             Assert.Equal(900, EconomyConfig.ContinuePrice(0)); Assert.Equal(2100, EconomyConfig.ContinuePrice(7));
             Assert.False(EconomyConfig.LosesLifeOnFail(14)); Assert.True(EconomyConfig.LosesLifeOnFail(15));
             Assert.Equal(7, EconomyConfig.UnlockSlot); Assert.Equal(13, EconomyConfig.UnlockComb); Assert.Equal(17, EconomyConfig.UnlockShuttle);
+            Assert.Equal(19, EconomyConfig.UnlockStreak);
             Assert.Equal(29, EconomyConfig.UnlockInterstitial);
         }
 

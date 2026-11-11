@@ -7,6 +7,7 @@ namespace Rugtopia.View
     public class LaneView : MonoBehaviour
     {
         public Rect area = new Rect(-4.3f, -9.35f, 8.6f, 4.03f);
+        public bool suppressEmpty;
         int _lanes;
         int _visible = 3;
         float _front = 1.6f;
@@ -91,7 +92,7 @@ namespace Rugtopia.View
                     }
                 }
                 if (lane.Count > shown) ViewKit.Label(transform, "More", new Vector2(cx, area.yMin + 0.16f), "+" + (lane.Count - shown), 0.09f, ThemeConfig.Ink, 3);
-                if (lane.Count == 0) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", _lanes >= 4 ? 0.05f : 0.08f, ThemeConfig.Muted, 3);
+                if (lane.Count == 0 && !suppressEmpty) ViewKit.Label(transform, "Empty" + i, new Vector2(cx, RowY(0)), "empty", _lanes >= 4 ? 0.05f : 0.08f, ThemeConfig.Muted, 3);
             }
         }
 

@@ -163,6 +163,7 @@ namespace Rugtopia.EditorTools
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-playing.png", ftue, d, w, h, true, false);
                 Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "theme-light-win.png", solved, d, w, h, false, true);
                 ThemeConfig.Current = ThemeConfig.Theme.Light;
+                CaptureShell(cam, rt, hud, board, belt, lanes, hand, bubble, backdrop, dir, w, h);
                 Debug.Log("Rugtopia screenshots written to " + dir);
             }
             catch (System.Exception ex)
@@ -180,6 +181,7 @@ namespace Rugtopia.EditorTools
             board.Build(g);
             backdrop.Build(board.area.center, new Vector2(board.area.width, board.area.height));
             belt.Refresh(g);
+            lanes.suppressEmpty = winCard;
             lanes.Fit(System.Math.Max(1, g.Lanes.Count), level.index >= 3);
             lanes.Refresh(g);
             hud.ShowPlay();
@@ -211,6 +213,57 @@ namespace Rugtopia.EditorTools
             }
             // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this
             // camera, then we render once the layout has settled (the captured end of frame).
+            hud.Bind(cam);
+            Canvas.ForceUpdateCanvases();
+            cam.Render();
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+            var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
+            tex.Apply();
+            RenderTexture.active = prev;
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name), tex.EncodeToPNG());
+            UnityEngine.Object.DestroyImmediate(tex);
+        }
+
+        static void CaptureShell(Camera cam, RenderTexture rt, HUD hud, BoardView board, BeltView belt, LaneView lanes, TutorialHand hand, SpeechBubble bubble, Backdrop backdrop, string dir, int w, int h)
+        {
+            var save = Rugtopia.Meta.SaveService.Data;
+            save.pickedLang = true;
+            save.muted = true;
+            save.coins = 300;
+            save.lives = 5;
+            save.streak = 0;
+            save.dailyLast = "";
+            save.dailyDay = 0;
+            save.hung = new System.Collections.Generic.List<int>();
+            save.maxLevel = 1;
+            hud.ShowMenu(save.coins, 2);
+            Grab(cam, rt, hud, dir, "shell-home-fresh.png", w, h);
+            save.maxLevel = 11;
+            save.hung = new System.Collections.Generic.List<int> { 0, 5, 9 };
+            hud.ShowMenu(save.coins, 12);
+            Grab(cam, rt, hud, dir, "shell-home-mid.png", w, h);
+            hud.ShowDaily();
+            Grab(cam, rt, hud, dir, "shell-daily.png", w, h);
+            save.maxLevel = 19;
+            save.streak = 2;
+            hud.ShowStreakSheet();
+            Grab(cam, rt, hud, dir, "shell-streak.png", w, h);
+            save.maxLevel = 11;
+            save.streak = 0;
+            hud.ShowMap(11, LevelLoader.Count);
+            Grab(cam, rt, hud, dir, "shell-path.png", w, h);
+            var solved = LevelBuilder.Build(LevelLoader.Get(0));
+            var d0 = LevelLoader.Get(0);
+            if (d0.solution != null) for (int i = 0; i < d0.solution.Length; i++) solved.Take(d0.solution[i]);
+            Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-win.png", solved, d0, w, h, false, true);
+            var lv9 = LevelLoader.Get(8);
+            Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-play-9.png", LevelBuilder.Build(lv9), lv9, w, h, false, false, "SUPER HARD");
+        }
+
+        static void Grab(Camera cam, RenderTexture rt, HUD hud, string dir, string name, int w, int h)
+        {
             hud.Bind(cam);
             Canvas.ForceUpdateCanvases();
             cam.Render();

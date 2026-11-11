@@ -22,6 +22,10 @@ namespace Rugtopia.Meta
         public string theme = "light";
         public string freeContinueDay = "";
         public long firstPlayUtc;
+        public int dailyDay;
+        public string dailyLast = "";
+        public bool muted;
+        public List<int> hung = new List<int>();
     }
 
     /// <summary>PlayerPrefs JSON save (week-1 stub; cloud save / iCloud is out of slice scope).</summary>
@@ -40,6 +44,7 @@ namespace Rugtopia.Meta
             if (_data.firstPlayUtc == 0) { _data.firstPlayUtc = DateTime.UtcNow.Ticks; Save(); }
             if (_data.seenIntros == null) _data.seenIntros = new List<string>();
             if (_data.bestSeconds == null) _data.bestSeconds = new List<float>();
+            if (_data.hung == null) _data.hung = new List<int>();
         }
 
         public static void Save()

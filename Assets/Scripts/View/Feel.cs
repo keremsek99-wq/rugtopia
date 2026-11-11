@@ -23,6 +23,8 @@ namespace Rugtopia.View
         public static void Play(string id)
         {
             if (SoundHook != null) SoundHook(id);
+            var save = Rugtopia.Meta.SaveService.Data;
+            if (save != null && save.muted) return;
             Ensure();
             AudioClip clip = _tap;
             if (id == "stitch") clip = _stitch;
