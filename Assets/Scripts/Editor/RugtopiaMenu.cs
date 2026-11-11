@@ -188,7 +188,7 @@ namespace Rugtopia.EditorTools
             {
                 hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
                 var fx = new GameObject("ShotFx").AddComponent<PlayFx>();
-                Random.InitState(7);
+                UnityEngine.Random.InitState(7);
                 fx.StampConfetti();
             }
             // Overlay canvases are not in Camera.Render. Bind puts the same HUD on this
