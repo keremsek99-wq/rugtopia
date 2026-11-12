@@ -311,9 +311,9 @@ namespace Rugtopia.View
                 float v = (y + 0.5f) / n;
                 float taper = Mathf.Lerp(0.34f, 0.04f, Mathf.Clamp01((v - 0.18f) / 0.72f));
                 float dx = Mathf.Abs(u - 0.5f);
-                float outer = dx < taper && v > 0.14f && v < 0.92f;
+                bool outer = dx < taper && v > 0.14f && v < 0.92f;
                 float innerT = taper * 0.55f;
-                float inner = dx < innerT && v > 0.24f && v < 0.78f;
+                bool inner = dx < innerT && v > 0.24f && v < 0.78f;
                 if (outer && !inner) px[y * n + x] = Color.white;
             }
             t.SetPixels(px); t.Apply();
