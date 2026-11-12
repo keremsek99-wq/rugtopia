@@ -212,7 +212,7 @@ namespace Rugtopia.View
             if (_skip != null) _skip.text = Copy.Get("tapSkip");
             SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
             SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
-            SetChildLabel(_winPanel, "HomeBtn", Copy.Get("home"));
+            SetChildLabel(_winPanel, "HomeBtn", Copy.Get("toHome"));
             SetChildLabel(_winPanel, "HangBtn", Copy.Get("hang"));
         }
 
@@ -324,6 +324,34 @@ namespace Rugtopia.View
             ShowDim(true);
             _winPanel.SetActive(true);
             _winPanel.transform.SetAsLastSibling();
+            BurstConfetti();
+        }
+
+        void BurstConfetti()
+        {
+            ClearBits();
+            for (int i = 0; i < 48; i++)
+            {
+                float x = UnityEngine.Random.Range(0.02f, 0.94f);
+                float y = UnityEngine.Random.Range(0.58f, 0.97f);
+                float w = UnityEngine.Random.Range(0.016f, 0.034f);
+                float h = UnityEngine.Random.Range(0.01f, 0.02f);
+                var bit = Panel(_root, "Bit" + i, new Vector2(x, y), new Vector2(x + w, y + h), Color.HSVToRGB((i * 0.13f) % 1f, 0.78f, 1f));
+                bit.localRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(-50f, 50f));
+                bit.SetSiblingIndex(_winPanel.transform.GetSiblingIndex());
+            }
+        }
+
+        void ClearBits()
+        {
+            if (_root == null) return;
+            for (int i = _root.childCount - 1; i >= 0; i--)
+            {
+                var child = _root.GetChild(i);
+                if (!child.name.StartsWith("Bit")) continue;
+                if (Application.isPlaying) Destroy(child.gameObject);
+                else DestroyImmediate(child.gameObject);
+            }
         }
 
         public void SetWinPortrait(string[] rows)
@@ -603,6 +631,7 @@ namespace Rugtopia.View
             if (_dim != null) _dim.SetActive(false);
             if (_chip != null) _chip.SetActive(false);
             if (_diffSplash != null) _diffSplash.SetActive(false);
+            ClearBits();
         }
 
         void ShowDim(bool withChip)

@@ -189,9 +189,9 @@ namespace Rugtopia.View
             {
                 float yarnX = i % 2 == 0 ? -48f : 48f;
                 var wool = Panel(_pathContent, "Wool" + i, Vector2.zero, Vector2.zero, new Color(0.42f, 0.26f, 0.16f, 0.35f));
-                PlaceYarn(wool, yarnX + 3f, -86f - i * step, 26f, step - 8f);
+                PlaceYarn(wool, yarnX + 4f, -84f - i * step, 34f, step - 4f);
                 var yarn = Panel(_pathContent, "Yarn" + i, Vector2.zero, Vector2.zero, ViewKit.Hex("#A56B3C"));
-                PlaceYarn(yarn, yarnX, -90f - i * step, 16f, step - 16f);
+                PlaceYarn(yarn, yarnX, -90f - i * step, 22f, step - 12f);
             }
             for (int i = 0; i < LevelLoader.Count; i++)
             {
@@ -386,15 +386,21 @@ namespace Rugtopia.View
             Preferred(lives.Find("Heart").gameObject, 36f, 64f);
             var col = new GameObject("Col", typeof(RectTransform));
             col.transform.SetParent(lives, false);
+            var colLe = col.AddComponent<LayoutElement>();
+            colLe.preferredWidth = 64f;
+            colLe.preferredHeight = 56f;
+            colLe.minWidth = 36f;
             var v = col.AddComponent<VerticalLayoutGroup>();
             v.childAlignment = TextAnchor.MiddleLeft;
-            v.childForceExpandWidth = false;
+            v.childControlWidth = true;
+            v.childControlHeight = true;
+            v.childForceExpandWidth = true;
             v.childForceExpandHeight = false;
             v.spacing = 0f;
             _livesText = Txt(col.transform, "N", Vector2.zero, Vector2.one, "5", 30, TextAnchor.MiddleLeft, ViewKit.Cream);
-            Preferred(_livesText.gameObject, 48f, 34f);
+            Preferred(_livesText.gameObject, 36f, 32f);
             _timerText = Txt(col.transform, "T", Vector2.zero, Vector2.one, "", 16, TextAnchor.MiddleLeft, ViewKit.Gold);
-            Preferred(_timerText.gameObject, 72f, 22f);
+            Preferred(_timerText.gameObject, 64f, 18f);
             var coins = Chip(bar, "Coins");
             var coinIcon = Panel(coins, "Icon", Vector2.zero, Vector2.one, Color.white);
             var ci = coinIcon.GetComponent<Image>();
@@ -600,14 +606,16 @@ namespace Rugtopia.View
             Txt(card.transform, "Title", new Vector2(0.12f, 0.84f), new Vector2(0.8f, 0.96f), Copy.Get("streak"), 36, TextAnchor.MiddleLeft, ThemeConfig.Ink);
             _streakCount = Txt(card.transform, "Count", new Vector2(0.1f, 0.7f), new Vector2(0.9f, 0.82f), "0 / 3", 28, TextAnchor.MiddleCenter, ThemeConfig.Muted);
             _modalPips = new Image[3];
+            for (int i = 0; i < 2; i++)
+            {
+                float left = 0.1f + i * 0.22f + 0.16f;
+                float right = 0.1f + (i + 1) * 0.22f;
+                var yarn = Panel(card.transform, "Yarn" + i, new Vector2(left, 0.505f), new Vector2(right, 0.535f), ViewKit.Hex("#A56B3C"));
+                yarn.GetComponent<Image>().raycastTarget = false;
+            }
             for (int i = 0; i < 3; i++)
             {
                 float x0 = 0.1f + i * 0.22f;
-                if (i > 0)
-                {
-                    var yarn = Panel(card.transform, "Yarn" + i, new Vector2(x0 - 0.1f, 0.5f), new Vector2(x0, 0.54f), ViewKit.Hex("#A56B3C"));
-                    yarn.GetComponent<Image>().raycastTarget = false;
-                }
                 var pip = Panel(card.transform, "MPip" + i, new Vector2(x0, 0.42f), new Vector2(x0 + 0.16f, 0.62f), new Color(0.82f, 0.74f, 0.62f, 1f));
                 pip.GetComponent<Image>().sprite = Glyphs.Circle;
                 _modalPips[i] = pip.GetComponent<Image>();
