@@ -835,20 +835,30 @@ namespace Rugtopia.View
             }
             float target = LayoutUtility.GetPreferredWidth(_continueLabel.rectTransform);
             var layout = tracked.GetComponent<HorizontalLayoutGroup>();
-            float spacing = 1.5f;
+            var trackedRt = tracked.GetComponent<RectTransform>();
+            float spacing = 7f;
+            float last = -1f;
+            bool measured = false;
             if (target > 8f && slots.Count > 1)
             {
-                for (float s = 1.5f; s <= 18f; s += 0.5f)
+                for (float s = 2f; s <= 16f; s += 1f)
                 {
                     layout.spacing = s;
                     for (int i = 0; i < bottom.Length; i++)
-                        if (bottom[i] == ' ') slots[i].preferredWidth = 10f + s * 2f;
-                    float width = LayoutUtility.GetPreferredWidth(tracked.GetComponent<RectTransform>());
+                        if (bottom[i] == ' ') slots[i].preferredWidth = 12f + s * 1.6f;
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(trackedRt);
+                    float width = LayoutUtility.GetPreferredWidth(trackedRt);
+                    if (width > last + 0.5f) measured = true;
+                    last = width;
                     spacing = s;
-                    if (width >= target - 2f) break;
+                    if (measured && width >= target - 4f) break;
                 }
             }
+            if (!measured) spacing = 7f;
             layout.spacing = spacing;
+            for (int i = 0; i < bottom.Length; i++)
+                if (bottom[i] == ' ') slots[i].preferredWidth = 12f + spacing * 1.6f;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(trackedRt);
         }
 
         static void SetNamed(GameObject panel, string child, bool on)
