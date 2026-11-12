@@ -27,7 +27,8 @@ namespace Rugtopia.View
         Button _langEn, _langTr;
         Text _playLabel, _langLabel, _themeLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
         GameObject _dim, _chip;
-        Text[] _stars;
+        RectTransform[] _stars;
+        RectTransform _winRug;
         GameObject _intro;
         Button _slot, _comb, _shuttle;
         Text _slotL, _combL, _shuttleL;
@@ -93,13 +94,29 @@ namespace Rugtopia.View
             _chip = chip.gameObject;
             _chip.SetActive(false);
 
-            _winPanel = Card(root, "WinPanel", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.68f), ViewKit.Green);
-            _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.06f, 0.74f), new Vector2(0.94f, 0.96f), "", 72, TextAnchor.MiddleCenter, ViewKit.Ink);
-            _stars = new Text[3];
+            _winPanel = Card(root, "WinPanel", new Vector2(0.08f, 0.26f), new Vector2(0.92f, 0.76f), ViewKit.Green);
+            _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.08f, 0.86f), new Vector2(0.92f, 0.97f), "", 56, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var rugSlot = new GameObject("WinRug", typeof(RectTransform));
+            rugSlot.transform.SetParent(_winPanel.transform, false);
+            _winRug = rugSlot.GetComponent<RectTransform>();
+            _winRug.anchorMin = new Vector2(0.28f, 0.64f);
+            _winRug.anchorMax = new Vector2(0.72f, 0.84f);
+            _winRug.offsetMin = _winRug.offsetMax = Vector2.zero;
+            _stars = new RectTransform[3];
             for (int i = 0; i < 3; i++)
             {
-                float x = 0.26f + i * 0.18f;
-                _stars[i] = Txt(_winPanel.transform, "Star" + i, new Vector2(x, 0.52f), new Vector2(x + 0.16f, 0.74f), "★", 110, TextAnchor.MiddleCenter, ViewKit.Gold);
+                bool mid = i == 1;
+                float x = mid ? 0.40f : 0.18f + i * 0.22f;
+                float w = mid ? 0.20f : 0.16f;
+                float y0 = mid ? 0.46f : 0.48f;
+                float y1 = mid ? 0.64f : 0.62f;
+                var badge = Panel(_winPanel.transform, "Star" + i, new Vector2(x, y0), new Vector2(x + w, y1), ViewKit.Gold);
+                badge.GetComponent<Image>().sprite = Glyphs.Circle;
+                var star = Panel(badge, "Glyph", new Vector2(0.18f, 0.18f), new Vector2(0.82f, 0.82f), ViewKit.Hex("#FFF6D8"));
+                var si = star.GetComponent<Image>();
+                si.sprite = Glyphs.Star;
+                si.raycastTarget = false;
+                _stars[i] = badge;
             }
             var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.3f, 0.38f), new Vector2(0.42f, 0.52f), Color.white);
             var coinImg = coin.GetComponent<Image>();
@@ -309,6 +326,18 @@ namespace Rugtopia.View
             _winPanel.transform.SetAsLastSibling();
         }
 
+        public void SetWinPortrait(string[] rows)
+        {
+            if (_winRug == null) return;
+            for (int i = _winRug.childCount - 1; i >= 0; i--)
+            {
+                var go = _winRug.GetChild(i).gameObject;
+                if (Application.isPlaying) Destroy(go);
+                else DestroyImmediate(go);
+            }
+            if (rows != null) RugPortrait.Draw(_winRug, rows, true);
+        }
+
         void Update()
         {
             if (_stars == null || _winPanel == null || !_winPanel.activeSelf) return;
@@ -317,8 +346,8 @@ namespace Rugtopia.View
             {
                 float pop = Mathf.Clamp01((_starT - i * 0.12f) / 0.28f);
                 float bounce = pop < 1f ? Mathf.Sin(pop * Mathf.PI) * 0.35f : 0.08f * Mathf.Sin(Time.time * 5f + i);
-                float s = Mathf.Lerp(0.2f, 1f, pop) + bounce;
-                _stars[i].rectTransform.localScale = new Vector3(s, s, 1f);
+                float s = Mathf.Lerp(0.2f, i == 1 ? 1.12f : 1f, pop) + bounce;
+                _stars[i].localScale = new Vector3(s, s, 1f);
             }
         }
 

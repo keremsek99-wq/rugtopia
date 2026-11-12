@@ -207,6 +207,7 @@ namespace Rugtopia.EditorTools
             if (winCard)
             {
                 hud.ShowLevelComplete(EconomyConfig.Reward(level.tag));
+                hud.SetWinPortrait(level.rows);
                 var fx = new GameObject("ShotFx").AddComponent<PlayFx>();
                 UnityEngine.Random.InitState(7);
                 fx.StampConfetti();

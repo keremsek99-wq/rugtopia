@@ -60,12 +60,12 @@ namespace Rugtopia.View
         /// <summary>Places confetti immediately so a single captured frame shows it.</summary>
         public void StampConfetti()
         {
-            for (int i = 0; i < 36; i++)
+            for (int i = 0; i < 64; i++)
             {
-                var c = Color.HSVToRGB((i * 0.17f) % 1f, 0.65f, 1f);
-                float x = Random.Range(-3.6f, 3.6f);
-                float y = Random.Range(-1.5f, 6.5f);
-                ViewKit.Quad(transform, "Bit", new Vector2(x, y), new Vector2(Random.Range(0.16f, 0.36f), Random.Range(0.08f, 0.18f)), c, 45);
+                var c = Color.HSVToRGB((i * 0.13f) % 1f, 0.72f, 1f);
+                float x = Random.Range(-4.1f, 4.1f);
+                float y = Random.Range(-2.2f, 7.2f);
+                ViewKit.Quad(transform, "Bit", new Vector2(x, y), new Vector2(Random.Range(0.22f, 0.48f), Random.Range(0.1f, 0.24f)), c, 45);
             }
         }
 

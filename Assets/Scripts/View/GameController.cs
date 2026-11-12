@@ -378,6 +378,7 @@ namespace Rugtopia.View
                 StartCoroutine(BoardPop());
                 _hud.TossCoins();
                 _hud.ShowHang(levelIndex >= 9 && !Economy.IsHung(levelIndex));
+                _hud.SetWinPortrait(_g.Level.rows);
                 if (levelIndex == 0 && !SaveService.Data.pickedLang) _hud.ShowLangChoice(true);
             }
             else if (_g.Status == GameStatus.Failed)
