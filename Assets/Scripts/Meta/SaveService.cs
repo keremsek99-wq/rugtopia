@@ -16,6 +16,7 @@ namespace Rugtopia.Meta
         public int lives = EconomyConfig.MaxLives;
         public long livesTicksUtc;      // DateTime.UtcNow.Ticks when the refill timer started
         public int streak;
+        public bool streakBroken;
         public List<string> seenIntros = new List<string>();
         public List<float> bestSeconds = new List<float>();
         public bool pickedLang;

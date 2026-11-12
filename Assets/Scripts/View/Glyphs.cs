@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar;
 
         public static Sprite Of(char c)
         {
@@ -33,6 +33,8 @@ namespace Rugtopia.View
         public static Sprite SlotIcon { get { if (_slot == null) _slot = Pocket(); return _slot; } }
         public static Sprite CombIcon { get { if (_comb == null) _comb = Teeth(); return _comb; } }
         public static Sprite ShuttleIcon { get { if (_shuttle == null) _shuttle = Boat(); return _shuttle; } }
+        public static Sprite SolidCircle { get { if (_solidCircle == null) _solidCircle = HardDisc(); return _solidCircle; } }
+        public static Sprite SolidStar { get { if (_solidStar == null) _solidStar = HardStar(); return _solidStar; } }
 
         static Sprite Disc(bool ring)
         {
@@ -179,6 +181,46 @@ namespace Rugtopia.View
                 float body = Mathf.Abs(v - 0.55f) / 0.16f + Mathf.Abs(u - 0.42f) / 0.28f;
                 bool nose = u > 0.55f && u < 0.88f && Mathf.Abs(v - 0.55f) < (0.88f - u) * 0.55f;
                 px[y * n + x] = (body < 1f || nose) ? Color.white : Color.clear;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite HardDisc()
+        {
+            const int n = 256;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            float mid = (n - 1) * 0.5f;
+            float aa = 1.25f / mid;
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float d = Mathf.Sqrt((x - mid) * (x - mid) + (y - mid) * (y - mid)) / mid;
+                float a = Mathf.Clamp01((0.96f - d) / aa);
+                px[y * n + x] = new Color(1f, 1f, 1f, a);
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite HardStar()
+        {
+            const int n = 256;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            float mid = (n - 1) * 0.5f;
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = (x - mid) / mid, dy = (y - mid) / mid;
+                float ang = Mathf.Atan2(dy, dx);
+                float rad = Mathf.Sqrt(dx * dx + dy * dy);
+                float slice = Mathf.PI * 2f / 10f;
+                float m = (ang / slice) % 2f;
+                if (m < 0) m += 2f;
+                float lim = Mathf.Lerp(1f, 0.42f, Mathf.Abs(m - 1f));
+                px[y * n + x] = rad < lim * 0.92f ? Color.white : Color.clear;
             }
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);

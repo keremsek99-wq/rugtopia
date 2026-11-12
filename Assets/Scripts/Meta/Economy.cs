@@ -89,6 +89,7 @@ namespace Rugtopia.Meta
             S.coins += reward;
             S.maxLevel = Math.Max(S.maxLevel, levelIndex + 1);
             S.streak++;
+            S.streakBroken = false;
             Analytics.Track("streak_changed", ("to", S.streak.ToString()), ("reason", "win"));
             while (S.bestSeconds.Count <= levelIndex) S.bestSeconds.Add(0);
             if (S.bestSeconds[levelIndex] <= 0 || seconds < S.bestSeconds[levelIndex]) S.bestSeconds[levelIndex] = seconds;
@@ -108,6 +109,7 @@ namespace Rugtopia.Meta
             int was = S.streak;
             if (was <= 0) return;
             S.streak = 0;
+            S.streakBroken = true;
             SaveService.Save();
             Analytics.Track("streak_changed", ("from", was.ToString()), ("to", "0"), ("reason", reason));
         }

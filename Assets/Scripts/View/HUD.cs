@@ -113,10 +113,13 @@ namespace Rugtopia.View
                 float y0 = mid ? 0.46f : 0.48f;
                 float y1 = mid ? 0.64f : 0.62f;
                 var badge = Panel(_winPanel.transform, "Star" + i, new Vector2(x, y0), new Vector2(x + w, y1), ViewKit.Gold);
-                badge.GetComponent<Image>().sprite = Glyphs.Circle;
-                var star = Panel(badge, "Glyph", new Vector2(0.18f, 0.18f), new Vector2(0.82f, 0.82f), ViewKit.Hex("#FFF6D8"));
+                var badgeImg = badge.GetComponent<Image>();
+                badgeImg.sprite = Glyphs.SolidCircle;
+                badgeImg.preserveAspect = true;
+                var star = Panel(badge, "Glyph", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ViewKit.Hex("#FFF6D8"));
                 var si = star.GetComponent<Image>();
-                si.sprite = Glyphs.Star;
+                si.sprite = Glyphs.SolidStar;
+                si.preserveAspect = true;
                 si.raycastTarget = false;
                 _stars[i] = badge;
             }
