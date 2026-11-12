@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rugtopia.View
@@ -5,7 +6,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart, _playMark, _homeMark;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar;
 
         public static Sprite Of(char c)
         {
@@ -35,14 +36,34 @@ namespace Rugtopia.View
         public static Sprite ShuttleIcon { get { if (_shuttle == null) _shuttle = Boat(); return _shuttle; } }
         public static Sprite SolidCircle { get { if (_solidCircle == null) _solidCircle = HardDisc(); return _solidCircle; } }
         public static Sprite SolidStar { get { if (_solidStar == null) _solidStar = HardStar(); return _solidStar; } }
-        public static Sprite LinePath { get { if (_linePath == null) _linePath = MakeLinePath(); return _linePath; } }
-        public static Sprite LineGift { get { if (_lineGift == null) _lineGift = MakeLineGift(); return _lineGift; } }
-        public static Sprite LineFlame { get { if (_lineFlame == null) _lineFlame = MakeLineFlame(); return _lineFlame; } }
-        public static Sprite PlayMark { get { if (_playMark == null) _playMark = MakePlayMark(); return _playMark; } }
-        public static Sprite Gear { get { if (_gear == null) _gear = MakeGear(); return _gear; } }
-        public static Sprite Heart { get { if (_heart == null) _heart = MakeHeart(); return _heart; } }
-        public static Sprite Restart { get { if (_restart == null) _restart = MakeRestart(); return _restart; } }
-        public static Sprite HomeMark { get { if (_homeMark == null) _homeMark = MakeHome(); return _homeMark; } }
+        public static Sprite LinePath { get { return Icon("map-trifold-fill"); } }
+        public static Sprite LineGift { get { return Icon("gift-fill"); } }
+        public static Sprite LineFlame { get { return Icon("fire-simple-fill"); } }
+        public static Sprite PlayMark { get { return Icon("play-fill"); } }
+        public static Sprite Gear { get { return Icon("gear-six-fill"); } }
+        public static Sprite Heart { get { return Icon("heart-straight-fill"); } }
+        public static Sprite Restart { get { return Icon("arrow-clockwise-fill"); } }
+        public static Sprite HomeMark { get { return Icon("house-simple-fill"); } }
+        public static Sprite BackMark { get { return Icon("caret-left-fill"); } }
+        public static Sprite CloseMark { get { return Icon("x-circle-fill"); } }
+        public static Sprite CheckMark { get { return Icon("check-fat-fill"); } }
+
+        static readonly Dictionary<string, Sprite> _loaded = new Dictionary<string, Sprite>();
+
+        static Sprite Icon(string name)
+        {
+            Sprite cached;
+            if (_loaded.TryGetValue(name, out cached) && cached != null) return cached;
+            var sprite = Resources.Load<Sprite>("Icons/" + name);
+            if (sprite == null)
+            {
+                var tex = Resources.Load<Texture2D>("Icons/" + name);
+                if (tex != null)
+                    sprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), tex.width);
+            }
+            _loaded[name] = sprite;
+            return sprite;
+        }
 
         static Sprite Disc(bool ring)
         {
@@ -305,6 +326,39 @@ namespace Rugtopia.View
                 float a = nx * nx + ny * ny - 1f;
                 if (a * a * a - nx * nx * ny * ny * ny < 0f) px[y * n + x] = Color.white;
             }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeBack()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            StrokeLine(px, n, 34f, 64f, 96f, 104f, 18f);
+            StrokeLine(px, n, 34f, 64f, 96f, 24f, 18f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeClose()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            StrokeLine(px, n, 28f, 28f, 100f, 100f, 16f);
+            StrokeLine(px, n, 28f, 100f, 100f, 28f, 16f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeCheck()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            StrokeLine(px, n, 22f, 62f, 52f, 28f, 16f);
+            StrokeLine(px, n, 46f, 32f, 108f, 100f, 18f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }

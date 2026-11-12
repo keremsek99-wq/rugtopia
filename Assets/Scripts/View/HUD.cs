@@ -68,7 +68,7 @@ namespace Rugtopia.View
             Btn(top, "Home", new Vector2(0.03f, 0.42f), new Vector2(0.15f, 0.96f), "‹", "home");
             var restart = Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "", "restart");
             restart.transform.Find("Label").gameObject.SetActive(false);
-            var restartMark = Panel(restart.transform, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ViewKit.Cream);
+            var restartMark = Panel(restart.transform, "Icon", new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f), ViewKit.Cream);
             var restartImg = restartMark.GetComponent<Image>();
             restartImg.sprite = Glyphs.Restart;
             restartImg.preserveAspect = true;
@@ -854,7 +854,7 @@ namespace Rugtopia.View
             gi.preserveAspect = true;
             gi.raycastTarget = false;
             var gle = glyph.gameObject.AddComponent<LayoutElement>();
-            gle.preferredWidth = gle.preferredHeight = 118f;
+            gle.preferredWidth = gle.preferredHeight = 136f;
             var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 28, TextAnchor.MiddleCenter, ViewKit.Ink);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;

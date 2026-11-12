@@ -35,7 +35,7 @@ namespace Rugtopia.View
             BuildGallery(_gallery.transform);
             _streak = Screen(canvas, "Streak");
             BuildStreak(_streak.transform);
-            _settings = Card(_home.transform, "Settings", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.72f), ThemeConfig.Button);
+            _settings = Card(_home.transform, "Settings", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.72f), ViewKit.Hex("#C4A484"));
             BuildSettings(_settings.transform);
             Hide();
         }
@@ -247,11 +247,14 @@ namespace Rugtopia.View
                     prt.anchorMin = prt.anchorMax = new Vector2(0.5f, 1f);
                     prt.pivot = new Vector2(0.5f, 0.5f);
                     prt.sizeDelta = new Vector2(pillW, pillH);
-                    prt.anchoredPosition = new Vector2(px, ny - size * 0.18f);
+                    prt.anchoredPosition = new Vector2(px, ny + size * 0.12f);
                     pill.GetComponent<Image>().sprite = ArtKit.UiRound;
                     pill.GetComponent<Image>().type = Image.Type.Sliced;
-                    var tag = Txt(pill, "Tag", Vector2.zero, Vector2.one, super ? Copy.Get("pillSuper") : Copy.Get("pillHard"), 24, TextAnchor.MiddleCenter, Color.white);
+                    var tag = Txt(pill, "Tag", new Vector2(0.04f, 0.08f), new Vector2(0.96f, 0.92f), super ? Copy.Get("pillSuper") : Copy.Get("pillHard"), 22, TextAnchor.MiddleCenter, Color.white);
                     tag.raycastTarget = false;
+                    var tagKey = tag.gameObject.AddComponent<Outline>();
+                    tagKey.effectColor = new Color(0.15f, 0.05f, 0.08f, 0.9f);
+                    tagKey.effectDistance = new Vector2(1.2f, -1.2f);
                     tag.resizeTextForBestFit = true;
                     tag.resizeTextMinSize = 16;
                     tag.resizeTextMaxSize = 24;
@@ -320,7 +323,7 @@ namespace Rugtopia.View
             if (_modalPips != null)
             {
                 for (int i = 0; i < _modalPips.Length; i++)
-                    if (_modalPips[i] != null) _modalPips[i].color = i < d.streak ? ViewKit.Gold : new Color(0.82f, 0.74f, 0.62f, 1f);
+                    if (_modalPips[i] != null) _modalPips[i].color = i < d.streak ? ViewKit.Hex("#C4552A") : new Color(0.72f, 0.58f, 0.46f, 1f);
             }
             if (_streakCount != null) _streakCount.text = d.streak + " / 3";
             if (_streakFoot != null)
@@ -398,7 +401,7 @@ namespace Rugtopia.View
             var gear = Btn(root, "Gear", new Vector2(0.048f, 0.934f), new Vector2(0.115f, 0.965f), "", "settings", false);
             gear.GetComponent<Image>().color = Color.white;
             gear.transform.Find("Label").gameObject.SetActive(false);
-            var gearMark = Panel(gear.transform, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ThemeConfig.Ink);
+            var gearMark = Panel(gear.transform, "Icon", new Vector2(0.14f, 0.14f), new Vector2(0.86f, 0.86f), ThemeConfig.Ink);
             var gearImg = gearMark.GetComponent<Image>();
             gearImg.sprite = Glyphs.Gear;
             gearImg.preserveAspect = true;
@@ -624,7 +627,7 @@ namespace Rugtopia.View
         void BuildPath(Transform root)
         {
             Txt(root, "Title", new Vector2(0.22f, 0.915f), new Vector2(0.78f, 0.97f), Copy.Get("path"), 48, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            Btn(root, "Back", new Vector2(0.05f, 0.922f), new Vector2(0.13f, 0.962f), "‹", "home", false);
+            IconOnly(root, "Back", new Vector2(0.04f, 0.908f), new Vector2(0.16f, 0.972f), Glyphs.BackMark, "home");
             var scrollGo = new GameObject("Scroll", typeof(RectTransform), typeof(ScrollRect));
             scrollGo.transform.SetParent(root, false);
             var srt = scrollGo.GetComponent<RectTransform>();
@@ -657,11 +660,9 @@ namespace Rugtopia.View
         {
             var dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.1f, 0.05f, 0.03f, 0.55f));
             dim.GetComponent<Image>().raycastTarget = true;
-            var card = Card(root, "Card", new Vector2(0.06f, 0.22f), new Vector2(0.94f, 0.78f), ViewKit.Gold);
-            Txt(card.transform, "Title", new Vector2(0.12f, 0.86f), new Vector2(0.88f, 0.96f), Copy.Get("dailyTitle"), 36, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            var close = Btn(card.transform, "X", new Vector2(0.84f, 0.88f), new Vector2(0.96f, 0.97f), "×", "home", false);
-            close.GetComponent<Image>().color = new Color(0, 0, 0, 0);
-            close.GetComponentInChildren<Text>().color = ThemeConfig.Ink;
+            var card = Card(root, "Card", new Vector2(0.06f, 0.22f), new Vector2(0.94f, 0.78f), ViewKit.Hex("#C4A484"));
+            Txt(card.transform, "Title", new Vector2(0.12f, 0.86f), new Vector2(0.80f, 0.96f), Copy.Get("dailyTitle"), 36, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            IconOnly(card.transform, "X", new Vector2(0.82f, 0.86f), new Vector2(0.96f, 0.97f), Glyphs.CloseMark, "home");
             for (int i = 0; i < 7; i++)
             {
                 int col = i % 4;
@@ -703,10 +704,19 @@ namespace Rugtopia.View
                 }
                 var amt = Txt(cell, "Amt", new Vector2(0.08f, 0.04f), new Vector2(0.92f, 0.32f), "", 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
                 amt.raycastTarget = false;
-                var check = Txt(cell, "Check", new Vector2(0.62f, 0.62f), new Vector2(0.96f, 0.96f), "✓", 22, TextAnchor.MiddleCenter, ViewKit.Hex("#1E7A46"));
+                var check = Panel(cell, "Check", new Vector2(0.66f, 0.66f), new Vector2(0.96f, 0.96f), ViewKit.Hex("#1E7A46"));
+                var checkImg = check.GetComponent<Image>();
+                checkImg.sprite = Glyphs.SolidCircle;
+                checkImg.preserveAspect = true;
+                checkImg.raycastTarget = false;
+                var tick = Panel(check, "Tick", new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f), Color.white);
+                var tickImg = tick.GetComponent<Image>();
+                tickImg.sprite = Glyphs.CheckMark;
+                tickImg.preserveAspect = true;
+                tickImg.raycastTarget = false;
                 check.gameObject.SetActive(false);
             }
-            Btn(card.transform, "Claim", new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.18f), Copy.Get("claim"), "claim", true);
+            Pill(card.transform, "Claim", new Vector2(0.08f, 0.045f), new Vector2(0.92f, 0.162f), Copy.Get("claim"), "claim", 44, true);
         }
 
         void BuildGallery(Transform root)
@@ -721,12 +731,13 @@ namespace Rugtopia.View
         void BuildStreak(Transform root)
         {
             var dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.1f, 0.05f, 0.03f, 0.45f));
-            var card = Card(root, "Card", new Vector2(0.08f, 0.3f), new Vector2(0.92f, 0.72f), ViewKit.Gold);
-            var x = Btn(card.transform, "X", new Vector2(0.84f, 0.86f), new Vector2(0.96f, 0.96f), "×", "home", false);
-            x.GetComponent<Image>().color = new Color(0, 0, 0, 0);
-            x.GetComponentInChildren<Text>().color = ThemeConfig.Ink;
-            Txt(card.transform, "Title", new Vector2(0.14f, 0.84f), new Vector2(0.86f, 0.96f), Copy.Get("streak"), 36, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            _streakCount = Txt(card.transform, "Count", new Vector2(0.1f, 0.7f), new Vector2(0.9f, 0.82f), "0 / 3", 28, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            var card = Card(root, "Card", new Vector2(0.08f, 0.3f), new Vector2(0.92f, 0.72f), ViewKit.Hex("#C4A484"));
+            IconOnly(card.transform, "X", new Vector2(0.82f, 0.84f), new Vector2(0.96f, 0.96f), Glyphs.CloseMark, "home");
+            Txt(card.transform, "Title", new Vector2(0.14f, 0.84f), new Vector2(0.80f, 0.96f), Copy.Get("streak"), 36, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            _streakCount = Txt(card.transform, "Count", new Vector2(0.1f, 0.70f), new Vector2(0.9f, 0.84f), "0 / 3", 40, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            var countKey = _streakCount.gameObject.AddComponent<Outline>();
+            countKey.effectColor = ViewKit.Hex("#3A1C12");
+            countKey.effectDistance = new Vector2(1.3f, -1.3f);
             _modalPips = new Image[3];
             for (int i = 0; i < 2; i++)
             {
@@ -744,22 +755,22 @@ namespace Rugtopia.View
                 pipImg.preserveAspect = true;
                 _modalPips[i] = pipImg;
             }
-            var prize = Panel(card.transform, "Prize", new Vector2(0.72f, 0.44f), new Vector2(0.94f, 0.6f), ViewKit.Gold);
+            var prize = Panel(card.transform, "Prize", new Vector2(0.72f, 0.44f), new Vector2(0.94f, 0.6f), ViewKit.Hex("#C4552A"));
             prize.GetComponent<Image>().sprite = ArtKit.UiRound;
             prize.GetComponent<Image>().type = Image.Type.Sliced;
-            var prizeText = Txt(prize, "T", Vector2.zero, Vector2.one, "+1", 22, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var prizeText = Txt(prize, "T", new Vector2(0.08f, 0.12f), new Vector2(0.92f, 0.88f), "+1", 28, TextAnchor.MiddleCenter, Color.white);
             prizeText.raycastTarget = false;
             Txt(card.transform, "PrizeLabel", new Vector2(0.66f, 0.32f), new Vector2(0.98f, 0.44f), Copy.Get("streakReward"), 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            _streakFoot = Txt(card.transform, "Reset", new Vector2(0.08f, 0.08f), new Vector2(0.92f, 0.24f), Copy.Get("streakReset"), 22, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            _streakFoot = Txt(card.transform, "Reset", new Vector2(0.08f, 0.08f), new Vector2(0.92f, 0.24f), Copy.Get("streakReset"), 24, TextAnchor.MiddleCenter, ViewKit.Hex("#3D2A20"));
         }
 
         void BuildSettings(Transform root)
         {
-            Txt(root, "Title", new Vector2(0.1f, 0.78f), new Vector2(0.9f, 0.96f), Copy.Get("settings"), 40, TextAnchor.MiddleCenter, ViewKit.Cream);
-            Btn(root, "Lang", new Vector2(0.1f, 0.58f), new Vector2(0.9f, 0.74f), Copy.Get("langToTr"), "lang", true);
-            Btn(root, "Theme", new Vector2(0.1f, 0.40f), new Vector2(0.9f, 0.56f), Copy.Get("themeToDark"), "theme", false);
-            Btn(root, "Sound", new Vector2(0.1f, 0.22f), new Vector2(0.9f, 0.38f), Copy.Get("sound"), "sound", false);
-            Btn(root, "Close", new Vector2(0.22f, 0.05f), new Vector2(0.78f, 0.18f), Copy.Get("close"), "settingsClose", true);
+            Txt(root, "Title", new Vector2(0.16f, 0.86f), new Vector2(0.84f, 0.97f), Copy.Get("settings"), 40, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Choice(root, "Lang", new Vector2(0.1f, 0.68f), new Vector2(0.9f, 0.84f), Copy.Get("langToTr"), "lang", 36, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f), ViewKit.Hex("#1A0C08"));
+            Choice(root, "Theme", new Vector2(0.1f, 0.50f), new Vector2(0.9f, 0.66f), Copy.Get("themeToDark"), "theme", 36, ViewKit.Green, ViewKit.Hex("#24543A"), Color.white, ViewKit.Hex("#143828"));
+            Choice(root, "Sound", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.48f), Copy.Get("soundOn"), "sound", 34, Color.white, ViewKit.Hex("#E6D3BC"), ThemeConfig.Ink, ViewKit.Hex("#3A1C12"));
+            IconLabel(root, "Close", new Vector2(0.28f, 0.06f), new Vector2(0.72f, 0.26f), Glyphs.CloseMark, Copy.Get("close"), "settingsClose");
         }
 
         void YarnBar(Transform parent, string name, float x, float y, float w, float h, Color color)
@@ -830,6 +841,151 @@ namespace Rugtopia.View
             var button = rt.gameObject.AddComponent<Button>();
             var text = Txt(rt, "Label", new Vector2(0.06f, 0.42f), new Vector2(0.94f, 0.95f), label, 36, TextAnchor.MiddleCenter, ViewKit.Cream);
             text.raycastTarget = false;
+            string captured = id;
+            button.onClick.AddListener(() => Fire(captured));
+            return button;
+        }
+
+        Button Pill(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, bool mark)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.01f), new Vector2(b.x, b.y - 0.004f), new Color(0.36f, 0.12f, 0.05f, 0.30f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, ViewKit.Hex("#C4552A"));
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var button = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, ViewKit.Hex("#9A3A1E"));
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 0.86f, 0.74f, 0.22f));
+            var rowGo = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            rowGo.transform.SetParent(rt, false);
+            var row = rowGo.GetComponent<RectTransform>();
+            row.anchorMin = row.anchorMax = new Vector2(0.5f, 0.46f);
+            row.pivot = new Vector2(0.5f, 0.5f);
+            row.anchoredPosition = Vector2.zero;
+            var h = rowGo.GetComponent<HorizontalLayoutGroup>();
+            h.childAlignment = TextAnchor.MiddleCenter;
+            h.spacing = 8f;
+            h.childControlWidth = true;
+            h.childControlHeight = true;
+            h.childForceExpandWidth = false;
+            h.childForceExpandHeight = false;
+            var fit = rowGo.GetComponent<ContentSizeFitter>();
+            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (mark)
+            {
+                var icon = Panel(row, "Mark", Vector2.zero, Vector2.one, Color.white);
+                var ii = icon.GetComponent<Image>();
+                ii.sprite = Glyphs.PlayMark;
+                ii.preserveAspect = true;
+                ii.raycastTarget = false;
+                var le = icon.gameObject.AddComponent<LayoutElement>();
+                le.preferredWidth = le.preferredHeight = 48f;
+            }
+            var text = Txt(row, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.raycastTarget = false;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = ViewKit.Hex("#3A1C12");
+            key.effectDistance = new Vector2(1.7f, -1.7f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0.16f, 0.05f, 0.02f, 0.6f);
+            drop.effectDistance = new Vector2(0f, -2f);
+            string captured = id;
+            button.onClick.AddListener(() => Fire(captured));
+            return button;
+        }
+
+        Button Choice(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Color face, Color lip, Color ink, Color keyColor)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.004f), new Color(0.16f, 0.08f, 0.05f, 0.28f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, face);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var button = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, lip);
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 1f, 1f, 0.16f));
+            var text = Txt(rt, "Label", new Vector2(0.06f, 0.16f), new Vector2(0.94f, 0.74f), label, font, TextAnchor.MiddleCenter, ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.raycastTarget = false;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = keyColor;
+            key.effectDistance = new Vector2(1.6f, -1.6f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0f, 0f, 0f, 0.28f);
+            drop.effectDistance = new Vector2(0f, -1.8f);
+            string captured = id;
+            button.onClick.AddListener(() => Fire(captured));
+            return button;
+        }
+
+        Button IconOnly(Transform parent, string name, Vector2 a, Vector2 b, Sprite sprite, string id)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.008f), new Vector2(b.x, b.y - 0.003f), new Color(0.30f, 0.18f, 0.10f, 0.16f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, Color.white);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var button = rt.gameObject.AddComponent<Button>();
+            var mark = Panel(rt, "Icon", new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f), ViewKit.Hex("#C4552A"));
+            var mi = mark.GetComponent<Image>();
+            mi.sprite = sprite;
+            mi.preserveAspect = true;
+            mi.raycastTarget = false;
+            string captured = id;
+            button.onClick.AddListener(() => Fire(captured));
+            return button;
+        }
+
+        Button IconLabel(Transform parent, string name, Vector2 a, Vector2 b, Sprite sprite, string label, string id)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.01f), new Vector2(b.x, b.y - 0.004f), new Color(0.30f, 0.18f, 0.10f, 0.16f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, Color.white);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var button = rt.gameObject.AddComponent<Button>();
+            var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = -4f;
+            layout.padding = new RectOffset(4, 4, 4, 2);
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            var glyph = Panel(rt, "Icon", Vector2.zero, Vector2.one, ViewKit.Hex("#C4552A"));
+            var gi = glyph.GetComponent<Image>();
+            gi.sprite = sprite;
+            gi.preserveAspect = true;
+            gi.raycastTarget = false;
+            var gle = glyph.gameObject.AddComponent<LayoutElement>();
+            gle.preferredWidth = gle.preferredHeight = 88f;
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 26, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.raycastTarget = false;
+            var tle = text.gameObject.AddComponent<LayoutElement>();
+            tle.preferredWidth = 180f;
+            tle.preferredHeight = 34f;
             string captured = id;
             button.onClick.AddListener(() => Fire(captured));
             return button;
