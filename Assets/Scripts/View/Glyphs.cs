@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart;
 
         public static Sprite Of(char c)
         {
@@ -40,6 +40,7 @@ namespace Rugtopia.View
         public static Sprite LineFlame { get { if (_lineFlame == null) _lineFlame = MakeLineFlame(); return _lineFlame; } }
         public static Sprite Gear { get { if (_gear == null) _gear = MakeGear(); return _gear; } }
         public static Sprite Heart { get { if (_heart == null) _heart = MakeHeart(); return _heart; } }
+        public static Sprite Restart { get { if (_restart == null) _restart = MakeRestart(); return _restart; } }
 
         static Sprite Disc(bool ring)
         {
@@ -229,6 +230,42 @@ namespace Rugtopia.View
             }
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeRestart()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            float mid = (n - 1) * 0.5f;
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = x - mid, dy = y - mid;
+                float rad = Mathf.Sqrt(dx * dx + dy * dy) / mid;
+                float ang = Mathf.Atan2(dy, dx);
+                bool arc = rad > 0.46f && rad < 0.68f && ang > -2.4f && ang < 2.2f;
+                if (arc) px[y * n + x] = Color.white;
+            }
+            FillTri(px, n, 92f, 78f, 116f, 58f, 86f, 52f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static void FillTri(Color[] px, int n, float ax, float ay, float bx, float by, float cx, float cy)
+        {
+            float minX = Mathf.Min(ax, Mathf.Min(bx, cx));
+            float maxX = Mathf.Max(ax, Mathf.Max(bx, cx));
+            float minY = Mathf.Min(ay, Mathf.Min(by, cy));
+            float maxY = Mathf.Max(ay, Mathf.Max(by, cy));
+            for (int y = Mathf.Max(0, Mathf.FloorToInt(minY)); y <= Mathf.Min(n - 1, Mathf.CeilToInt(maxY)); y++)
+            for (int x = Mathf.Max(0, Mathf.FloorToInt(minX)); x <= Mathf.Min(n - 1, Mathf.CeilToInt(maxX)); x++)
+            {
+                float w0 = (bx - ax) * (y - ay) - (by - ay) * (x - ax);
+                float w1 = (cx - bx) * (y - by) - (cy - by) * (x - bx);
+                float w2 = (ax - cx) * (y - cy) - (ay - cy) * (x - cx);
+                if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) px[y * n + x] = Color.white;
+            }
         }
 
         static Sprite MakeGear()

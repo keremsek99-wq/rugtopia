@@ -26,6 +26,7 @@ namespace Rugtopia.View
         Text _diffSplashText;
         Coroutine _splash;
         Button _langEn, _langTr;
+        bool _hangWas;
         Text _playLabel, _langLabel, _themeLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
         GameObject _dim, _chip;
         RectTransform[] _stars;
@@ -65,7 +66,13 @@ namespace Rugtopia.View
             _top = Panel(root, "TopBar", new Vector2(0, 0.885f), new Vector2(1, 1), new Color(0.12f, 0.07f, 0.05f, 0.0f)).gameObject;
             var top = _top.transform;
             Btn(top, "Home", new Vector2(0.03f, 0.42f), new Vector2(0.15f, 0.96f), "‹", "home");
-            Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "↻", "restart");
+            var restart = Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "", "restart");
+            restart.transform.Find("Label").gameObject.SetActive(false);
+            var restartMark = Panel(restart.transform, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ViewKit.Cream);
+            var restartImg = restartMark.GetComponent<Image>();
+            restartImg.sprite = Glyphs.Restart;
+            restartImg.preserveAspect = true;
+            restartImg.raycastTarget = false;
             _title = Txt(top, "Title", new Vector2(0.16f, 0.5f), new Vector2(0.54f, 1f), "", 52, TextAnchor.MiddleCenter, ViewKit.Cream);
             _status = Txt(top, "Status", new Vector2(0.2f, 0.16f), new Vector2(0.8f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Gold);
             _lives = Txt(top, "Lives", new Vector2(0.03f, 0.0f), new Vector2(0.2f, 0.38f), "", 28, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
@@ -135,8 +142,8 @@ namespace Rugtopia.View
             Btn(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.02f), new Vector2(0.34f, 0.13f), "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
             _hang.gameObject.SetActive(false);
-            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.1f, 0.40f), new Vector2(0.46f, 0.52f), "English", "langEn");
-            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.54f, 0.40f), new Vector2(0.9f, 0.52f), "Türkçe", "langTr", true);
+            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.22f), new Vector2(0.48f, 0.40f), "English", "langEn");
+            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.22f), new Vector2(0.92f, 0.40f), "Türkçe", "langTr", true);
             _langEn.gameObject.SetActive(false);
             _langTr.gameObject.SetActive(false);
             _badge = Panel(top, "Badge", new Vector2(0.52f, 0.50f), new Vector2(0.83f, 0.96f), ViewKit.Hex("#8E44AD")).gameObject;
@@ -330,6 +337,7 @@ namespace Rugtopia.View
             ShowDim(true);
             _winPanel.SetActive(true);
             _winPanel.transform.SetAsLastSibling();
+            ShowLangChoice(false);
             BurstConfetti();
         }
 
@@ -479,6 +487,25 @@ namespace Rugtopia.View
         {
             if (_langEn != null) _langEn.gameObject.SetActive(on);
             if (_langTr != null) _langTr.gameObject.SetActive(on);
+            if (on && _hang != null) _hangWas = _hang.gameObject.activeSelf;
+            SetWinReward(!on);
+            if (_hang != null) _hang.gameObject.SetActive(on ? false : _hangWas);
+        }
+
+        void SetWinReward(bool on)
+        {
+            if (_stars != null)
+                for (int i = 0; i < _stars.Length; i++)
+                    if (_stars[i] != null) _stars[i].gameObject.SetActive(on);
+            if (_winPanel == null) return;
+            var coin = _winPanel.transform.Find("Coin");
+            if (coin != null) coin.gameObject.SetActive(on);
+            if (_winCoins != null) _winCoins.gameObject.SetActive(on);
+            var next = _winPanel.transform.Find("NextBtn");
+            if (next != null) next.gameObject.SetActive(on);
+            var home = _winPanel.transform.Find("HomeBtn");
+            if (home != null) home.gameObject.SetActive(on);
+            if (_skip != null) _skip.gameObject.SetActive(on);
         }
 
         public void ShowBadge(string text, Color color)

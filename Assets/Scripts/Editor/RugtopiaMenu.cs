@@ -266,6 +266,11 @@ namespace Rugtopia.EditorTools
             var d0 = LevelLoader.Get(0);
             if (d0.solution != null) for (int i = 0; i < d0.solution.Length; i++) solved.Take(d0.solution[i]);
             Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-win.png", solved, d0, w, h, false, true);
+            hud.ShowLangChoice(true);
+            Grab(cam, rt, hud, dir, "shell-win-lang.png", w, h);
+            hud.ShowLangChoice(false);
+            var play1 = LevelLoader.Get(0);
+            Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-play-hud.png", LevelBuilder.Build(play1), play1, w, h, false, false);
             var lv9 = LevelLoader.Get(8);
             Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-play-9.png", LevelBuilder.Build(lv9), lv9, w, h, false, false, "SUPER HARD");
         }
