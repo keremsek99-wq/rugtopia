@@ -692,7 +692,7 @@ namespace Rugtopia.View
             Btn(root, "Close", new Vector2(0.22f, 0.05f), new Vector2(0.78f, 0.18f), Copy.Get("close"), "settingsClose", true);
         }
 
-        static void YarnBar(Transform parent, string name, float x, float y, float w, float h, Color color)
+        void YarnBar(Transform parent, string name, float x, float y, float w, float h, Color color)
         {
             var bar = Panel(parent, name, Vector2.zero, Vector2.zero, color);
             var rt = bar.GetComponent<RectTransform>();
