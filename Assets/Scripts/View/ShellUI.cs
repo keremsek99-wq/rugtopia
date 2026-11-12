@@ -501,7 +501,7 @@ namespace Rugtopia.View
             markImg.sprite = Glyphs.PlayMark;
             markImg.preserveAspect = true;
             markImg.raycastTarget = false;
-            Preferred(mark.gameObject, 40f, 40f);
+            Preferred(mark.gameObject, 46f, 46f);
             var playText = Txt(rowGo.transform, "PlayWord", Vector2.zero, Vector2.one, Copy.Get("play"), 52, TextAnchor.MiddleCenter, Color.white);
             playText.horizontalOverflow = HorizontalWrapMode.Overflow;
             playText.verticalOverflow = VerticalWrapMode.Overflow;
@@ -599,10 +599,14 @@ namespace Rugtopia.View
             gi.raycastTarget = false;
             Preferred(glyph.gameObject, 100f, 100f);
             var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 30, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            Preferred(titleText.gameObject, 200f, 36f);
+            titleText.verticalOverflow = VerticalWrapMode.Overflow;
+            titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            Preferred(titleText.gameObject, 220f, 44f);
             var lockT = Txt(card.transform, "Lock", Vector2.zero, Vector2.one, "", 18, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            lockT.verticalOverflow = VerticalWrapMode.Overflow;
+            lockT.horizontalOverflow = HorizontalWrapMode.Overflow;
             lockT.raycastTarget = false;
-            Preferred(lockT.gameObject, 200f, 26f);
+            Preferred(lockT.gameObject, 220f, 28f);
             lockT.gameObject.SetActive(false);
             if (name == "DailyCard")
             {
