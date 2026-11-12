@@ -313,7 +313,7 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            FillTri(px, n, 10f, 14f, 10f, 114f, 118f, 64f);
+            FillTri(px, n, 6f, 8f, 6f, 120f, 122f, 64f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -337,12 +337,10 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            FillRect(px, n, 22f, 16f, 106f, 78f);
-            FillDisc(px, n, 42f, 94f, 18f);
-            FillDisc(px, n, 86f, 94f, 18f);
-            FillDisc(px, n, 64f, 80f, 12f);
-            ClearRect(px, n, 56f, 20f, 72f, 70f);
-            ClearRect(px, n, 32f, 48f, 96f, 60f);
+            FillRect(px, n, 16f, 14f, 112f, 72f);
+            FillDisc(px, n, 38f, 90f, 20f);
+            FillDisc(px, n, 90f, 90f, 20f);
+            FillDisc(px, n, 64f, 74f, 13f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }

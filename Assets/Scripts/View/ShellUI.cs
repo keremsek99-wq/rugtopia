@@ -359,7 +359,7 @@ namespace Rugtopia.View
         {
             // Square rug: 0.74 of the 1080-wide reference is 0.342 of the 2340 height.
             const float rugH = 0.342f;
-            float rugTop = gallery ? 0.792f : 0.808f;
+            float rugTop = gallery ? 0.776f : 0.792f;
             float rugBot = rugTop - rugH;
             var mat = _home.transform.Find("HeroMat");
             if (mat != null) SetBox(mat.gameObject, 0.13f, rugBot, 0.87f, rugTop);
@@ -370,9 +370,9 @@ namespace Rugtopia.View
             if (_playBtn != null) SetBox(_playBtn.gameObject, 0.08f, playTop - 0.066f, 0.92f, playTop);
             var playShadow = _home.transform.Find("PlayShadow");
             if (playShadow != null) SetBox(playShadow.gameObject, 0.08f, playTop - 0.074f, 0.92f, playTop - 0.008f);
-            PlaceCard("PathCard", 0.045f, 0.040f, 0.325f, 0.155f);
-            PlaceCard("DailyCard", 0.360f, 0.040f, 0.640f, 0.155f);
-            PlaceCard("StreakCard", 0.675f, 0.040f, 0.955f, 0.155f);
+            PlaceCard("PathCard", 0.045f, 0.058f, 0.325f, 0.178f);
+            PlaceCard("DailyCard", 0.360f, 0.058f, 0.640f, 0.178f);
+            PlaceCard("StreakCard", 0.675f, 0.058f, 0.955f, 0.178f);
         }
 
         void PlaceCard(string name, float x0, float y0, float x1, float y1)
@@ -452,7 +452,7 @@ namespace Rugtopia.View
             mat.GetComponent<Image>().type = Image.Type.Sliced;
             var heroBtn = mat.gameObject.AddComponent<Button>();
             heroBtn.onClick.AddListener(() => Fire("gallery"));
-            _hero = Panel(mat, "Hero", new Vector2(0.045f, 0.04f), new Vector2(0.955f, 0.96f), new Color(0, 0, 0, 0)).GetComponent<RectTransform>();
+            _hero = Panel(mat, "Hero", new Vector2(0.028f, 0.022f), new Vector2(0.972f, 0.978f), new Color(0, 0, 0, 0)).GetComponent<RectTransform>();
 
             _progressGo = Btn(root, "Progress", new Vector2(0.18f, 0.42f), new Vector2(0.82f, 0.458f), "", "gallery", false).gameObject;
             _progressGo.GetComponent<Image>().color = new Color(0, 0, 0, 0);
@@ -473,12 +473,12 @@ namespace Rugtopia.View
             var stackGo = new GameObject("Stack", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
             stackGo.transform.SetParent(play.transform, false);
             var stack = stackGo.GetComponent<RectTransform>();
-            stack.anchorMin = stack.anchorMax = new Vector2(0.5f, 0.46f);
+            stack.anchorMin = stack.anchorMax = new Vector2(0.5f, 0.48f);
             stack.pivot = new Vector2(0.5f, 0.5f);
             stack.anchoredPosition = Vector2.zero;
             var v = stackGo.GetComponent<VerticalLayoutGroup>();
             v.childAlignment = TextAnchor.MiddleCenter;
-            v.spacing = -2f;
+            v.spacing = -6f;
             v.childControlWidth = true;
             v.childControlHeight = true;
             v.childForceExpandWidth = false;
@@ -489,7 +489,7 @@ namespace Rugtopia.View
             rowGo.transform.SetParent(stack, false);
             var h = rowGo.GetComponent<HorizontalLayoutGroup>();
             h.childAlignment = TextAnchor.MiddleCenter;
-            h.spacing = 10f;
+            h.spacing = 8f;
             h.childControlWidth = true;
             h.childControlHeight = true;
             h.childForceExpandWidth = false;
@@ -501,18 +501,19 @@ namespace Rugtopia.View
             markImg.sprite = Glyphs.PlayMark;
             markImg.preserveAspect = true;
             markImg.raycastTarget = false;
-            Preferred(mark.gameObject, 46f, 46f);
+            Preferred(mark.gameObject, 58f, 58f);
             var playText = Txt(rowGo.transform, "PlayWord", Vector2.zero, Vector2.one, Copy.Get("play"), 52, TextAnchor.MiddleCenter, Color.white);
             playText.horizontalOverflow = HorizontalWrapMode.Overflow;
             playText.verticalOverflow = VerticalWrapMode.Overflow;
             var key = playText.gameObject.AddComponent<Outline>();
             key.effectColor = ViewKit.Hex("#3A1C12");
-            key.effectDistance = new Vector2(2.6f, -2.6f);
+            key.effectDistance = new Vector2(2.0f, -2.0f);
             var drop = playText.gameObject.AddComponent<Shadow>();
-            drop.effectColor = new Color(0.16f, 0.05f, 0.02f, 0.6f);
-            drop.effectDistance = new Vector2(0f, -3f);
-            _playSub = Txt(stack, "Sub", Vector2.zero, Vector2.one, "Level 1", 26, TextAnchor.MiddleCenter, new Color(1f, 0.91f, 0.78f, 1f));
+            drop.effectColor = new Color(0.16f, 0.05f, 0.02f, 0.7f);
+            drop.effectDistance = new Vector2(0f, -2.2f);
+            _playSub = Txt(stack, "Sub", Vector2.zero, Vector2.one, "Level 1", 30, TextAnchor.MiddleCenter, new Color(1f, 0.97f, 0.92f, 1f));
             _playSub.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _playSub.verticalOverflow = VerticalWrapMode.Overflow;
             _playSub.raycastTarget = false;
 
             BuildHub(root, "PathCard", Glyphs.LinePath, Copy.Get("path"), "path");
@@ -584,8 +585,8 @@ namespace Rugtopia.View
             card.GetComponent<Image>().color = Color.white;
             var layout = card.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = 0f;
-            layout.padding = new RectOffset(6, 6, 10, 8);
+            layout.spacing = -4f;
+            layout.padding = new RectOffset(4, 4, 4, 2);
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = false;
@@ -597,20 +598,20 @@ namespace Rugtopia.View
             gi.sprite = icon;
             gi.preserveAspect = true;
             gi.raycastTarget = false;
-            Preferred(glyph.gameObject, 100f, 100f);
-            var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 30, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Preferred(glyph.gameObject, 164f, 164f);
+            var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 32, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             titleText.verticalOverflow = VerticalWrapMode.Overflow;
             titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            Preferred(titleText.gameObject, 220f, 44f);
-            var lockT = Txt(card.transform, "Lock", Vector2.zero, Vector2.one, "", 18, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            Preferred(titleText.gameObject, 240f, 42f);
+            var lockT = Txt(card.transform, "Lock", Vector2.zero, Vector2.one, "", 22, TextAnchor.MiddleCenter, ViewKit.Hex("#3D2A20"));
             lockT.verticalOverflow = VerticalWrapMode.Overflow;
             lockT.horizontalOverflow = HorizontalWrapMode.Overflow;
             lockT.raycastTarget = false;
-            Preferred(lockT.gameObject, 220f, 28f);
+            Preferred(lockT.gameObject, 240f, 30f);
             lockT.gameObject.SetActive(false);
             if (name == "DailyCard")
             {
-                var badge = Panel(card.transform, "Badge", new Vector2(0.78f, 0.78f), new Vector2(0.92f, 0.94f), ViewKit.Hex("#C0392B"));
+                var badge = Panel(card.transform, "Badge", new Vector2(0.84f, 0.84f), new Vector2(0.94f, 0.96f), ViewKit.Hex("#C0392B"));
                 var bi = badge.GetComponent<Image>();
                 bi.sprite = Glyphs.SolidCircle;
                 bi.preserveAspect = true;
