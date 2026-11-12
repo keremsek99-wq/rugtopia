@@ -83,11 +83,11 @@ namespace Rugtopia.View
             float span = 3f * dx + 2f * gap;
             float bx = (1f - span) * 0.5f;
             float by = 0.04f;
-            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.SlotIcon, "slot"); _slotL = _slot.transform.Find("Badge/Count").GetComponent<Text>();
+            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.PackSlot, "slot", 0.12f); _slotL = _slot.transform.Find("Badge/Count").GetComponent<Text>();
             bx += dx + gap;
             _comb = IconBtn(root, "Comb", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.CombIcon, "comb"); _combL = _comb.transform.Find("Badge/Count").GetComponent<Text>();
             bx += dx + gap;
-            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.ShuttleIcon, "shuttle"); _shuttleL = _shuttle.transform.Find("Badge/Count").GetComponent<Text>();
+            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.PackShuttle, "shuttle", 0.12f); _shuttleL = _shuttle.transform.Find("Badge/Count").GetComponent<Text>();
 
             _dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.059f, 0.031f, 0.02f, 0.72f)).gameObject;
             _dim.SetActive(false);
@@ -145,7 +145,7 @@ namespace Rugtopia.View
             coinDrop.effectDistance = new Vector2(0f, -2f);
             var winNext = FamilyPill(_winPanel.transform, "NextBtn", new Vector2(0.08f, 0.22f), new Vector2(0.92f, 0.352f), "Continue", "next", 46, Glyphs.PlayMark);
             _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.16f), "", 22, TextAnchor.MiddleCenter, ViewKit.Wool);
-            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.035f), new Vector2(0.38f, 0.175f), Glyphs.HomeMark, "Home", "home");
+            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.035f), new Vector2(0.28f, 0.175f), Glyphs.HomeMark, "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
             _hang.gameObject.SetActive(false);
             _langEn = FamilyFace(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.50f), "English", "langEn", 42, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f, 1f), ViewKit.Hex("#1A0C08"));
@@ -187,8 +187,8 @@ namespace Rugtopia.View
             _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.46f), new Vector2(0.92f, 0.55f), "", 24, TextAnchor.MiddleCenter, ViewKit.Hex("#5C3B28"));
             _continueLabel = FamilyPill(_failPanel.transform, "ContinueBtn", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.42f), "Continue", "continue", 40, Glyphs.PlayMark, 54).GetComponentInChildren<Text>();
             _continueLabel.lineSpacing = 0.82f;
-            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.06f, 0.045f), new Vector2(0.48f, 0.195f), Glyphs.Restart, "Retry", "retry");
-            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.045f), new Vector2(0.94f, 0.195f), Glyphs.LinePath, "Levels", "map");
+            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.18f, 0.045f), new Vector2(0.48f, 0.195f), Glyphs.Restart, "Retry", "retry");
+            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.045f), new Vector2(0.82f, 0.195f), Glyphs.LinePath, "Levels", "map");
 
             _menu = Panel(root, "Menu", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
             Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Cream);
@@ -671,7 +671,9 @@ namespace Rugtopia.View
                 rt.offsetMax = Vector2.zero;
             }
             _failBody.text = "";
-            _continueLabel.text = WrapContinue(continueLabel);
+            _continueLabel.alignment = TextAnchor.MiddleLeft;
+            _continueLabel.supportRichText = true;
+            _continueLabel.text = TrackContinue(WrapContinue(continueLabel), _continueLabel);
             ShowDim(false);
             _failPanel.SetActive(true);
             _failPanel.transform.SetAsLastSibling();
@@ -765,6 +767,46 @@ namespace Rugtopia.View
             int split = s.LastIndexOf('&');
             if (split <= 0) return s;
             return s.Substring(0, split).TrimEnd() + "\n" + s.Substring(split).TrimStart();
+        }
+
+        static string TrackContinue(string wrapped, Text probe)
+        {
+            if (probe == null || string.IsNullOrEmpty(wrapped)) return wrapped;
+            int nl = wrapped.IndexOf('\n');
+            if (nl < 0) return wrapped;
+            string top = wrapped.Substring(0, nl);
+            string bottom = wrapped.Substring(nl + 1);
+            probe.text = top;
+            float target = probe.preferredWidth;
+            if (target < 8f) return wrapped;
+            string best = bottom;
+            float bestGap = 9999f;
+            for (int size = 0; size <= 36; size++)
+            {
+                string trial = size == 0 ? bottom : Spread(bottom, size);
+                probe.text = trial;
+                float w = probe.preferredWidth;
+                float gap = Mathf.Abs(w - target);
+                if (gap < bestGap)
+                {
+                    bestGap = gap;
+                    best = trial;
+                }
+                if (w > target + 2f) break;
+            }
+            return top + "\n" + best;
+        }
+
+        static string Spread(string line, int spaceSize)
+        {
+            var sb = new System.Text.StringBuilder();
+            string gap = "<size=" + spaceSize + "> </size>";
+            for (int i = 0; i < line.Length; i++)
+            {
+                if (i > 0) sb.Append(gap);
+                if (line[i] != ' ') sb.Append(line[i]);
+            }
+            return sb.ToString();
         }
 
         static void SetNamed(GameObject panel, string child, bool on)
@@ -912,14 +954,14 @@ namespace Rugtopia.View
             img.raycastTarget = false;
         }
 
-        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, Sprite icon, string id)
+        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, Sprite icon, string id, float inset = 0.22f)
         {
             var rt = Panel(parent, name, aMin, aMax, ThemeConfig.Button);
             var image = rt.GetComponent<Image>();
             image.sprite = Glyphs.Circle;
             image.preserveAspect = true;
             var b = rt.gameObject.AddComponent<Button>();
-            var mark = Panel(rt, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), new Color(1f, 0.95f, 0.88f, 1f));
+            var mark = Panel(rt, "Icon", new Vector2(inset, inset), new Vector2(1f - inset, 1f - inset), new Color(1f, 0.95f, 0.88f, 1f));
             var markImg = mark.GetComponent<Image>();
             markImg.sprite = icon;
             markImg.preserveAspect = true;
