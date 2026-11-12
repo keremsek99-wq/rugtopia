@@ -18,7 +18,7 @@ namespace Rugtopia.View
         RectTransform _ui;
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
-        Text _winTitle, _winCoins, _failTitle, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
+        Text _winTitle, _winCoins, _failTitle, _failCount, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
         Image _failFill;
         ShellUI _shell;
         Button _hang;
@@ -103,13 +103,13 @@ namespace Rugtopia.View
             _chip = chip.gameObject;
             _chip.SetActive(false);
 
-            _winPanel = Card(root, "WinPanel", new Vector2(0.08f, 0.26f), new Vector2(0.92f, 0.76f), ViewKit.Green);
+            _winPanel = Card(root, "WinPanel", new Vector2(0.08f, 0.26f), new Vector2(0.92f, 0.76f), ViewKit.Hex("#C4A484"));
             _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.08f, 0.86f), new Vector2(0.92f, 0.97f), "", 56, TextAnchor.MiddleCenter, ViewKit.Ink);
             var rugSlot = new GameObject("WinRug", typeof(RectTransform));
             rugSlot.transform.SetParent(_winPanel.transform, false);
             _winRug = rugSlot.GetComponent<RectTransform>();
-            _winRug.anchorMin = new Vector2(0.16f, 0.64f);
-            _winRug.anchorMax = new Vector2(0.84f, 0.86f);
+            _winRug.anchorMin = new Vector2(0.18f, 0.66f);
+            _winRug.anchorMax = new Vector2(0.82f, 0.86f);
             _winRug.offsetMin = _winRug.offsetMax = Vector2.zero;
             _stars = new RectTransform[3];
             for (int i = 0; i < 3; i++)
@@ -117,8 +117,8 @@ namespace Rugtopia.View
                 bool mid = i == 1;
                 float x = mid ? 0.40f : 0.18f + i * 0.22f;
                 float w = mid ? 0.20f : 0.16f;
-                float y0 = mid ? 0.44f : 0.46f;
-                float y1 = mid ? 0.60f : 0.58f;
+                float y0 = mid ? 0.50f : 0.515f;
+                float y1 = mid ? 0.64f : 0.625f;
                 var badge = Panel(_winPanel.transform, "Star" + i, new Vector2(x, y0), new Vector2(x + w, y1), ViewKit.Gold);
                 var badgeImg = badge.GetComponent<Image>();
                 badgeImg.sprite = Glyphs.SolidCircle;
@@ -130,16 +130,22 @@ namespace Rugtopia.View
                 si.raycastTarget = false;
                 _stars[i] = badge;
             }
-            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.30f, 0.345f), new Vector2(0.40f, 0.415f), Color.white);
+            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.30f, 0.405f), new Vector2(0.40f, 0.495f), Color.white);
             var coinImg = coin.GetComponent<Image>();
             coinImg.sprite = ArtKit.Coin;
             coinImg.preserveAspect = true;
             coinImg.color = Color.white;
             coinImg.raycastTarget = false;
-            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.40f, 0.34f), new Vector2(0.78f, 0.42f), "", 40, TextAnchor.MiddleLeft, ViewKit.Ink);
-            var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.32f), "Continue", "next", true);
-            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.38f, 0.02f), new Vector2(0.92f, 0.13f), "", 24, TextAnchor.MiddleCenter, ViewKit.Wool);
-            Btn(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.02f), new Vector2(0.34f, 0.13f), "Home", "home");
+            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.40f, 0.40f), new Vector2(0.76f, 0.50f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
+            var coinKey = _winCoins.gameObject.AddComponent<Outline>();
+            coinKey.effectColor = ViewKit.Hex("#3A1C12");
+            coinKey.effectDistance = new Vector2(1.4f, -1.4f);
+            var coinDrop = _winCoins.gameObject.AddComponent<Shadow>();
+            coinDrop.effectColor = new Color(0.22f, 0.10f, 0.06f, 0.35f);
+            coinDrop.effectDistance = new Vector2(0f, -2f);
+            var winNext = FamilyPill(_winPanel.transform, "NextBtn", new Vector2(0.08f, 0.22f), new Vector2(0.92f, 0.352f), "Continue", "next", 46, Glyphs.PlayMark);
+            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.16f), "", 22, TextAnchor.MiddleCenter, ViewKit.Wool);
+            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.03f), new Vector2(0.40f, 0.19f), Glyphs.HomeMark, "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
             _hang.gameObject.SetActive(false);
             _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.54f), "English", "langEn");
@@ -162,15 +168,24 @@ namespace Rugtopia.View
             _playLabel = null;
             Remember(winNext, "winNext");
 
-            _failPanel = Card(root, "FailPanel", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.7f), ViewKit.Hex("#C0392B"));
-            _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.78f), new Vector2(0.92f, 0.96f), "", 48, TextAnchor.MiddleCenter, ViewKit.Ink);
-            _failLeft = Txt(_failPanel.transform, "Left", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.78f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
-            var bar = Panel(_failPanel.transform, "Bar", new Vector2(0.12f, 0.54f), new Vector2(0.88f, 0.62f), new Color(0.2f, 0.14f, 0.1f, 0.25f));
-            _failFill = Panel(bar, "Fill", Vector2.zero, new Vector2(0.4f, 1f), ViewKit.Green).GetComponent<Image>();
-            _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.42f), new Vector2(0.92f, 0.54f), "", 28, TextAnchor.MiddleCenter, ViewKit.Wool);
-            _continueLabel = Btn(_failPanel.transform, "ContinueBtn", new Vector2(0.1f, 0.28f), new Vector2(0.9f, 0.46f), "Continue", "continue", true).GetComponentInChildren<Text>();
-            Btn(_failPanel.transform, "RetryBtn", new Vector2(0.08f, 0.06f), new Vector2(0.46f, 0.24f), "Retry", "retry");
-            Btn(_failPanel.transform, "MapBtn", new Vector2(0.54f, 0.06f), new Vector2(0.92f, 0.24f), "Map", "map");
+            _failPanel = Card(root, "FailPanel", new Vector2(0.08f, 0.24f), new Vector2(0.92f, 0.72f), ViewKit.Hex("#C4A484"));
+            _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.88f), new Vector2(0.92f, 0.97f), "", 44, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _failCount = Txt(_failPanel.transform, "Count", new Vector2(0.08f, 0.755f), new Vector2(0.92f, 0.875f), "", 56, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var countKey = _failCount.gameObject.AddComponent<Outline>();
+            countKey.effectColor = ViewKit.Hex("#3A1C12");
+            countKey.effectDistance = new Vector2(1.5f, -1.5f);
+            _failLeft = Txt(_failPanel.transform, "Left", new Vector2(0.08f, 0.675f), new Vector2(0.92f, 0.75f), "", 26, TextAnchor.MiddleCenter, ViewKit.Hex("#3D2A20"));
+            var bar = Panel(_failPanel.transform, "Bar", new Vector2(0.12f, 0.56f), new Vector2(0.88f, 0.64f), ViewKit.Hex("#E6D3BC"));
+            var barImg = bar.GetComponent<Image>();
+            barImg.sprite = ArtKit.UiRound;
+            barImg.type = Image.Type.Sliced;
+            _failFill = Panel(bar, "Fill", Vector2.zero, new Vector2(0.4f, 1f), ViewKit.Hex("#C4552A")).GetComponent<Image>();
+            _failFill.sprite = ArtKit.UiRound;
+            _failFill.type = Image.Type.Sliced;
+            _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.46f), new Vector2(0.92f, 0.55f), "", 24, TextAnchor.MiddleCenter, ViewKit.Hex("#5C3B28"));
+            _continueLabel = FamilyPill(_failPanel.transform, "ContinueBtn", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.42f), "Continue", "continue", 30, Glyphs.PlayMark).GetComponentInChildren<Text>();
+            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.06f, 0.04f), new Vector2(0.48f, 0.24f), Glyphs.Restart, "Retry", "retry");
+            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.24f), Glyphs.LinePath, "Levels", "map");
 
             _menu = Panel(root, "Menu", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
             Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Cream);
@@ -626,6 +641,8 @@ namespace Rugtopia.View
             if (b == null) return;
             var img = b.GetComponent<Image>();
             if (img == null) return;
+            string n = b.name;
+            if (n == "winNext" || n == "ContinueBtn" || n == "RetryBtn" || n == "MapBtn" || n == "HomeBtn") return;
             if (Mathf.Abs(img.color.g - ViewKit.Green.g) < 0.08f && img.color.g > img.color.r) return;
             img.color = ThemeConfig.Button;
             var label = b.GetComponentInChildren<Text>();
@@ -638,7 +655,8 @@ namespace Rugtopia.View
             HidePanels();
             ApplyLanguage();
             _failTitle.text = title;
-            if (_failLeft != null) _failLeft.text = stitchesLeft + " " + Copy.Get(stitchesLeft == 1 ? "left1" : "leftN");
+            if (_failCount != null) _failCount.text = stitchesLeft.ToString();
+            if (_failLeft != null) _failLeft.text = Copy.Get(stitchesLeft == 1 ? "left1" : "leftN");
             if (_failFill != null)
             {
                 var rt = _failFill.rectTransform;
@@ -734,6 +752,116 @@ namespace Rugtopia.View
             lrt.anchoredPosition = Vector2.zero;
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
+        }
+
+        Button FamilyPill(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Sprite mark)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.006f), new Color(0.36f, 0.12f, 0.05f, 0.30f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, ViewKit.Hex("#C4552A"));
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, ViewKit.Hex("#9A3A1E"));
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 0.86f, 0.74f, 0.28f));
+            var rowGo = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            rowGo.transform.SetParent(rt, false);
+            var row = rowGo.GetComponent<RectTransform>();
+            row.anchorMin = row.anchorMax = new Vector2(0.5f, 0.46f);
+            row.pivot = new Vector2(0.5f, 0.5f);
+            row.anchoredPosition = Vector2.zero;
+            var h = rowGo.GetComponent<HorizontalLayoutGroup>();
+            h.childAlignment = TextAnchor.MiddleCenter;
+            h.spacing = 8f;
+            h.childControlWidth = true;
+            h.childControlHeight = true;
+            h.childForceExpandWidth = false;
+            h.childForceExpandHeight = false;
+            var fit = rowGo.GetComponent<ContentSizeFitter>();
+            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (mark != null)
+            {
+                var icon = Panel(row, "Mark", Vector2.zero, Vector2.one, Color.white);
+                var ii = icon.GetComponent<Image>();
+                ii.sprite = mark;
+                ii.preserveAspect = true;
+                ii.raycastTarget = false;
+                var le = icon.gameObject.AddComponent<LayoutElement>();
+                le.preferredWidth = le.preferredHeight = font >= 40 ? 42f : 28f;
+            }
+            var text = Txt(row, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = ViewKit.Hex("#3A1C12");
+            key.effectDistance = new Vector2(1.8f, -1.8f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0.16f, 0.05f, 0.02f, 0.65f);
+            drop.effectDistance = new Vector2(0f, -2f);
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        Button FamilyIcon(Transform parent, string name, Vector2 a, Vector2 b, Sprite icon, string label, string id)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.01f), new Vector2(b.x, b.y - 0.006f), new Color(0.30f, 0.18f, 0.10f, 0.14f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, Color.white);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = -2f;
+            layout.padding = new RectOffset(4, 4, 6, 4);
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            var glyph = Panel(rt, "Icon", Vector2.zero, Vector2.one, ViewKit.Hex("#C4552A"));
+            var gi = glyph.GetComponent<Image>();
+            gi.sprite = icon;
+            gi.preserveAspect = true;
+            gi.raycastTarget = false;
+            var gle = glyph.gameObject.AddComponent<LayoutElement>();
+            gle.preferredWidth = gle.preferredHeight = 72f;
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 24, TextAnchor.MiddleCenter, ViewKit.Ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var tle = text.gameObject.AddComponent<LayoutElement>();
+            tle.preferredWidth = 180f;
+            tle.preferredHeight = 32f;
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        static void ClipFace(Transform parent, string name, float y0, float y1, Color color)
+        {
+            var clipGo = new GameObject(name, typeof(RectTransform), typeof(RectMask2D));
+            clipGo.transform.SetParent(parent, false);
+            var clip = clipGo.GetComponent<RectTransform>();
+            clip.anchorMin = new Vector2(0f, y0);
+            clip.anchorMax = new Vector2(1f, y1);
+            clip.offsetMin = clip.offsetMax = Vector2.zero;
+            var face = Panel(clip, "Face", Vector2.zero, Vector2.one, color);
+            float span = Mathf.Max(0.001f, y1 - y0);
+            var fr = face.GetComponent<RectTransform>();
+            fr.anchorMin = new Vector2(0f, (0f - y0) / span);
+            fr.anchorMax = new Vector2(1f, (1f - y0) / span);
+            fr.offsetMin = fr.offsetMax = Vector2.zero;
+            var img = face.GetComponent<Image>();
+            img.sprite = ArtKit.UiRound;
+            img.type = Image.Type.Sliced;
+            img.raycastTarget = false;
         }
 
         Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, Sprite icon, string id)

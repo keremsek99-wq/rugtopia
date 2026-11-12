@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart, _playMark;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart, _playMark, _homeMark;
 
         public static Sprite Of(char c)
         {
@@ -42,6 +42,7 @@ namespace Rugtopia.View
         public static Sprite Gear { get { if (_gear == null) _gear = MakeGear(); return _gear; } }
         public static Sprite Heart { get { if (_heart == null) _heart = MakeHeart(); return _heart; } }
         public static Sprite Restart { get { if (_restart == null) _restart = MakeRestart(); return _restart; } }
+        public static Sprite HomeMark { get { if (_homeMark == null) _homeMark = MakeHome(); return _homeMark; } }
 
         static Sprite Disc(bool ring)
         {
@@ -304,6 +305,18 @@ namespace Rugtopia.View
                 float a = nx * nx + ny * ny - 1f;
                 if (a * a * a - nx * nx * ny * ny * ny < 0f) px[y * n + x] = Color.white;
             }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeHome()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            FillRect(px, n, 30f, 16f, 98f, 68f);
+            FillTri(px, n, 16f, 60f, 112f, 60f, 64f, 112f);
+            ClearRect(px, n, 52f, 16f, 76f, 46f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }

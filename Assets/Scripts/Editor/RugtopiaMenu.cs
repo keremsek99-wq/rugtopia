@@ -268,7 +268,19 @@ namespace Rugtopia.EditorTools
             Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-win.png", solved, d0, w, h, false, true);
             hud.ShowLangChoice(true);
             Grab(cam, rt, hud, dir, "shell-win-lang.png", w, h);
+            Grab(cam, rt, hud, dir, "shell-win-first.png", w, h);
             hud.ShowLangChoice(false);
+            var dense = LevelLoader.Get(8);
+            var denseWin = LevelBuilder.Build(dense);
+            if (dense.solution != null) for (int i = 0; i < dense.solution.Length; i++) denseWin.Take(dense.solution[i]);
+            Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-win-dense.png", denseWin, dense, w, h, false, true);
+            var denseFail = LevelBuilder.Build(dense);
+            if (dense.solution != null)
+            {
+                int steps = System.Math.Min(8, dense.solution.Length);
+                for (int i = 0; i < steps; i++) denseFail.Take(dense.solution[i]);
+            }
+            Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-fail.png", denseFail, dense, w, h, false, false, null, true);
             var play1 = LevelLoader.Get(0);
             Shot(cam, rt, board, belt, lanes, hud, hand, bubble, backdrop, dir, "shell-play-hud.png", LevelBuilder.Build(play1), play1, w, h, false, false);
             var lv9 = LevelLoader.Get(8);
