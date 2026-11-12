@@ -47,6 +47,8 @@ namespace Rugtopia.View
         public static Sprite BackMark { get { return Icon("caret-left-fill"); } }
         public static Sprite CloseMark { get { return Icon("x-circle-fill"); } }
         public static Sprite CheckMark { get { return Icon("check-fat-fill"); } }
+        public static Sprite PackSlot { get { return Icon("cylinder-fill"); } }
+        public static Sprite PackShuttle { get { return Icon("boat-fill"); } }
 
         static readonly Dictionary<string, Sprite> _loaded = new Dictionary<string, Sprite>();
 

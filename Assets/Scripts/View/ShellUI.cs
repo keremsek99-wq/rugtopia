@@ -311,8 +311,31 @@ namespace Rugtopia.View
             {
                 var t = claim.GetComponentInChildren<Text>();
                 if (t != null) t.text = offer < 0 ? Copy.Get("claimed") : Copy.Get("claim");
-                var b = claim.GetComponent<Button>();
-                if (b != null) b.interactable = offer >= 0;
+                PaintClaim(claim, offer < 0);
+            }
+        }
+
+        void PaintClaim(Transform claim, bool done)
+        {
+            var img = claim.GetComponent<Image>();
+            if (img != null) img.color = done ? ViewKit.Hex("#6B4330") : ViewKit.Hex("#C4552A");
+            var lip = claim.Find("Lip/Face");
+            if (lip != null)
+            {
+                var lipImg = lip.GetComponent<Image>();
+                if (lipImg != null) lipImg.color = done ? ViewKit.Hex("#3A2418") : ViewKit.Hex("#9A3A1E");
+            }
+            var mark = claim.Find("Row/Mark");
+            if (mark != null) mark.gameObject.SetActive(!done);
+            var button = claim.GetComponent<Button>();
+            if (button != null) button.interactable = !done;
+            var shadow = claim.parent != null ? claim.parent.Find("ClaimSh") : null;
+            if (shadow != null)
+            {
+                var sh = shadow.GetComponent<Image>();
+                if (sh != null) sh.color = done
+                    ? new Color(0.16f, 0.08f, 0.05f, 0.28f)
+                    : new Color(0.36f, 0.12f, 0.05f, 0.30f);
             }
         }
 
@@ -588,8 +611,8 @@ namespace Rugtopia.View
             card.GetComponent<Image>().color = Color.white;
             var layout = card.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = -4f;
-            layout.padding = new RectOffset(4, 4, 4, 2);
+            layout.spacing = -6f;
+            layout.padding = new RectOffset(2, 2, 2, 0);
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = false;
@@ -601,7 +624,7 @@ namespace Rugtopia.View
             gi.sprite = icon;
             gi.preserveAspect = true;
             gi.raycastTarget = false;
-            Preferred(glyph.gameObject, 164f, 164f);
+            Preferred(glyph.gameObject, 200f, 200f);
             var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 32, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             titleText.verticalOverflow = VerticalWrapMode.Overflow;
             titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -687,15 +710,15 @@ namespace Rugtopia.View
                 }
                 else
                 {
-                    Sprite[] icons = { Glyphs.SlotIcon, Glyphs.CombIcon, Glyphs.ShuttleIcon };
+                    Sprite[] icons = { Glyphs.PackSlot, Glyphs.CombIcon, Glyphs.PackShuttle };
                     for (int k = 0; k < 3; k++)
                     {
                         float cx = 0.20f + k * 0.30f;
-                        var circle = Panel(cell, "B" + k, new Vector2(cx - 0.11f, 0.36f), new Vector2(cx + 0.11f, 0.56f), ThemeConfig.Button);
+                        var circle = Panel(cell, "B" + k, new Vector2(cx - 0.13f, 0.34f), new Vector2(cx + 0.13f, 0.64f), ThemeConfig.Button);
                         var ci = circle.GetComponent<Image>();
                         ci.sprite = Glyphs.SolidCircle;
                         ci.preserveAspect = true;
-                        var mark = Panel(circle, "I", new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.8f), new Color(1f, 0.95f, 0.88f, 1f));
+                        var mark = Panel(circle, "I", new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f), new Color(1f, 0.95f, 0.88f, 1f));
                         var mi = mark.GetComponent<Image>();
                         mi.sprite = icons[k];
                         mi.preserveAspect = true;
@@ -722,7 +745,7 @@ namespace Rugtopia.View
         void BuildGallery(Transform root)
         {
             Txt(root, "Title", new Vector2(0.18f, 0.9f), new Vector2(0.82f, 0.97f), Copy.Get("gallery"), 48, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            Btn(root, "Back", new Vector2(0.05f, 0.91f), new Vector2(0.18f, 0.97f), "‹", "home", false);
+            IconOnly(root, "Back", new Vector2(0.04f, 0.905f), new Vector2(0.16f, 0.972f), Glyphs.BackMark, "home");
             var grid = new GameObject("Grid", typeof(RectTransform));
             grid.transform.SetParent(root, false);
             Stretch(grid.GetComponent<RectTransform>(), 0.02f, 0.04f, 0.98f, 0.88f);
@@ -770,7 +793,7 @@ namespace Rugtopia.View
             Choice(root, "Lang", new Vector2(0.1f, 0.68f), new Vector2(0.9f, 0.84f), Copy.Get("langToTr"), "lang", 36, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f), ViewKit.Hex("#1A0C08"));
             Choice(root, "Theme", new Vector2(0.1f, 0.50f), new Vector2(0.9f, 0.66f), Copy.Get("themeToDark"), "theme", 36, ViewKit.Green, ViewKit.Hex("#24543A"), Color.white, ViewKit.Hex("#143828"));
             Choice(root, "Sound", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.48f), Copy.Get("soundOn"), "sound", 34, Color.white, ViewKit.Hex("#E6D3BC"), ThemeConfig.Ink, ViewKit.Hex("#3A1C12"));
-            IconLabel(root, "Close", new Vector2(0.28f, 0.06f), new Vector2(0.72f, 0.26f), Glyphs.CloseMark, Copy.Get("close"), "settingsClose");
+            IconLabel(root, "Close", new Vector2(0.32f, 0.05f), new Vector2(0.68f, 0.26f), Glyphs.CloseMark, Copy.Get("close"), "settingsClose");
         }
 
         void YarnBar(Transform parent, string name, float x, float y, float w, float h, Color color)
@@ -858,6 +881,10 @@ namespace Rugtopia.View
             image.sprite = ArtKit.UiRound;
             image.type = Image.Type.Sliced;
             var button = rt.gameObject.AddComponent<Button>();
+            var colors = button.colors;
+            colors.disabledColor = Color.white;
+            colors.fadeDuration = 0f;
+            button.colors = colors;
             ClipFace(rt, "Lip", 0f, 0.18f, ViewKit.Hex("#9A3A1E"));
             ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 0.86f, 0.74f, 0.22f));
             var rowGo = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
@@ -966,8 +993,8 @@ namespace Rugtopia.View
             var button = rt.gameObject.AddComponent<Button>();
             var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = -4f;
-            layout.padding = new RectOffset(4, 4, 4, 2);
+            layout.spacing = -10f;
+            layout.padding = new RectOffset(0, 0, 0, 0);
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = false;
@@ -978,7 +1005,7 @@ namespace Rugtopia.View
             gi.preserveAspect = true;
             gi.raycastTarget = false;
             var gle = glyph.gameObject.AddComponent<LayoutElement>();
-            gle.preferredWidth = gle.preferredHeight = 88f;
+            gle.preferredWidth = gle.preferredHeight = 156f;
             var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 26, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;

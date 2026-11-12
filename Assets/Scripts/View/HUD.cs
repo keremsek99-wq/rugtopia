@@ -842,8 +842,8 @@ namespace Rugtopia.View
             var btn = rt.gameObject.AddComponent<Button>();
             var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = -6f;
-            layout.padding = new RectOffset(2, 2, 2, 2);
+            layout.spacing = -12f;
+            layout.padding = new RectOffset(0, 0, 0, 0);
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = false;
@@ -854,13 +854,13 @@ namespace Rugtopia.View
             gi.preserveAspect = true;
             gi.raycastTarget = false;
             var gle = glyph.gameObject.AddComponent<LayoutElement>();
-            gle.preferredWidth = gle.preferredHeight = 136f;
+            gle.preferredWidth = gle.preferredHeight = 150f;
             var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 28, TextAnchor.MiddleCenter, ViewKit.Ink);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             var tle = text.gameObject.AddComponent<LayoutElement>();
             tle.preferredWidth = 200f;
-            tle.preferredHeight = 36f;
+            tle.preferredHeight = 32f;
             btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return btn;
         }
