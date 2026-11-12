@@ -142,8 +142,8 @@ namespace Rugtopia.View
             Btn(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.02f), new Vector2(0.34f, 0.13f), "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
             _hang.gameObject.SetActive(false);
-            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.22f), new Vector2(0.48f, 0.40f), "English", "langEn");
-            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.22f), new Vector2(0.92f, 0.40f), "Türkçe", "langTr", true);
+            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.54f), "English", "langEn");
+            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.36f), new Vector2(0.92f, 0.54f), "Türkçe", "langTr", true);
             _langEn.gameObject.SetActive(false);
             _langTr.gameObject.SetActive(false);
             _badge = Panel(top, "Badge", new Vector2(0.52f, 0.50f), new Vector2(0.83f, 0.96f), ViewKit.Hex("#8E44AD")).gameObject;
@@ -494,18 +494,14 @@ namespace Rugtopia.View
 
         void SetWinReward(bool on)
         {
-            if (_stars != null)
-                for (int i = 0; i < _stars.Length; i++)
-                    if (_stars[i] != null) _stars[i].gameObject.SetActive(on);
             if (_winPanel == null) return;
-            var coin = _winPanel.transform.Find("Coin");
-            if (coin != null) coin.gameObject.SetActive(on);
-            if (_winCoins != null) _winCoins.gameObject.SetActive(on);
-            var next = _winPanel.transform.Find("NextBtn");
-            if (next != null) next.gameObject.SetActive(on);
-            var home = _winPanel.transform.Find("HomeBtn");
-            if (home != null) home.gameObject.SetActive(on);
-            if (_skip != null) _skip.gameObject.SetActive(on);
+            for (int i = 0; i < _winPanel.transform.childCount; i++)
+            {
+                var child = _winPanel.transform.GetChild(i);
+                string n = child.name;
+                if (n == "Title" || n == "WinRug" || n == "Fill" || n == "LangEn" || n == "LangTr" || n == "HangBtn") continue;
+                child.gameObject.SetActive(on);
+            }
         }
 
         public void ShowBadge(string text, Color color)
