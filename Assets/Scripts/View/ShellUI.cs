@@ -288,7 +288,7 @@ namespace Rugtopia.View
             if (_scroll != null)
             {
                 float view = 900f;
-                float target = Mathf.Clamp(90f + current * step - view * 0.45f, 0f, Mathf.Max(0f, height - view));
+                float target = Mathf.Clamp(40f + current * step - view * 0.58f, 0f, Mathf.Max(0f, height - view));
                 _pathContent.anchoredPosition = new Vector2(0f, target);
             }
         }
@@ -621,10 +621,13 @@ namespace Rugtopia.View
                 else
                 {
                     Sprite[] icons = { Glyphs.SlotIcon, Glyphs.CombIcon, Glyphs.ShuttleIcon };
+                    // The slot and shuttle marks sit in a short band of their sprite, so their boxes are larger to match the comb.
+                    float[] scale = { 1.45f, 1f, 1.35f };
                     for (int k = 0; k < 3; k++)
                     {
-                        float ix = 0.12f + k * 0.28f;
-                        var icon = Panel(cell, "B" + k, new Vector2(ix, 0.36f), new Vector2(ix + 0.20f, 0.56f), ThemeConfig.Ink);
+                        float cx = 0.22f + k * 0.28f;
+                        float s = 0.16f * scale[k];
+                        var icon = Panel(cell, "B" + k, new Vector2(cx - s * 0.5f, 0.46f - s * 0.55f), new Vector2(cx + s * 0.5f, 0.46f + s * 0.55f), ThemeConfig.Ink);
                         var ii = icon.GetComponent<Image>();
                         ii.sprite = icons[k];
                         ii.preserveAspect = true;
@@ -679,7 +682,7 @@ namespace Rugtopia.View
             prize.GetComponent<Image>().type = Image.Type.Sliced;
             var prizeText = Txt(prize, "T", Vector2.zero, Vector2.one, "+1", 22, TextAnchor.MiddleCenter, ViewKit.Ink);
             prizeText.raycastTarget = false;
-            Txt(card.transform, "PrizeLabel", new Vector2(0.58f, 0.32f), new Vector2(0.98f, 0.44f), Copy.Get("streakReward"), 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Txt(card.transform, "PrizeLabel", new Vector2(0.66f, 0.32f), new Vector2(0.98f, 0.44f), Copy.Get("streakReward"), 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             _streakFoot = Txt(card.transform, "Reset", new Vector2(0.08f, 0.08f), new Vector2(0.92f, 0.24f), Copy.Get("streakReset"), 22, TextAnchor.MiddleCenter, ThemeConfig.Muted);
         }
 
