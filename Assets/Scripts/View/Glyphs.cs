@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart, _restart, _playMark;
 
         public static Sprite Of(char c)
         {
@@ -38,6 +38,7 @@ namespace Rugtopia.View
         public static Sprite LinePath { get { if (_linePath == null) _linePath = MakeLinePath(); return _linePath; } }
         public static Sprite LineGift { get { if (_lineGift == null) _lineGift = MakeLineGift(); return _lineGift; } }
         public static Sprite LineFlame { get { if (_lineFlame == null) _lineFlame = MakeLineFlame(); return _lineFlame; } }
+        public static Sprite PlayMark { get { if (_playMark == null) _playMark = MakePlayMark(); return _playMark; } }
         public static Sprite Gear { get { if (_gear == null) _gear = MakeGear(); return _gear; } }
         public static Sprite Heart { get { if (_heart == null) _heart = MakeHeart(); return _heart; } }
         public static Sprite Restart { get { if (_restart == null) _restart = MakeRestart(); return _restart; } }
@@ -307,16 +308,26 @@ namespace Rugtopia.View
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
 
+        static Sprite MakePlayMark()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            FillTri(px, n, 34f, 22f, 34f, 106f, 104f, 64f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
         static Sprite MakeLinePath()
         {
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            StrokeLine(px, n, 34f, 96f, 64f, 64f, 5.5f);
-            StrokeLine(px, n, 64f, 64f, 96f, 34f, 5.5f);
-            StrokeDisc(px, n, 34f, 96f, 11f, 5f);
-            StrokeDisc(px, n, 64f, 64f, 11f, 5f);
-            StrokeDisc(px, n, 96f, 34f, 11f, 5f);
+            StrokeLine(px, n, 30f, 98f, 64f, 64f, 16f);
+            StrokeLine(px, n, 64f, 64f, 98f, 30f, 16f);
+            FillDisc(px, n, 30f, 98f, 16f);
+            FillDisc(px, n, 64f, 64f, 16f);
+            FillDisc(px, n, 98f, 30f, 16f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -326,12 +337,12 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            StrokeRect(px, n, 34f, 22f, 94f, 74f, 6f);
-            FillRect(px, n, 58f, 22f, 70f, 74f);
-            FillRect(px, n, 34f, 56f, 94f, 68f);
-            StrokeDisc(px, n, 50f, 90f, 14f, 5.5f);
-            StrokeDisc(px, n, 78f, 90f, 14f, 5.5f);
-            FillDisc(px, n, 64f, 78f, 7f);
+            FillRect(px, n, 26f, 18f, 102f, 76f);
+            FillDisc(px, n, 44f, 90f, 16f);
+            FillDisc(px, n, 84f, 90f, 16f);
+            FillDisc(px, n, 64f, 76f, 12f);
+            ClearRect(px, n, 57f, 18f, 71f, 68f);
+            ClearRect(px, n, 26f, 46f, 102f, 58f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -341,20 +352,35 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
+            Tongue(px, n, 48f, 22f, 72f, 26f);
+            Tongue(px, n, 80f, 18f, 78f, 26f);
+            Tongue(px, n, 64f, 12f, 106f, 32f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static void Tongue(Color[] px, int n, float cx, float baseY, float height, float width)
+        {
             for (int y = 0; y < n; y++)
             for (int x = 0; x < n; x++)
             {
-                float u = (x + 0.5f) / n;
-                float v = (y + 0.5f) / n;
-                float taper = Mathf.Lerp(0.34f, 0.04f, Mathf.Clamp01((v - 0.18f) / 0.72f));
-                float dx = Mathf.Abs(u - 0.5f);
-                bool outer = dx < taper && v > 0.14f && v < 0.92f;
-                float innerT = taper * 0.55f;
-                bool inner = dx < innerT && v > 0.24f && v < 0.78f;
-                if (outer && !inner) px[y * n + x] = Color.white;
+                float t = (y - baseY) / height;
+                if (t < 0f || t > 1f) continue;
+                float belly = Mathf.Sin(Mathf.Clamp01(t * 0.9f) * Mathf.PI);
+                float half = width * Mathf.Lerp(0.78f, 0f, t) * (0.5f + 0.85f * belly);
+                if (Mathf.Abs(x - cx) <= half) px[y * n + x] = Color.white;
             }
-            t.SetPixels(px); t.Apply();
-            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static void ClearRect(Color[] px, int n, float x0, float y0, float x1, float y1)
+        {
+            int a = Mathf.Clamp(Mathf.RoundToInt(Mathf.Min(x0, x1)), 0, n - 1);
+            int b = Mathf.Clamp(Mathf.RoundToInt(Mathf.Max(x0, x1)), 0, n - 1);
+            int c = Mathf.Clamp(Mathf.RoundToInt(Mathf.Min(y0, y1)), 0, n - 1);
+            int d = Mathf.Clamp(Mathf.RoundToInt(Mathf.Max(y0, y1)), 0, n - 1);
+            for (int y = c; y <= d; y++)
+            for (int x = a; x <= b; x++)
+                px[y * n + x] = Color.clear;
         }
 
         static void FillRect(Color[] px, int n, float x0, float y0, float x1, float y1)
