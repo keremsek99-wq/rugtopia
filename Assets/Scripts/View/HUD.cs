@@ -671,9 +671,7 @@ namespace Rugtopia.View
                 rt.offsetMax = Vector2.zero;
             }
             _failBody.text = "";
-            _continueLabel.alignment = TextAnchor.MiddleLeft;
-            _continueLabel.supportRichText = true;
-            _continueLabel.text = TrackContinue(WrapContinue(continueLabel), _continueLabel);
+            SetFailCopy(WrapContinue(continueLabel));
             ShowDim(false);
             _failPanel.SetActive(true);
             _failPanel.transform.SetAsLastSibling();
@@ -769,44 +767,79 @@ namespace Rugtopia.View
             return s.Substring(0, split).TrimEnd() + "\n" + s.Substring(split).TrimStart();
         }
 
-        static string TrackContinue(string wrapped, Text probe)
+        void SetFailCopy(string wrapped)
         {
-            if (probe == null || string.IsNullOrEmpty(wrapped)) return wrapped;
-            int nl = wrapped.IndexOf('\n');
-            if (nl < 0) return wrapped;
+            if (_continueLabel == null) return;
+            var lines = _continueLabel.transform.parent;
+            var tracked = lines.Find("Tracked");
+            int nl = string.IsNullOrEmpty(wrapped) ? -1 : wrapped.IndexOf('\n');
+            if (nl < 0)
+            {
+                _continueLabel.text = wrapped ?? "";
+                _continueLabel.alignment = TextAnchor.MiddleCenter;
+                if (tracked != null) tracked.gameObject.SetActive(false);
+                return;
+            }
             string top = wrapped.Substring(0, nl);
-            string bottom = wrapped.Substring(nl + 1);
-            probe.text = top;
-            float target = probe.preferredWidth;
-            if (target < 8f) return wrapped;
-            string best = bottom;
-            float bestGap = 9999f;
-            for (int size = 0; size <= 36; size++)
+            string bottom = wrapped.Substring(nl + 1).Replace(" ", "");
+            _continueLabel.text = top;
+            _continueLabel.alignment = TextAnchor.MiddleLeft;
+            if (tracked == null)
             {
-                string trial = size == 0 ? bottom : Spread(bottom, size);
-                probe.text = trial;
-                float w = probe.preferredWidth;
-                float gap = Mathf.Abs(w - target);
-                if (gap < bestGap)
+                var go = new GameObject("Tracked", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+                go.transform.SetParent(lines, false);
+                var h = go.GetComponent<HorizontalLayoutGroup>();
+                h.childAlignment = TextAnchor.MiddleLeft;
+                h.childControlWidth = true;
+                h.childControlHeight = true;
+                h.childForceExpandWidth = false;
+                h.childForceExpandHeight = false;
+                var fit = go.GetComponent<ContentSizeFitter>();
+                fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                tracked = go.transform;
+            }
+            tracked.gameObject.SetActive(true);
+            for (int i = tracked.childCount - 1; i >= 0; i--)
+            {
+                var child = tracked.GetChild(i).gameObject;
+                if (Application.isPlaying) Destroy(child);
+                else DestroyImmediate(child);
+            }
+            var outline = _continueLabel.GetComponent<Outline>();
+            var shadow = _continueLabel.GetComponent<Shadow>();
+            for (int i = 0; i < bottom.Length; i++)
+            {
+                var glyph = Txt(tracked, "C" + i, Vector2.zero, Vector2.one, bottom[i].ToString(), _continueLabel.fontSize, TextAnchor.MiddleCenter, _continueLabel.color);
+                glyph.horizontalOverflow = HorizontalWrapMode.Overflow;
+                glyph.verticalOverflow = VerticalWrapMode.Overflow;
+                if (outline != null)
                 {
-                    bestGap = gap;
-                    best = trial;
+                    var key = glyph.gameObject.AddComponent<Outline>();
+                    key.effectColor = outline.effectColor;
+                    key.effectDistance = outline.effectDistance;
                 }
-                if (w > target + 2f) break;
+                if (shadow != null)
+                {
+                    var drop = glyph.gameObject.AddComponent<Shadow>();
+                    drop.effectColor = shadow.effectColor;
+                    drop.effectDistance = shadow.effectDistance;
+                }
             }
-            return top + "\n" + best;
-        }
-
-        static string Spread(string line, int spaceSize)
-        {
-            var sb = new System.Text.StringBuilder();
-            string gap = "<size=" + spaceSize + "> </size>";
-            for (int i = 0; i < line.Length; i++)
+            float target = LayoutUtility.GetPreferredWidth(_continueLabel.rectTransform);
+            var layout = tracked.GetComponent<HorizontalLayoutGroup>();
+            float spacing = 0f;
+            if (target > 8f && bottom.Length > 1)
             {
-                if (i > 0) sb.Append(gap);
-                if (line[i] != ' ') sb.Append(line[i]);
+                for (float s = 0f; s <= 28f; s += 0.5f)
+                {
+                    layout.spacing = s;
+                    float width = LayoutUtility.GetPreferredWidth(tracked.GetComponent<RectTransform>());
+                    if (width <= target + 1f) spacing = s;
+                    else break;
+                }
             }
-            return sb.ToString();
+            layout.spacing = spacing;
         }
 
         static void SetNamed(GameObject panel, string child, bool on)
@@ -857,7 +890,19 @@ namespace Rugtopia.View
                 float markSize = markPx > 0 ? markPx : (font >= 40 ? 42f : 28f);
                 le.preferredWidth = le.preferredHeight = markSize;
             }
-            var text = Txt(row, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
+            var linesGo = new GameObject("Lines", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            linesGo.transform.SetParent(row, false);
+            var lines = linesGo.GetComponent<VerticalLayoutGroup>();
+            lines.childAlignment = TextAnchor.MiddleLeft;
+            lines.spacing = -6f;
+            lines.childControlWidth = true;
+            lines.childControlHeight = true;
+            lines.childForceExpandWidth = false;
+            lines.childForceExpandHeight = false;
+            var linesFit = linesGo.GetComponent<ContentSizeFitter>();
+            linesFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            linesFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var text = Txt(linesGo.transform, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             var key = text.gameObject.AddComponent<Outline>();
