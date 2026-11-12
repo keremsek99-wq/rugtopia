@@ -245,6 +245,13 @@ namespace Rugtopia.EditorTools
             save.hung = new System.Collections.Generic.List<int> { 0, 5, 9 };
             hud.ShowMenu(save.coins, 12);
             Grab(cam, rt, hud, dir, "shell-home-mid.png", w, h);
+            save.maxLevel = 20;
+            save.streak = 2;
+            hud.ShowMenu(save.coins, 21);
+            Grab(cam, rt, hud, dir, "shell-home-streak.png", w, h);
+            save.maxLevel = 11;
+            save.streak = 0;
+            hud.ShowMenu(save.coins, 12);
             hud.ShowDaily();
             Grab(cam, rt, hud, dir, "shell-daily.png", w, h);
             save.maxLevel = 19;

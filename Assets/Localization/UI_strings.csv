@@ -180,3 +180,4 @@ Key,English(en),Turkish(tr)
 "day","Day","Gün"
 "toHome","Home","Ana sayfa"
 "streakReset","A fail resets the streak","Bir yenilgi seriyi sıfırlar"
+"rugsProgress","{0} / {1} rugs","{0} / {1} halı"

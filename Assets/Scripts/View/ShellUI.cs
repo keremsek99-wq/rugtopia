@@ -13,12 +13,13 @@ namespace Rugtopia.View
         public event Action<string> Clicked;
 
         GameObject _home, _path, _daily, _gallery, _streak, _settings;
-        RectTransform _hero, _galleryStrip, _playBtn;
-        Text _playSub, _livesText, _coinsText, _timerText, _dailyLock, _streakLock, _streakReward;
+        RectTransform _hero, _playBtn;
+        Text _playSub, _livesText, _coinsText, _timerText, _dailyLock, _streakLock, _streakReward, _progress;
         Image[] _pips;
         Image[] _modalPips;
         Text _streakCount, _streakFoot;
-        Image _dailyBadge;
+        Image _dailyBadge, _pathIcon, _dailyIcon, _streakIcon;
+        GameObject _progressGo;
         ScrollRect _scroll;
         RectTransform _pathContent;
 
@@ -121,14 +122,30 @@ namespace Rugtopia.View
             }
             bool daily = Economy.DailyUnlocked;
             bool streak = Economy.StreakUnlocked;
-            if (_dailyLock != null) _dailyLock.text = daily ? Copy.Get("dailyReady") : Copy.Get("opens10");
+            var clay = ViewKit.Hex("#C4552A");
+            var mute = new Color(0.62f, 0.50f, 0.40f, 1f);
+            if (_dailyLock != null)
+            {
+                _dailyLock.gameObject.SetActive(!daily);
+                if (!daily) _dailyLock.text = Copy.Get("opens10");
+            }
+            if (_dailyIcon != null) _dailyIcon.color = daily ? clay : mute;
             if (_dailyBadge != null) _dailyBadge.gameObject.SetActive(daily && !Economy.DailyClaimedToday());
-            if (_streakLock != null) _streakLock.text = streak ? d.streak + "/3" : Copy.Get("opens20");
+            if (_streakLock != null)
+            {
+                _streakLock.gameObject.SetActive(true);
+                _streakLock.text = streak ? d.streak + "/3" : Copy.Get("opens20");
+            }
+            if (_streakIcon != null) _streakIcon.color = streak ? clay : mute;
+            if (_pathIcon != null) _pathIcon.color = clay;
             if (_streakReward != null) _streakReward.text = streak ? Copy.Get("streakReward") : "";
-            PlaceHome(Economy.GalleryUnlocked);
+            bool gallery = Economy.GalleryUnlocked;
+            if (_progressGo != null) _progressGo.SetActive(gallery);
+            if (_progress != null && gallery)
+                _progress.text = string.Format(Copy.Get("rugsProgress"), d.maxLevel, LevelLoader.Count);
+            PlaceHome(gallery);
             PaintPips(d.streak, streak);
             RebuildHero(d.maxLevel <= 0 ? 0 : d.maxLevel - 1);
-            RebuildStrip();
         }
 
         void PaintPips(int streak, bool on)
@@ -145,40 +162,7 @@ namespace Rugtopia.View
             if (_hero == null) return;
             for (int i = _hero.childCount - 1; i >= 0; i--) Kill(_hero.GetChild(i).gameObject);
             var data = LevelLoader.Get(Mathf.Clamp(levelIndex, 0, LevelLoader.Count - 1));
-            RugPortrait.Draw(_hero, data.rows, true, false);
-        }
-
-        void RebuildStrip()
-        {
-            if (_galleryStrip == null) return;
-            for (int i = _galleryStrip.childCount - 1; i >= 0; i--) Kill(_galleryStrip.GetChild(i).gameObject);
-            bool on = Economy.GalleryUnlocked;
-            _galleryStrip.gameObject.SetActive(on);
-            if (!on) return;
-            var hung = SaveService.Data.hung;
-            if (hung == null || hung.Count == 0)
-            {
-                var note = Txt(_galleryStrip, "Empty", Vector2.zero, Vector2.one, Copy.Get("galleryEmpty"), 26, TextAnchor.MiddleCenter, ThemeConfig.Muted);
-                note.raycastTarget = false;
-                return;
-            }
-            int n = Mathf.Min(4, hung.Count);
-            // Square slots so every thumb gets the same thin frame and the pattern fills it.
-            const float side = 0.20f;
-            float gap = 0.03f;
-            float start = 0.5f - (n * side + (n - 1) * gap) * 0.5f;
-            for (int i = 0; i < n; i++)
-            {
-                float x0 = start + i * (side + gap);
-                var box = new GameObject("Mini" + i, typeof(RectTransform));
-                box.transform.SetParent(_galleryStrip, false);
-                var rt = box.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(x0, 0.06f);
-                rt.anchorMax = new Vector2(x0 + side, 0.94f);
-                rt.offsetMin = rt.offsetMax = Vector2.zero;
-                var level = LevelLoader.Get(Mathf.Clamp(hung[hung.Count - 1 - i], 0, LevelLoader.Count - 1));
-                RugPortrait.Draw(rt, level.rows, false, true);
-            }
+            RugPortrait.Draw(_hero, data.rows, true, true);
         }
 
         void RefreshPath()
@@ -373,16 +357,22 @@ namespace Rugtopia.View
 
         void PlaceHome(bool gallery)
         {
-            SetBox(GameObjectOf(_hero), 0.16f, gallery ? 0.56f : 0.50f, 0.84f, 0.82f);
+            // Square rug: 0.74 of the 1080-wide reference is 0.342 of the 2340 height.
+            const float rugH = 0.342f;
+            float rugTop = gallery ? 0.792f : 0.808f;
+            float rugBot = rugTop - rugH;
+            var mat = _home.transform.Find("HeroMat");
+            if (mat != null) SetBox(mat.gameObject, 0.13f, rugBot, 0.87f, rugTop);
             var shadow = _home.transform.Find("HeroShadow");
-            if (shadow != null) SetBox(shadow.gameObject, 0.2f, gallery ? 0.545f : 0.485f, 0.82f, gallery ? 0.60f : 0.54f);
-            if (_galleryStrip != null) SetBox(_galleryStrip.gameObject, 0.08f, 0.475f, 0.92f, 0.55f);
-            if (_playBtn != null) SetBox(_playBtn.gameObject, 0.1f, gallery ? 0.355f : 0.385f, 0.9f, gallery ? 0.455f : 0.485f);
-            float y0 = gallery ? 0.16f : 0.18f;
-            float y1 = gallery ? 0.33f : 0.36f;
-            PlaceCard("PathCard", 0.05f, y0, 0.33f, y1);
-            PlaceCard("DailyCard", 0.36f, y0, 0.64f, y1);
-            PlaceCard("StreakCard", 0.67f, y0, 0.95f, y1);
+            if (shadow != null) SetBox(shadow.gameObject, 0.13f, rugBot - 0.012f, 0.87f, rugTop - 0.012f);
+            if (_progressGo != null) SetBox(_progressGo, 0.18f, rugBot - 0.048f, 0.82f, rugBot - 0.012f);
+            float playTop = (gallery ? rugBot - 0.062f : rugBot - 0.028f);
+            if (_playBtn != null) SetBox(_playBtn.gameObject, 0.08f, playTop - 0.066f, 0.92f, playTop);
+            var playShadow = _home.transform.Find("PlayShadow");
+            if (playShadow != null) SetBox(playShadow.gameObject, 0.08f, playTop - 0.074f, 0.92f, playTop - 0.008f);
+            PlaceCard("PathCard", 0.045f, 0.040f, 0.325f, 0.155f);
+            PlaceCard("DailyCard", 0.360f, 0.040f, 0.640f, 0.155f);
+            PlaceCard("StreakCard", 0.675f, 0.040f, 0.955f, 0.155f);
         }
 
         void PlaceCard(string name, float x0, float y0, float x1, float y1)
@@ -390,7 +380,7 @@ namespace Rugtopia.View
             var t = _home.transform.Find(name);
             if (t != null) SetBox(t.gameObject, x0, y0, x1, y1);
             var sh = _home.transform.Find(name + "Sh");
-            if (sh != null) SetBox(sh.gameObject, x0 + 0.008f, y0 - 0.008f, x1 + 0.008f, y1 - 0.012f);
+            if (sh != null) SetBox(sh.gameObject, x0, y0 - 0.008f, x1, y1 - 0.008f);
         }
 
         static void SetBox(GameObject go, float x0, float y0, float x1, float y1)
@@ -405,67 +395,97 @@ namespace Rugtopia.View
 
         void BuildHome(Transform root)
         {
-            var bar = Panel(root, "Top", new Vector2(0.04f, 0.915f), new Vector2(0.96f, 0.975f), new Color(0, 0, 0, 0));
+            var gear = Btn(root, "Gear", new Vector2(0.048f, 0.934f), new Vector2(0.115f, 0.965f), "", "settings", false);
+            gear.GetComponent<Image>().color = Color.white;
+            gear.transform.Find("Label").gameObject.SetActive(false);
+            var gearMark = Panel(gear.transform, "Icon", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ThemeConfig.Ink);
+            var gearImg = gearMark.GetComponent<Image>();
+            gearImg.sprite = Glyphs.Gear;
+            gearImg.preserveAspect = true;
+            gearImg.raycastTarget = false;
+
+            var bar = Panel(root, "Top", new Vector2(0.36f, 0.932f), new Vector2(0.955f, 0.967f), new Color(0, 0, 0, 0));
             var row = bar.gameObject.AddComponent<HorizontalLayoutGroup>();
-            row.childAlignment = TextAnchor.MiddleLeft;
-            row.spacing = 14f;
+            row.childAlignment = TextAnchor.MiddleRight;
+            row.spacing = 10f;
             row.childControlWidth = true;
             row.childControlHeight = true;
             row.childForceExpandWidth = false;
             row.childForceExpandHeight = false;
-            row.padding = new RectOffset(0, 0, 6, 6);
-            var gear = Btn(bar, "Gear", Vector2.zero, Vector2.one, "⚙", "settings", false);
-            var gle = gear.gameObject.AddComponent<LayoutElement>();
-            gle.preferredWidth = 84f;
-            gle.preferredHeight = 84f;
             var spacer = new GameObject("Spacer", typeof(RectTransform));
             spacer.transform.SetParent(bar, false);
-            var spe = spacer.AddComponent<LayoutElement>();
-            spe.flexibleWidth = 1f;
+            spacer.AddComponent<LayoutElement>().flexibleWidth = 1f;
             var lives = Chip(bar, "Lives");
-            Txt(lives, "Heart", Vector2.zero, Vector2.one, "♥", 30, TextAnchor.MiddleCenter, new Color(0.86f, 0.28f, 0.34f));
-            Preferred(lives.Find("Heart").gameObject, 32f, 44f);
-            _livesText = Txt(lives, "N", Vector2.zero, Vector2.one, "5", 30, TextAnchor.MiddleLeft, ViewKit.Cream);
-            Preferred(_livesText.gameObject, 28f, 44f);
-            _timerText = Txt(lives, "T", Vector2.zero, Vector2.one, "", 16, TextAnchor.MiddleLeft, ViewKit.Gold);
-            Preferred(_timerText.gameObject, 58f, 44f);
+            lives.GetComponent<Image>().color = Color.white;
+            var heart = Panel(lives, "Heart", Vector2.zero, Vector2.one, new Color(0.86f, 0.28f, 0.34f));
+            var heartImg = heart.GetComponent<Image>();
+            heartImg.sprite = Glyphs.Heart;
+            heartImg.preserveAspect = true;
+            heartImg.raycastTarget = false;
+            Preferred(heart.gameObject, 26f, 26f);
+            _livesText = Txt(lives, "N", Vector2.zero, Vector2.one, "5", 28, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Preferred(_livesText.gameObject, 24f, 36f);
+            _timerText = Txt(lives, "T", Vector2.zero, Vector2.one, "", 16, TextAnchor.MiddleCenter, ViewKit.Gold);
+            Preferred(_timerText.gameObject, 52f, 36f);
             _timerText.gameObject.SetActive(false);
             var coins = Chip(bar, "Coins");
+            coins.GetComponent<Image>().color = Color.white;
             var coinIcon = Panel(coins, "Icon", Vector2.zero, Vector2.one, Color.white);
             var ci = coinIcon.GetComponent<Image>();
             ci.sprite = ArtKit.Coin;
+            ci.preserveAspect = true;
             ci.raycastTarget = false;
-            Preferred(coinIcon.gameObject, 36f, 36f);
-            _coinsText = Txt(coins, "N", Vector2.zero, Vector2.one, "300", 30, TextAnchor.MiddleLeft, ViewKit.Cream);
-            Preferred(_coinsText.gameObject, 72f, 40f);
+            Preferred(coinIcon.gameObject, 28f, 28f);
+            _coinsText = Txt(coins, "N", Vector2.zero, Vector2.one, "300", 28, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Preferred(_coinsText.gameObject, 64f, 36f);
 
-            Txt(root, "Word", new Vector2(0.08f, 0.855f), new Vector2(0.92f, 0.91f), "Rugtopia", 72, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            Txt(root, "Tag", new Vector2(0.1f, 0.82f), new Vector2(0.9f, 0.855f), Copy.Get("tagline"), 30, TextAnchor.MiddleCenter, ViewKit.Gold);
+            var word = Txt(root, "Word", new Vector2(0.08f, 0.868f), new Vector2(0.92f, 0.918f), "Rugtopia", 64, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            word.alignment = TextAnchor.LowerCenter;
+            var tag = Txt(root, "Tag", new Vector2(0.12f, 0.832f), new Vector2(0.88f, 0.868f), Copy.Get("tagline"), 28, TextAnchor.UpperCenter, ViewKit.Gold);
+            tag.alignment = TextAnchor.UpperCenter;
 
-            var shadow = Panel(root, "HeroShadow", new Vector2(0.2f, 0.485f), new Vector2(0.82f, 0.54f), new Color(0.25f, 0.12f, 0.06f, 0.28f));
+            var shadow = Panel(root, "HeroShadow", new Vector2(0.13f, 0.46f), new Vector2(0.87f, 0.80f), new Color(0.28f, 0.16f, 0.08f, 0.16f));
             shadow.GetComponent<Image>().sprite = ArtKit.UiRound;
             shadow.GetComponent<Image>().type = Image.Type.Sliced;
-            _hero = Panel(root, "Hero", new Vector2(0.16f, 0.50f), new Vector2(0.84f, 0.82f), new Color(0, 0, 0, 0)).GetComponent<RectTransform>();
-            _galleryStrip = Panel(root, "Strip", new Vector2(0.08f, 0.475f), new Vector2(0.92f, 0.55f), new Color(0, 0, 0, 0)).GetComponent<RectTransform>();
+            var mat = Panel(root, "HeroMat", new Vector2(0.13f, 0.472f), new Vector2(0.87f, 0.812f), ViewKit.Hex("#E6D3BC"));
+            mat.GetComponent<Image>().sprite = ArtKit.UiRound;
+            mat.GetComponent<Image>().type = Image.Type.Sliced;
+            var heroBtn = mat.gameObject.AddComponent<Button>();
+            heroBtn.onClick.AddListener(() => Fire("gallery"));
+            _hero = Panel(mat, "Hero", new Vector2(0.045f, 0.04f), new Vector2(0.955f, 0.96f), new Color(0, 0, 0, 0)).GetComponent<RectTransform>();
 
-            var play = Btn(root, "Play", new Vector2(0.1f, 0.385f), new Vector2(0.9f, 0.485f), Copy.Get("play"), "play", true);
+            _progressGo = Btn(root, "Progress", new Vector2(0.18f, 0.42f), new Vector2(0.82f, 0.458f), "", "gallery", false).gameObject;
+            _progressGo.GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            var progLabel = _progressGo.transform.Find("Label").GetComponent<Text>();
+            progLabel.gameObject.SetActive(false);
+            _progress = Txt(_progressGo.transform, "Count", Vector2.zero, Vector2.one, "", 26, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            _progressGo.SetActive(false);
+
+            var playShadow = Panel(root, "PlayShadow", new Vector2(0.08f, 0.30f), new Vector2(0.92f, 0.366f), new Color(0.45f, 0.18f, 0.08f, 0.22f));
+            playShadow.GetComponent<Image>().sprite = ArtKit.UiRound;
+            playShadow.GetComponent<Image>().type = Image.Type.Sliced;
+            var play = Btn(root, "Play", new Vector2(0.08f, 0.312f), new Vector2(0.92f, 0.378f), Copy.Get("play"), "play", true);
             _playBtn = play.GetComponent<RectTransform>();
-            play.gameObject.AddComponent<PlayBreath>();
-            var playLabel = play.transform.Find("Label").GetComponent<RectTransform>();
-            playLabel.anchorMin = new Vector2(0.08f, 0.50f);
-            playLabel.anchorMax = new Vector2(0.92f, 0.74f);
-            _playSub = Txt(play.transform, "Sub", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.50f), "Level 1", 26, TextAnchor.MiddleCenter, new Color(1f, 0.93f, 0.75f, 1f));
+            var playText = play.transform.Find("Label").GetComponent<Text>();
+            playText.color = Color.white;
+            playText.fontSize = 40;
+            playText.alignment = TextAnchor.MiddleCenter;
+            var playLabel = playText.rectTransform;
+            playLabel.anchorMin = new Vector2(0.08f, 0.42f);
+            playLabel.anchorMax = new Vector2(0.92f, 0.78f);
+            playLabel.offsetMin = playLabel.offsetMax = Vector2.zero;
+            _playSub = Txt(play.transform, "Sub", new Vector2(0.08f, 0.16f), new Vector2(0.92f, 0.44f), "Level 1", 22, TextAnchor.MiddleCenter, new Color(1f, 0.93f, 0.78f, 1f));
             _playSub.raycastTarget = false;
 
-            BuildHub(root, "PathCard", 0.05f, Copy.Get("path"), "path");
-            BuildHub(root, "DailyCard", 0.36f, Copy.Get("daily"), "daily");
-            BuildHub(root, "StreakCard", 0.67f, Copy.Get("streak"), "streak");
+            BuildHub(root, "PathCard", Glyphs.LinePath, Copy.Get("path"), "path");
+            BuildHub(root, "DailyCard", Glyphs.LineGift, Copy.Get("daily"), "daily");
+            BuildHub(root, "StreakCard", Glyphs.LineFlame, Copy.Get("streak"), "streak");
+            _pathIcon = root.Find("PathCard/Icon").GetComponent<Image>();
+            _dailyIcon = root.Find("DailyCard/Icon").GetComponent<Image>();
+            _streakIcon = root.Find("StreakCard/Icon").GetComponent<Image>();
             _dailyLock = root.Find("DailyCard/Lock").GetComponent<Text>();
             _dailyBadge = root.Find("DailyCard/Badge").GetComponent<Image>();
             _streakLock = root.Find("StreakCard/Lock").GetComponent<Text>();
-            _streakReward = root.Find("StreakCard/Reward").GetComponent<Text>();
-            _pips = new Image[3];
-            for (int i = 0; i < 3; i++) _pips[i] = root.Find("StreakCard/Pip" + i).GetComponent<Image>();
         }
 
         RectTransform Chip(Transform parent, string name)
@@ -497,61 +517,44 @@ namespace Rugtopia.View
             le.preferredHeight = h;
         }
 
-        void BuildHub(Transform root, string name, float x, string title, string id)
+        void BuildHub(Transform root, string name, Sprite icon, string title, string id)
         {
-            var shadow = Panel(root, name + "Sh", new Vector2(x + 0.008f, 0.172f), new Vector2(x + 0.298f, 0.348f), new Color(0.25f, 0.12f, 0.06f, 0.22f));
+            var shadow = Panel(root, name + "Sh", new Vector2(0.05f, 0.032f), new Vector2(0.33f, 0.147f), new Color(0.30f, 0.18f, 0.10f, 0.10f));
             shadow.GetComponent<Image>().sprite = ArtKit.UiRound;
             shadow.GetComponent<Image>().type = Image.Type.Sliced;
-            var card = Btn(root, name, new Vector2(x, 0.18f), new Vector2(x + 0.28f, 0.36f), "", id, false);
-            card.GetComponent<Image>().color = ViewKit.Hex("#F6E7CF");
-            Txt(card.transform, "Title", new Vector2(0.06f, 0.72f), new Vector2(0.94f, 0.96f), title, 24, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-            var lockT = Txt(card.transform, "Lock", new Vector2(0.06f, 0.06f), new Vector2(0.94f, 0.32f), "", 16, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            var card = Btn(root, name, new Vector2(0.05f, 0.04f), new Vector2(0.33f, 0.155f), "", id, false);
+            card.GetComponent<Image>().color = Color.white;
+            var layout = card.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = 2f;
+            layout.padding = new RectOffset(8, 8, 14, 12);
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            var blank = card.transform.Find("Label");
+            if (blank != null) blank.gameObject.SetActive(false);
+            var glyph = Panel(card.transform, "Icon", Vector2.zero, Vector2.one, ViewKit.Hex("#C4552A"));
+            var gi = glyph.GetComponent<Image>();
+            gi.sprite = icon;
+            gi.preserveAspect = true;
+            gi.raycastTarget = false;
+            Preferred(glyph.gameObject, 52f, 52f);
+            var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 22, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Preferred(titleText.gameObject, 180f, 32f);
+            var lockT = Txt(card.transform, "Lock", Vector2.zero, Vector2.one, "", 15, TextAnchor.MiddleCenter, ThemeConfig.Muted);
             lockT.raycastTarget = false;
-            if (name == "PathCard")
-            {
-                // Card is taller than wide (about 302 x 421). A square dot is ~36px.
-                Color[] colors = { ViewKit.Hex("#5C3B28"), ViewKit.Hex("#8A5A3C"), ViewKit.Gold };
-                for (int i = 0; i < 3; i++)
-                {
-                    float py = 0.36f + i * 0.12f;
-                    var dot = Panel(card.transform, "Dot" + i, new Vector2(0.44f, py), new Vector2(0.56f, py + 0.085f), colors[i]);
-                    var di = dot.GetComponent<Image>();
-                    di.sprite = Glyphs.SolidCircle;
-                    di.preserveAspect = true;
-                }
-            }
+            Preferred(lockT.gameObject, 180f, 24f);
+            lockT.gameObject.SetActive(false);
             if (name == "DailyCard")
             {
-                var box = Panel(card.transform, "Gift", new Vector2(0.28f, 0.32f), new Vector2(0.72f, 0.62f), ViewKit.Hex("#E7B15A"));
-                var vert = Panel(box, "V", new Vector2(0.38f, 0f), new Vector2(0.62f, 1f), ViewKit.Hex("#C0392B"));
-                vert.GetComponent<Image>().raycastTarget = false;
-                var horiz = Panel(box, "H", new Vector2(0f, 0.36f), new Vector2(1f, 0.64f), ViewKit.Hex("#C0392B"));
-                horiz.GetComponent<Image>().raycastTarget = false;
-                var bowL = Panel(card.transform, "BowL", new Vector2(0.28f, 0.56f), new Vector2(0.50f, 0.72f), ViewKit.Hex("#C0392B"));
-                var bowR = Panel(card.transform, "BowR", new Vector2(0.50f, 0.56f), new Vector2(0.72f, 0.72f), ViewKit.Hex("#C0392B"));
-                bowL.GetComponent<Image>().sprite = Glyphs.SolidCircle;
-                bowR.GetComponent<Image>().sprite = Glyphs.SolidCircle;
-                bowL.GetComponent<Image>().preserveAspect = true;
-                bowR.GetComponent<Image>().preserveAspect = true;
-                var knot = Panel(card.transform, "Knot", new Vector2(0.44f, 0.58f), new Vector2(0.56f, 0.70f), ViewKit.Hex("#8E2A22"));
-                knot.GetComponent<Image>().sprite = Glyphs.SolidCircle;
-                knot.GetComponent<Image>().preserveAspect = true;
-                var badge = Panel(card.transform, "Badge", new Vector2(0.86f, 0.88f), new Vector2(0.96f, 0.97f), ViewKit.Hex("#C0392B"));
-                badge.GetComponent<Image>().sprite = Glyphs.SolidCircle;
-                badge.GetComponent<Image>().preserveAspect = true;
-            }
-            if (name == "StreakCard")
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    float px = 0.16f + i * 0.26f;
-                    var pip = Panel(card.transform, "Pip" + i, new Vector2(px, 0.40f), new Vector2(px + 0.18f, 0.58f), new Color(0.78f, 0.70f, 0.58f, 1f));
-                    var pipImg = pip.GetComponent<Image>();
-                    pipImg.sprite = Glyphs.SolidCircle;
-                    pipImg.preserveAspect = true;
-                }
-                var reward = Txt(card.transform, "Reward", new Vector2(0.04f, 0.22f), new Vector2(0.96f, 0.36f), "", 15, TextAnchor.MiddleCenter, ThemeConfig.Ink);
-                reward.raycastTarget = false;
+                var badge = Panel(card.transform, "Badge", new Vector2(0.72f, 0.72f), new Vector2(0.90f, 0.92f), ViewKit.Hex("#C0392B"));
+                var bi = badge.GetComponent<Image>();
+                bi.sprite = Glyphs.SolidCircle;
+                bi.preserveAspect = true;
+                var ignore = badge.gameObject.AddComponent<LayoutElement>();
+                ignore.ignoreLayout = true;
+                badge.gameObject.SetActive(false);
             }
         }
 

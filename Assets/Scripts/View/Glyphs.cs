@@ -5,7 +5,7 @@ namespace Rugtopia.View
     /// <summary>Flat motif sprites used on rug cells, NEXT chips and spools. Same set as the HTML prototype.</summary>
     public static class Glyphs
     {
-        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar;
+        static Sprite _diamond, _cross, _circle, _square, _star, _chevron, _box, _ring, _dot, _slot, _comb, _shuttle, _solidCircle, _solidStar, _linePath, _lineGift, _lineFlame, _gear, _heart;
 
         public static Sprite Of(char c)
         {
@@ -35,6 +35,11 @@ namespace Rugtopia.View
         public static Sprite ShuttleIcon { get { if (_shuttle == null) _shuttle = Boat(); return _shuttle; } }
         public static Sprite SolidCircle { get { if (_solidCircle == null) _solidCircle = HardDisc(); return _solidCircle; } }
         public static Sprite SolidStar { get { if (_solidStar == null) _solidStar = HardStar(); return _solidStar; } }
+        public static Sprite LinePath { get { if (_linePath == null) _linePath = MakeLinePath(); return _linePath; } }
+        public static Sprite LineGift { get { if (_lineGift == null) _lineGift = MakeLineGift(); return _lineGift; } }
+        public static Sprite LineFlame { get { if (_lineFlame == null) _lineFlame = MakeLineFlame(); return _lineFlame; } }
+        public static Sprite Gear { get { if (_gear == null) _gear = MakeGear(); return _gear; } }
+        public static Sprite Heart { get { if (_heart == null) _heart = MakeHeart(); return _heart; } }
 
         static Sprite Disc(bool ring)
         {
@@ -224,6 +229,150 @@ namespace Rugtopia.View
             }
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeGear()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            float mid = (n - 1) * 0.5f;
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = (x - mid) / mid, dy = (y - mid) / mid;
+                float rad = Mathf.Sqrt(dx * dx + dy * dy);
+                float ang = Mathf.Atan2(dy, dx);
+                float tooth = Mathf.Abs(Mathf.Repeat(ang / (Mathf.PI * 2f) * 8f, 1f) - 0.5f);
+                bool teeth = rad > 0.62f && rad < 0.94f && tooth < 0.28f;
+                bool ring = rad > 0.38f && rad < 0.62f;
+                bool hub = rad < 0.2f;
+                if (teeth || ring || hub) px[y * n + x] = Color.white;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeHeart()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float nx = (x - n * 0.5f) / (n * 0.36f);
+                float ny = (y - n * 0.42f) / (n * 0.36f);
+                float a = nx * nx + ny * ny - 1f;
+                if (a * a * a - nx * nx * ny * ny * ny < 0f) px[y * n + x] = Color.white;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeLinePath()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            StrokeLine(px, n, 34f, 96f, 64f, 64f, 5.5f);
+            StrokeLine(px, n, 64f, 64f, 96f, 34f, 5.5f);
+            StrokeDisc(px, n, 34f, 96f, 11f, 5f);
+            StrokeDisc(px, n, 64f, 64f, 11f, 5f);
+            StrokeDisc(px, n, 96f, 34f, 11f, 5f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeLineGift()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            StrokeRect(px, n, 34f, 22f, 94f, 74f, 6f);
+            FillRect(px, n, 58f, 22f, 70f, 74f);
+            FillRect(px, n, 34f, 56f, 94f, 68f);
+            StrokeDisc(px, n, 50f, 90f, 14f, 5.5f);
+            StrokeDisc(px, n, 78f, 90f, 14f, 5.5f);
+            FillDisc(px, n, 64f, 78f, 7f);
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static Sprite MakeLineFlame()
+        {
+            const int n = 128;
+            var t = Tex(n);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float u = (x + 0.5f) / n;
+                float v = (y + 0.5f) / n;
+                float taper = Mathf.Lerp(0.34f, 0.04f, Mathf.Clamp01((v - 0.18f) / 0.72f));
+                float dx = Mathf.Abs(u - 0.5f);
+                float outer = dx < taper && v > 0.14f && v < 0.92f;
+                float innerT = taper * 0.55f;
+                float inner = dx < innerT && v > 0.24f && v < 0.78f;
+                if (outer && !inner) px[y * n + x] = Color.white;
+            }
+            t.SetPixels(px); t.Apply();
+            return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        }
+
+        static void FillRect(Color[] px, int n, float x0, float y0, float x1, float y1)
+        {
+            int a = Mathf.Clamp(Mathf.RoundToInt(x0), 0, n - 1);
+            int b = Mathf.Clamp(Mathf.RoundToInt(x1), 0, n - 1);
+            int c = Mathf.Clamp(Mathf.RoundToInt(y0), 0, n - 1);
+            int d = Mathf.Clamp(Mathf.RoundToInt(y1), 0, n - 1);
+            for (int y = Mathf.Min(c, d); y <= Mathf.Max(c, d); y++)
+            for (int x = Mathf.Min(a, b); x <= Mathf.Max(a, b); x++)
+                px[y * n + x] = Color.white;
+        }
+
+        static void StrokeRect(Color[] px, int n, float x0, float y0, float x1, float y1, float w)
+        {
+            FillRect(px, n, x0, y0, x1, y0 + w);
+            FillRect(px, n, x0, y1 - w, x1, y1);
+            FillRect(px, n, x0, y0, x0 + w, y1);
+            FillRect(px, n, x1 - w, y0, x1, y1);
+        }
+
+        static void FillDisc(Color[] px, int n, float cx, float cy, float r)
+        {
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = x - cx, dy = y - cy;
+                if (dx * dx + dy * dy <= r * r) px[y * n + x] = Color.white;
+            }
+        }
+
+        static void StrokeDisc(Color[] px, int n, float cx, float cy, float r, float w)
+        {
+            float inner = Mathf.Max(0f, r - w);
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float d = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= r && d >= inner) px[y * n + x] = Color.white;
+            }
+        }
+
+        static void StrokeLine(Color[] px, int n, float x0, float y0, float x1, float y1, float w)
+        {
+            float half = w * 0.5f;
+            float len2 = (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float t = len2 < 0.01f ? 0f : Mathf.Clamp01(((x - x0) * (x1 - x0) + (y - y0) * (y1 - y0)) / len2);
+                float px0 = x0 + (x1 - x0) * t;
+                float py0 = y0 + (y1 - y0) * t;
+                float dx = x - px0, dy = y - py0;
+                if (dx * dx + dy * dy <= half * half) px[y * n + x] = Color.white;
+            }
         }
 
         static Texture2D Tex(int n)
