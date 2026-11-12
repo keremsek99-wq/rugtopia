@@ -781,7 +781,7 @@ namespace Rugtopia.View
                 return;
             }
             string top = wrapped.Substring(0, nl);
-            string bottom = wrapped.Substring(nl + 1).Replace(" ", "");
+            string bottom = wrapped.Substring(nl + 1);
             _continueLabel.text = top;
             _continueLabel.alignment = TextAnchor.MiddleLeft;
             if (tracked == null)
@@ -808,11 +808,18 @@ namespace Rugtopia.View
             }
             var outline = _continueLabel.GetComponent<Outline>();
             var shadow = _continueLabel.GetComponent<Shadow>();
+            var slots = new System.Collections.Generic.List<LayoutElement>();
             for (int i = 0; i < bottom.Length; i++)
             {
-                var glyph = Txt(tracked, "C" + i, Vector2.zero, Vector2.one, bottom[i].ToString(), _continueLabel.fontSize, TextAnchor.MiddleCenter, _continueLabel.color);
+                bool gap = bottom[i] == ' ';
+                var glyph = Txt(tracked, "C" + i, Vector2.zero, Vector2.one, gap ? "" : bottom[i].ToString(), _continueLabel.fontSize, TextAnchor.MiddleCenter, _continueLabel.color);
                 glyph.horizontalOverflow = HorizontalWrapMode.Overflow;
                 glyph.verticalOverflow = VerticalWrapMode.Overflow;
+                var le = glyph.gameObject.AddComponent<LayoutElement>();
+                le.preferredWidth = gap ? 14f : Mathf.Max(8f, glyph.preferredWidth * 0.82f);
+                le.preferredHeight = _continueLabel.fontSize;
+                slots.Add(le);
+                if (gap) continue;
                 if (outline != null)
                 {
                     var key = glyph.gameObject.AddComponent<Outline>();
@@ -828,15 +835,17 @@ namespace Rugtopia.View
             }
             float target = LayoutUtility.GetPreferredWidth(_continueLabel.rectTransform);
             var layout = tracked.GetComponent<HorizontalLayoutGroup>();
-            float spacing = 0f;
-            if (target > 8f && bottom.Length > 1)
+            float spacing = 1.5f;
+            if (target > 8f && slots.Count > 1)
             {
-                for (float s = 0f; s <= 28f; s += 0.5f)
+                for (float s = 1.5f; s <= 18f; s += 0.5f)
                 {
                     layout.spacing = s;
+                    for (int i = 0; i < bottom.Length; i++)
+                        if (bottom[i] == ' ') slots[i].preferredWidth = 10f + s * 2f;
                     float width = LayoutUtility.GetPreferredWidth(tracked.GetComponent<RectTransform>());
-                    if (width <= target + 1f) spacing = s;
-                    else break;
+                    spacing = s;
+                    if (width >= target - 2f) break;
                 }
             }
             layout.spacing = spacing;
@@ -894,7 +903,7 @@ namespace Rugtopia.View
             linesGo.transform.SetParent(row, false);
             var lines = linesGo.GetComponent<VerticalLayoutGroup>();
             lines.childAlignment = TextAnchor.MiddleLeft;
-            lines.spacing = -6f;
+            lines.spacing = -2f;
             lines.childControlWidth = true;
             lines.childControlHeight = true;
             lines.childForceExpandWidth = false;
