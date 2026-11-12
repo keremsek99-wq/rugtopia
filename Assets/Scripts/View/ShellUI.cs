@@ -621,17 +621,18 @@ namespace Rugtopia.View
                 else
                 {
                     Sprite[] icons = { Glyphs.SlotIcon, Glyphs.CombIcon, Glyphs.ShuttleIcon };
-                    // The slot and shuttle marks sit in a short band of their sprite, so their boxes are larger to match the comb.
-                    float[] scale = { 1.45f, 1f, 1.35f };
                     for (int k = 0; k < 3; k++)
                     {
-                        float cx = 0.22f + k * 0.28f;
-                        float s = 0.16f * scale[k];
-                        var icon = Panel(cell, "B" + k, new Vector2(cx - s * 0.5f, 0.46f - s * 0.55f), new Vector2(cx + s * 0.5f, 0.46f + s * 0.55f), ThemeConfig.Ink);
-                        var ii = icon.GetComponent<Image>();
-                        ii.sprite = icons[k];
-                        ii.preserveAspect = true;
-                        ii.raycastTarget = false;
+                        float cx = 0.20f + k * 0.30f;
+                        var circle = Panel(cell, "B" + k, new Vector2(cx - 0.11f, 0.36f), new Vector2(cx + 0.11f, 0.56f), ThemeConfig.Button);
+                        var ci = circle.GetComponent<Image>();
+                        ci.sprite = Glyphs.SolidCircle;
+                        ci.preserveAspect = true;
+                        var mark = Panel(circle, "I", new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.8f), new Color(1f, 0.95f, 0.88f, 1f));
+                        var mi = mark.GetComponent<Image>();
+                        mi.sprite = icons[k];
+                        mi.preserveAspect = true;
+                        mi.raycastTarget = false;
                     }
                 }
                 var amt = Txt(cell, "Amt", new Vector2(0.08f, 0.04f), new Vector2(0.92f, 0.32f), "", 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
