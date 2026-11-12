@@ -313,7 +313,7 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            FillTri(px, n, 34f, 22f, 34f, 106f, 104f, 64f);
+            FillTri(px, n, 10f, 14f, 10f, 114f, 118f, 64f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -337,12 +337,12 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            FillRect(px, n, 26f, 18f, 102f, 76f);
-            FillDisc(px, n, 44f, 90f, 16f);
-            FillDisc(px, n, 84f, 90f, 16f);
-            FillDisc(px, n, 64f, 76f, 12f);
-            ClearRect(px, n, 57f, 18f, 71f, 68f);
-            ClearRect(px, n, 26f, 46f, 102f, 58f);
+            FillRect(px, n, 22f, 16f, 106f, 78f);
+            FillDisc(px, n, 42f, 94f, 18f);
+            FillDisc(px, n, 86f, 94f, 18f);
+            FillDisc(px, n, 64f, 80f, 12f);
+            ClearRect(px, n, 56f, 20f, 72f, 70f);
+            ClearRect(px, n, 32f, 48f, 96f, 60f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -352,9 +352,9 @@ namespace Rugtopia.View
             const int n = 128;
             var t = Tex(n);
             var px = new Color[n * n];
-            Tongue(px, n, 48f, 22f, 72f, 26f);
-            Tongue(px, n, 80f, 18f, 78f, 26f);
-            Tongue(px, n, 64f, 12f, 106f, 32f);
+            Tongue(px, n, 32f, 28f, 64f, 30f);
+            Tongue(px, n, 96f, 24f, 72f, 30f);
+            Tongue(px, n, 64f, 6f, 116f, 34f);
             t.SetPixels(px); t.Apply();
             return Sprite.Create(t, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
         }
@@ -366,8 +366,9 @@ namespace Rugtopia.View
             {
                 float t = (y - baseY) / height;
                 if (t < 0f || t > 1f) continue;
-                float belly = Mathf.Sin(Mathf.Clamp01(t * 0.9f) * Mathf.PI);
-                float half = width * Mathf.Lerp(0.78f, 0f, t) * (0.5f + 0.85f * belly);
+                float pinch = Mathf.Pow(1f - t, 0.72f);
+                float belly = Mathf.Sin(Mathf.Clamp01(t) * Mathf.PI);
+                float half = width * pinch * (0.42f + 0.7f * belly);
                 if (Mathf.Abs(x - cx) <= half) px[y * n + x] = Color.white;
             }
         }

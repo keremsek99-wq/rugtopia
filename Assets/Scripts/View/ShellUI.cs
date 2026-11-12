@@ -468,16 +468,8 @@ namespace Rugtopia.View
             _playBtn = play.GetComponent<RectTransform>();
             play.GetComponent<Image>().color = ViewKit.Hex("#C4552A");
             play.transform.Find("Label").gameObject.SetActive(false);
-            var lip = Panel(play.transform, "Lip", new Vector2(0f, 0f), new Vector2(1f, 0.38f), ViewKit.Hex("#9A3A1E"));
-            var lipImg = lip.GetComponent<Image>();
-            lipImg.sprite = ArtKit.UiRound;
-            lipImg.type = Image.Type.Sliced;
-            lipImg.raycastTarget = false;
-            var hi = Panel(play.transform, "Hi", new Vector2(0.04f, 0.72f), new Vector2(0.96f, 0.94f), new Color(1f, 0.88f, 0.76f, 0.20f));
-            var hiImg = hi.GetComponent<Image>();
-            hiImg.sprite = ArtKit.UiRound;
-            hiImg.type = Image.Type.Sliced;
-            hiImg.raycastTarget = false;
+            ClipFace(play.transform, "Lip", 0f, 0.18f, ViewKit.Hex("#9A3A1E"));
+            ClipFace(play.transform, "Rim", 0.90f, 1f, new Color(1f, 0.86f, 0.74f, 0.28f));
             var stackGo = new GameObject("Stack", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
             stackGo.transform.SetParent(play.transform, false);
             var stack = stackGo.GetComponent<RectTransform>();
@@ -509,7 +501,7 @@ namespace Rugtopia.View
             markImg.sprite = Glyphs.PlayMark;
             markImg.preserveAspect = true;
             markImg.raycastTarget = false;
-            Preferred(mark.gameObject, 28f, 28f);
+            Preferred(mark.gameObject, 40f, 40f);
             var playText = Txt(rowGo.transform, "PlayWord", Vector2.zero, Vector2.one, Copy.Get("play"), 52, TextAnchor.MiddleCenter, Color.white);
             playText.horizontalOverflow = HorizontalWrapMode.Overflow;
             playText.verticalOverflow = VerticalWrapMode.Overflow;
@@ -556,6 +548,26 @@ namespace Rugtopia.View
             return go.GetComponent<RectTransform>();
         }
 
+        void ClipFace(Transform parent, string name, float y0, float y1, Color color)
+        {
+            var clipGo = new GameObject(name, typeof(RectTransform), typeof(RectMask2D));
+            clipGo.transform.SetParent(parent, false);
+            var clip = clipGo.GetComponent<RectTransform>();
+            clip.anchorMin = new Vector2(0f, y0);
+            clip.anchorMax = new Vector2(1f, y1);
+            clip.offsetMin = clip.offsetMax = Vector2.zero;
+            var face = Panel(clip, "Face", Vector2.zero, Vector2.one, color);
+            float span = Mathf.Max(0.001f, y1 - y0);
+            var fr = face.GetComponent<RectTransform>();
+            fr.anchorMin = new Vector2(0f, (0f - y0) / span);
+            fr.anchorMax = new Vector2(1f, (1f - y0) / span);
+            fr.offsetMin = fr.offsetMax = Vector2.zero;
+            var img = face.GetComponent<Image>();
+            img.sprite = ArtKit.UiRound;
+            img.type = Image.Type.Sliced;
+            img.raycastTarget = false;
+        }
+
         static void Preferred(GameObject go, float w, float h)
         {
             var le = go.AddComponent<LayoutElement>();
@@ -585,8 +597,8 @@ namespace Rugtopia.View
             gi.sprite = icon;
             gi.preserveAspect = true;
             gi.raycastTarget = false;
-            Preferred(glyph.gameObject, 70f, 70f);
-            var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 28, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+            Preferred(glyph.gameObject, 100f, 100f);
+            var titleText = Txt(card.transform, "Title", Vector2.zero, Vector2.one, title, 30, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             Preferred(titleText.gameObject, 200f, 36f);
             var lockT = Txt(card.transform, "Lock", Vector2.zero, Vector2.one, "", 18, TextAnchor.MiddleCenter, ThemeConfig.Muted);
             lockT.raycastTarget = false;
