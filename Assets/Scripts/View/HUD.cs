@@ -15,6 +15,7 @@ namespace Rugtopia.View
         public event Action<string> Clicked;
 
         Canvas _canvas;
+        RectTransform _ui;
         Text _title, _coins, _lives, _status;
         GameObject _winPanel, _failPanel, _menu, _map, _top;
         Text _winTitle, _winCoins, _failTitle, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
@@ -48,6 +49,7 @@ namespace Rugtopia.View
             scaler.referenceResolution = new Vector2(1080, 2340); scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
             var root = canvasGo.GetComponent<RectTransform>();
+            _ui = root;
 
             if (FindAnyObjectByType<EventSystem>() == null)
             {
@@ -336,7 +338,7 @@ namespace Rugtopia.View
                 float y = UnityEngine.Random.Range(0.58f, 0.97f);
                 float w = UnityEngine.Random.Range(0.016f, 0.034f);
                 float h = UnityEngine.Random.Range(0.01f, 0.02f);
-                var bit = Panel(_root, "Bit" + i, new Vector2(x, y), new Vector2(x + w, y + h), Color.HSVToRGB((i * 0.13f) % 1f, 0.78f, 1f));
+                var bit = Panel(_ui, "Bit" + i, new Vector2(x, y), new Vector2(x + w, y + h), Color.HSVToRGB((i * 0.13f) % 1f, 0.78f, 1f));
                 bit.localRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(-50f, 50f));
                 bit.SetSiblingIndex(_winPanel.transform.GetSiblingIndex());
             }
@@ -344,10 +346,10 @@ namespace Rugtopia.View
 
         void ClearBits()
         {
-            if (_root == null) return;
-            for (int i = _root.childCount - 1; i >= 0; i--)
+            if (_ui == null) return;
+            for (int i = _ui.childCount - 1; i >= 0; i--)
             {
-                var child = _root.GetChild(i);
+                var child = _ui.GetChild(i);
                 if (!child.name.StartsWith("Bit")) continue;
                 if (Application.isPlaying) Destroy(child.gameObject);
                 else DestroyImmediate(child.gameObject);
