@@ -145,13 +145,15 @@ namespace Rugtopia.View
             coinDrop.effectDistance = new Vector2(0f, -2f);
             var winNext = FamilyPill(_winPanel.transform, "NextBtn", new Vector2(0.08f, 0.22f), new Vector2(0.92f, 0.352f), "Continue", "next", 46, Glyphs.PlayMark);
             _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.16f), "", 22, TextAnchor.MiddleCenter, ViewKit.Wool);
-            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.03f), new Vector2(0.40f, 0.19f), Glyphs.HomeMark, "Home", "home");
+            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.035f), new Vector2(0.38f, 0.175f), Glyphs.HomeMark, "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
             _hang.gameObject.SetActive(false);
-            _langEn = Btn(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.54f), "English", "langEn");
-            _langTr = Btn(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.36f), new Vector2(0.92f, 0.54f), "Türkçe", "langTr", true);
+            _langEn = FamilyFace(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.50f), "English", "langEn", 42, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f, 1f), ViewKit.Hex("#1A0C08"));
+            _langTr = FamilyFace(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.36f), new Vector2(0.92f, 0.50f), "Türkçe", "langTr", 42, ViewKit.Green, ViewKit.Hex("#24543A"), Color.white, ViewKit.Hex("#143828"));
             _langEn.gameObject.SetActive(false);
             _langTr.gameObject.SetActive(false);
+            SetNamed(_winPanel, "LangEnSh", false);
+            SetNamed(_winPanel, "LangTrSh", false);
             _badge = Panel(top, "Badge", new Vector2(0.52f, 0.50f), new Vector2(0.83f, 0.96f), ViewKit.Hex("#8E44AD")).gameObject;
             _badge.GetComponent<Image>().sprite = ArtKit.UiRound;
             _badge.GetComponent<Image>().type = Image.Type.Sliced;
@@ -183,9 +185,10 @@ namespace Rugtopia.View
             _failFill.sprite = ArtKit.UiRound;
             _failFill.type = Image.Type.Sliced;
             _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.46f), new Vector2(0.92f, 0.55f), "", 24, TextAnchor.MiddleCenter, ViewKit.Hex("#5C3B28"));
-            _continueLabel = FamilyPill(_failPanel.transform, "ContinueBtn", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.42f), "Continue", "continue", 30, Glyphs.PlayMark).GetComponentInChildren<Text>();
-            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.06f, 0.04f), new Vector2(0.48f, 0.24f), Glyphs.Restart, "Retry", "retry");
-            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.24f), Glyphs.LinePath, "Levels", "map");
+            _continueLabel = FamilyPill(_failPanel.transform, "ContinueBtn", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.42f), "Continue", "continue", 40, Glyphs.PlayMark, 54).GetComponentInChildren<Text>();
+            _continueLabel.lineSpacing = 0.82f;
+            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.06f, 0.045f), new Vector2(0.48f, 0.195f), Glyphs.Restart, "Retry", "retry");
+            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.045f), new Vector2(0.94f, 0.195f), Glyphs.LinePath, "Levels", "map");
 
             _menu = Panel(root, "Menu", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
             Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Cream);
@@ -502,6 +505,8 @@ namespace Rugtopia.View
         {
             if (_langEn != null) _langEn.gameObject.SetActive(on);
             if (_langTr != null) _langTr.gameObject.SetActive(on);
+            SetNamed(_winPanel, "LangEnSh", on);
+            SetNamed(_winPanel, "LangTrSh", on);
             if (on && _hang != null) _hangWas = _hang.gameObject.activeSelf;
             SetWinReward(!on);
             if (_hang != null) _hang.gameObject.SetActive(on ? false : _hangWas);
@@ -514,7 +519,7 @@ namespace Rugtopia.View
             {
                 var child = _winPanel.transform.GetChild(i);
                 string n = child.name;
-                if (n == "Title" || n == "WinRug" || n == "Fill" || n == "LangEn" || n == "LangTr" || n == "HangBtn") continue;
+                if (n == "Title" || n == "WinRug" || n == "Fill" || n == "LangEn" || n == "LangTr" || n == "LangEnSh" || n == "LangTrSh" || n == "HangBtn") continue;
                 child.gameObject.SetActive(on);
             }
         }
@@ -642,7 +647,7 @@ namespace Rugtopia.View
             var img = b.GetComponent<Image>();
             if (img == null) return;
             string n = b.name;
-            if (n == "winNext" || n == "ContinueBtn" || n == "RetryBtn" || n == "MapBtn" || n == "HomeBtn") return;
+            if (n == "winNext" || n == "ContinueBtn" || n == "RetryBtn" || n == "MapBtn" || n == "HomeBtn" || n == "LangEn" || n == "LangTr") return;
             if (Mathf.Abs(img.color.g - ViewKit.Green.g) < 0.08f && img.color.g > img.color.r) return;
             img.color = ThemeConfig.Button;
             var label = b.GetComponentInChildren<Text>();
@@ -666,7 +671,7 @@ namespace Rugtopia.View
                 rt.offsetMax = Vector2.zero;
             }
             _failBody.text = "";
-            _continueLabel.text = continueLabel;
+            _continueLabel.text = WrapContinue(continueLabel);
             ShowDim(false);
             _failPanel.SetActive(true);
             _failPanel.transform.SetAsLastSibling();
@@ -754,7 +759,22 @@ namespace Rugtopia.View
             return b;
         }
 
-        Button FamilyPill(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Sprite mark)
+        static string WrapContinue(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            int split = s.LastIndexOf('&');
+            if (split <= 0) return s;
+            return s.Substring(0, split).TrimEnd() + "\n" + s.Substring(split).TrimStart();
+        }
+
+        static void SetNamed(GameObject panel, string child, bool on)
+        {
+            if (panel == null) return;
+            var t = panel.transform.Find(child);
+            if (t != null) t.gameObject.SetActive(on);
+        }
+
+        Button FamilyPill(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Sprite mark, int markPx = 0)
         {
             var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.006f), new Color(0.36f, 0.12f, 0.05f, 0.30f));
             var sh = shadow.GetComponent<Image>();
@@ -792,7 +812,8 @@ namespace Rugtopia.View
                 ii.preserveAspect = true;
                 ii.raycastTarget = false;
                 var le = icon.gameObject.AddComponent<LayoutElement>();
-                le.preferredWidth = le.preferredHeight = font >= 40 ? 42f : 28f;
+                float markSize = markPx > 0 ? markPx : (font >= 40 ? 42f : 28f);
+                le.preferredWidth = le.preferredHeight = markSize;
             }
             var text = Txt(row, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -821,8 +842,8 @@ namespace Rugtopia.View
             var btn = rt.gameObject.AddComponent<Button>();
             var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = -2f;
-            layout.padding = new RectOffset(4, 4, 6, 4);
+            layout.spacing = -6f;
+            layout.padding = new RectOffset(2, 2, 2, 2);
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = false;
@@ -833,13 +854,40 @@ namespace Rugtopia.View
             gi.preserveAspect = true;
             gi.raycastTarget = false;
             var gle = glyph.gameObject.AddComponent<LayoutElement>();
-            gle.preferredWidth = gle.preferredHeight = 72f;
-            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 24, TextAnchor.MiddleCenter, ViewKit.Ink);
+            gle.preferredWidth = gle.preferredHeight = 118f;
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 28, TextAnchor.MiddleCenter, ViewKit.Ink);
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             var tle = text.gameObject.AddComponent<LayoutElement>();
-            tle.preferredWidth = 180f;
-            tle.preferredHeight = 32f;
+            tle.preferredWidth = 200f;
+            tle.preferredHeight = 36f;
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        Button FamilyFace(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Color face, Color lip, Color ink, Color keyColor)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.006f), new Color(0.16f, 0.08f, 0.05f, 0.28f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, face);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, lip);
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 1f, 1f, 0.16f));
+            var text = Txt(rt, "Label", new Vector2(0.06f, 0.16f), new Vector2(0.94f, 0.72f), label, font, TextAnchor.MiddleCenter, ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = keyColor;
+            key.effectDistance = new Vector2(1.7f, -1.7f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0f, 0f, 0f, 0.35f);
+            drop.effectDistance = new Vector2(0f, -2f);
             btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return btn;
         }
