@@ -257,7 +257,7 @@ namespace Rugtopia.EditorTools
             hud.ShowDaily();
             Grab(cam, rt, hud, dir, "shell-daily.png", w, h);
             save.dailyLast = System.DateTime.UtcNow.ToString("yyyyMMdd");
-            save.dailyDay = 1;
+            save.dailyDay = 2;
             hud.ShowDaily();
             Grab(cam, rt, hud, dir, "shell-daily-claimed.png", w, h);
             save.dailyLast = "";
@@ -276,9 +276,11 @@ namespace Rugtopia.EditorTools
             hud.ShowMap(11, LevelLoader.Count);
             Grab(cam, rt, hud, dir, "shell-path.png", w, h);
             hud.ShowMenu(save.coins, 12);
+            save.muted = false;
             hud.ShowSettings(true);
             Grab(cam, rt, hud, dir, "shell-settings.png", w, h);
             hud.ShowSettings(false);
+            save.muted = true;
             var solved = LevelBuilder.Build(LevelLoader.Get(0));
             var d0 = LevelLoader.Get(0);
             if (d0.solution != null) for (int i = 0; i < d0.solution.Length; i++) solved.Take(d0.solution[i]);
