@@ -673,7 +673,7 @@ namespace Rugtopia.View
                 var cell = Panel(card.transform, "Day" + i, new Vector2(x0, y1), new Vector2(x0 + 0.21f, y1 + 0.22f), ViewKit.Hex("#F6E7CF"));
                 cell.GetComponent<Image>().sprite = ArtKit.UiRound;
                 cell.GetComponent<Image>().type = Image.Type.Sliced;
-                var day = Txt(cell, "Day", new Vector2(0.02f, 0.66f), new Vector2(0.98f, 0.98f), Copy.Get("day") + " " + (i + 1), 32, TextAnchor.MiddleCenter, ThemeConfig.Ink);
+                var day = Txt(cell, "Day", new Vector2(0.02f, 0.66f), new Vector2(0.62f, 0.98f), Copy.Get("day") + " " + (i + 1), 28, TextAnchor.MiddleCenter, ThemeConfig.Ink);
                 day.raycastTarget = false;
                 day.horizontalOverflow = HorizontalWrapMode.Overflow;
                 day.verticalOverflow = VerticalWrapMode.Overflow;
@@ -704,7 +704,7 @@ namespace Rugtopia.View
                 }
                 var amt = Txt(cell, "Amt", new Vector2(0.08f, 0.04f), new Vector2(0.92f, 0.32f), "", 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
                 amt.raycastTarget = false;
-                var check = Panel(cell, "Check", new Vector2(0.66f, 0.66f), new Vector2(0.96f, 0.96f), ViewKit.Hex("#1E7A46"));
+                var check = Panel(cell, "Check", new Vector2(0.64f, 0.68f), new Vector2(0.98f, 0.98f), ViewKit.Hex("#1E7A46"));
                 var checkImg = check.GetComponent<Image>();
                 checkImg.sprite = Glyphs.SolidCircle;
                 checkImg.preserveAspect = true;
