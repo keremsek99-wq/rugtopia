@@ -101,8 +101,8 @@ namespace Rugtopia.View
             var rugSlot = new GameObject("WinRug", typeof(RectTransform));
             rugSlot.transform.SetParent(_winPanel.transform, false);
             _winRug = rugSlot.GetComponent<RectTransform>();
-            _winRug.anchorMin = new Vector2(0.28f, 0.64f);
-            _winRug.anchorMax = new Vector2(0.72f, 0.84f);
+            _winRug.anchorMin = new Vector2(0.16f, 0.64f);
+            _winRug.anchorMax = new Vector2(0.84f, 0.86f);
             _winRug.offsetMin = _winRug.offsetMax = Vector2.zero;
             _stars = new RectTransform[3];
             for (int i = 0; i < 3; i++)
@@ -110,8 +110,8 @@ namespace Rugtopia.View
                 bool mid = i == 1;
                 float x = mid ? 0.40f : 0.18f + i * 0.22f;
                 float w = mid ? 0.20f : 0.16f;
-                float y0 = mid ? 0.46f : 0.48f;
-                float y1 = mid ? 0.64f : 0.62f;
+                float y0 = mid ? 0.44f : 0.46f;
+                float y1 = mid ? 0.60f : 0.58f;
                 var badge = Panel(_winPanel.transform, "Star" + i, new Vector2(x, y0), new Vector2(x + w, y1), ViewKit.Gold);
                 var badgeImg = badge.GetComponent<Image>();
                 badgeImg.sprite = Glyphs.SolidCircle;
@@ -123,13 +123,14 @@ namespace Rugtopia.View
                 si.raycastTarget = false;
                 _stars[i] = badge;
             }
-            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.3f, 0.38f), new Vector2(0.42f, 0.52f), Color.white);
+            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.30f, 0.345f), new Vector2(0.40f, 0.415f), Color.white);
             var coinImg = coin.GetComponent<Image>();
             coinImg.sprite = ArtKit.Coin;
+            coinImg.preserveAspect = true;
             coinImg.color = Color.white;
             coinImg.raycastTarget = false;
-            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.42f, 0.36f), new Vector2(0.78f, 0.54f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
-            var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.38f), "Continue", "next", true);
+            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.40f, 0.34f), new Vector2(0.78f, 0.42f), "", 40, TextAnchor.MiddleLeft, ViewKit.Ink);
+            var winNext = Btn(_winPanel.transform, "NextBtn", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.32f), "Continue", "next", true);
             _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.38f, 0.02f), new Vector2(0.92f, 0.13f), "", 24, TextAnchor.MiddleCenter, ViewKit.Wool);
             Btn(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.02f), new Vector2(0.34f, 0.13f), "Home", "home");
             _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
@@ -368,7 +369,7 @@ namespace Rugtopia.View
                 if (Application.isPlaying) Destroy(go);
                 else DestroyImmediate(go);
             }
-            if (rows != null) RugPortrait.Draw(_winRug, rows, true);
+            if (rows != null) RugPortrait.Draw(_winRug, rows, true, true);
         }
 
         void Update()

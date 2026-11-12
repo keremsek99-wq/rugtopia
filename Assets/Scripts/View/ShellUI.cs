@@ -145,7 +145,7 @@ namespace Rugtopia.View
             if (_hero == null) return;
             for (int i = _hero.childCount - 1; i >= 0; i--) Kill(_hero.GetChild(i).gameObject);
             var data = LevelLoader.Get(Mathf.Clamp(levelIndex, 0, LevelLoader.Count - 1));
-            RugPortrait.Draw(_hero, data.rows, true);
+            RugPortrait.Draw(_hero, data.rows, true, false);
         }
 
         void RebuildStrip()
@@ -163,17 +163,21 @@ namespace Rugtopia.View
                 return;
             }
             int n = Mathf.Min(4, hung.Count);
+            // Square slots so every thumb gets the same thin frame and the pattern fills it.
+            const float side = 0.20f;
+            float gap = 0.03f;
+            float start = 0.5f - (n * side + (n - 1) * gap) * 0.5f;
             for (int i = 0; i < n; i++)
             {
-                float x0 = 0.04f + i * 0.24f;
+                float x0 = start + i * (side + gap);
                 var box = new GameObject("Mini" + i, typeof(RectTransform));
                 box.transform.SetParent(_galleryStrip, false);
                 var rt = box.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(x0, 0.08f);
-                rt.anchorMax = new Vector2(x0 + 0.22f, 0.92f);
+                rt.anchorMin = new Vector2(x0, 0.06f);
+                rt.anchorMax = new Vector2(x0 + side, 0.94f);
                 rt.offsetMin = rt.offsetMax = Vector2.zero;
                 var level = LevelLoader.Get(Mathf.Clamp(hung[hung.Count - 1 - i], 0, LevelLoader.Count - 1));
-                RugPortrait.Draw(rt, level.rows, false);
+                RugPortrait.Draw(rt, level.rows, false, true);
             }
         }
 
@@ -185,35 +189,55 @@ namespace Rugtopia.View
             const float step = 168f;
             float height = LevelLoader.Count * step + 220f;
             _pathContent.sizeDelta = new Vector2(0f, height);
+            const float yarnW = 22f;
+            var yarnColor = ViewKit.Hex("#A56B3C");
+            var woolColor = new Color(0.42f, 0.26f, 0.16f, 0.28f);
             for (int i = 0; i < LevelLoader.Count - 1; i++)
             {
-                float yarnX = i % 2 == 0 ? -48f : 48f;
-                var wool = Panel(_pathContent, "Wool" + i, Vector2.zero, Vector2.zero, new Color(0.42f, 0.26f, 0.16f, 0.35f));
-                PlaceYarn(wool, yarnX + 4f, -84f - i * step, 34f, step - 4f);
-                var yarn = Panel(_pathContent, "Yarn" + i, Vector2.zero, Vector2.zero, ViewKit.Hex("#A56B3C"));
-                PlaceYarn(yarn, yarnX, -90f - i * step, 22f, step - 12f);
+                bool doneA = i < SaveService.Data.maxLevel;
+                bool nowA = i == current;
+                bool doneB = i + 1 < SaveService.Data.maxLevel;
+                bool nowB = i + 1 == current;
+                float sizeA = nowA ? 156f : doneA ? 118f : 96f;
+                float sizeB = nowB ? 156f : doneB ? 118f : 96f;
+                float x0 = i % 2 == 0 ? -78f : 78f;
+                float x1 = (i + 1) % 2 == 0 ? -78f : 78f;
+                float y0 = -110f - i * step;
+                float y1 = -110f - (i + 1) * step;
+                float leave = y0 - sizeA * 0.42f;
+                float enter = y1 + sizeB * 0.42f;
+                float mid = (leave + enter) * 0.5f;
+                YarnBar(_pathContent, "WoolV" + i + "a", x0 + 3f, (leave + mid) * 0.5f - 2f, yarnW + 10f, Mathf.Abs(mid - leave), woolColor);
+                YarnBar(_pathContent, "WoolH" + i, (x0 + x1) * 0.5f + 3f, mid - 2f, Mathf.Abs(x1 - x0) + yarnW, yarnW + 10f, woolColor);
+                YarnBar(_pathContent, "WoolV" + i + "b", x1 + 3f, (mid + enter) * 0.5f - 2f, yarnW + 10f, Mathf.Abs(enter - mid), woolColor);
+                YarnBar(_pathContent, "YarnV" + i + "a", x0, (leave + mid) * 0.5f, yarnW, Mathf.Abs(mid - leave) + yarnW, yarnColor);
+                YarnBar(_pathContent, "YarnH" + i, (x0 + x1) * 0.5f, mid, Mathf.Abs(x1 - x0) + yarnW, yarnW, yarnColor);
+                YarnBar(_pathContent, "YarnV" + i + "b", x1, (mid + enter) * 0.5f, yarnW, Mathf.Abs(enter - mid) + yarnW, yarnColor);
             }
             for (int i = 0; i < LevelLoader.Count; i++)
             {
                 bool done = i < SaveService.Data.maxLevel;
                 bool now = i == current;
                 bool locked = i > SaveService.Data.maxLevel;
-                float size = now ? 156f : done ? 124f : 100f;
+                float size = now ? 156f : done ? 118f : 96f;
+                float nx = i % 2 == 0 ? -78f : 78f;
+                float ny = -110f - i * step;
                 var shade = Panel(_pathContent, "Sh" + i, Vector2.zero, Vector2.zero, new Color(0.25f, 0.12f, 0.06f, 0.22f));
                 var srt = shade.GetComponent<RectTransform>();
                 srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 1f);
                 srt.pivot = new Vector2(0.5f, 0.5f);
                 srt.sizeDelta = new Vector2(size, size);
-                srt.anchoredPosition = new Vector2((i % 2 == 0 ? -70f : 70f) + 5f, -96f - i * step);
-                shade.GetComponent<Image>().sprite = Glyphs.Circle;
+                srt.anchoredPosition = new Vector2(nx + 5f, ny - 6f);
+                shade.GetComponent<Image>().sprite = Glyphs.SolidCircle;
                 var node = Panel(_pathContent, "N" + i, Vector2.zero, Vector2.zero, locked ? new Color(0.86f, 0.78f, 0.66f, 1f) : now ? ViewKit.Gold : ViewKit.Hex("#F3E6CF"));
                 var rt = node.GetComponent<RectTransform>();
                 rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
                 rt.pivot = new Vector2(0.5f, 0.5f);
                 rt.sizeDelta = new Vector2(size, size);
-                rt.anchoredPosition = new Vector2(i % 2 == 0 ? -70f : 70f, -90f - i * step);
+                rt.anchoredPosition = new Vector2(nx, ny);
                 var img = node.GetComponent<Image>();
-                img.sprite = Glyphs.Circle;
+                img.sprite = Glyphs.SolidCircle;
+                node.gameObject.AddComponent<Mask>().showMaskGraphic = true;
                 if (!locked)
                 {
                     var b = node.gameObject.AddComponent<Button>();
@@ -227,22 +251,36 @@ namespace Rugtopia.View
                 label.raycastTarget = false;
                 if (marked)
                 {
-                    var pillColor = face % 10 == 9 ? ViewKit.Hex("#8E44AD") : ViewKit.Hex("#C0392B");
-                    var pill = Panel(node, "Pill", new Vector2(0.06f, 0.04f), new Vector2(0.94f, 0.30f), pillColor);
+                    bool super = face % 10 == 9;
+                    float pillW = super ? 168f : 108f;
+                    float pillH = 44f;
+                    float outward = i % 2 == 0 ? -1f : 1f;
+                    float px = nx + outward * (size * 0.5f + pillW * 0.5f + 10f);
+                    float edge = 520f;
+                    px = Mathf.Clamp(px, -edge + pillW * 0.5f, edge - pillW * 0.5f);
+                    var pill = Panel(_pathContent, "Pill" + i, Vector2.zero, Vector2.zero, super ? ViewKit.Hex("#8E44AD") : ViewKit.Hex("#C0392B"));
+                    var prt = pill.GetComponent<RectTransform>();
+                    prt.anchorMin = prt.anchorMax = new Vector2(0.5f, 1f);
+                    prt.pivot = new Vector2(0.5f, 0.5f);
+                    prt.sizeDelta = new Vector2(pillW, pillH);
+                    prt.anchoredPosition = new Vector2(px, ny - size * 0.18f);
                     pill.GetComponent<Image>().sprite = ArtKit.UiRound;
                     pill.GetComponent<Image>().type = Image.Type.Sliced;
-                    var tag = Txt(pill, "Tag", Vector2.zero, Vector2.one, face % 10 == 9 ? "SUPER" : "HARD", 13, TextAnchor.MiddleCenter, Color.white);
+                    var tag = Txt(pill, "Tag", Vector2.zero, Vector2.one, super ? Copy.Get("pillSuper") : Copy.Get("pillHard"), 24, TextAnchor.MiddleCenter, Color.white);
                     tag.raycastTarget = false;
+                    tag.resizeTextForBestFit = true;
+                    tag.resizeTextMinSize = 16;
+                    tag.resizeTextMaxSize = 24;
                 }
                 if (done && !now)
                 {
                     var mini = new GameObject("Mini", typeof(RectTransform));
                     mini.transform.SetParent(node, false);
                     var mrt = mini.GetComponent<RectTransform>();
-                    mrt.anchorMin = new Vector2(0.12f, marked ? 0.34f : 0.16f);
-                    mrt.anchorMax = new Vector2(0.88f, 0.86f);
+                    mrt.anchorMin = new Vector2(0.08f, 0.08f);
+                    mrt.anchorMax = new Vector2(0.92f, 0.92f);
                     mrt.offsetMin = mrt.offsetMax = Vector2.zero;
-                    RugPortrait.Draw(mrt, LevelLoader.Get(i).rows, false);
+                    RugPortrait.Draw(mrt, LevelLoader.Get(i).rows, false, true);
                     label.text = "";
                 }
             }
@@ -329,7 +367,7 @@ namespace Rugtopia.View
                 rt.anchorMax = new Vector2(x0 + 0.28f, y1);
                 rt.offsetMin = rt.offsetMax = Vector2.zero;
                 var level = LevelLoader.Get(Mathf.Clamp(hung[i], 0, LevelLoader.Count - 1));
-                RugPortrait.Draw(rt, level.rows, true);
+                RugPortrait.Draw(rt, level.rows, true, true);
             }
         }
 
@@ -413,7 +451,10 @@ namespace Rugtopia.View
             var play = Btn(root, "Play", new Vector2(0.1f, 0.385f), new Vector2(0.9f, 0.485f), Copy.Get("play"), "play", true);
             _playBtn = play.GetComponent<RectTransform>();
             play.gameObject.AddComponent<PlayBreath>();
-            _playSub = Txt(play.transform, "Sub", new Vector2(0.1f, 0.06f), new Vector2(0.9f, 0.4f), "Level 1", 26, TextAnchor.MiddleCenter, new Color(1f, 0.93f, 0.75f, 1f));
+            var playLabel = play.transform.Find("Label").GetComponent<RectTransform>();
+            playLabel.anchorMin = new Vector2(0.08f, 0.50f);
+            playLabel.anchorMax = new Vector2(0.92f, 0.74f);
+            _playSub = Txt(play.transform, "Sub", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.50f), "Level 1", 26, TextAnchor.MiddleCenter, new Color(1f, 0.93f, 0.75f, 1f));
             _playSub.raycastTarget = false;
 
             BuildHub(root, "PathCard", 0.05f, Copy.Get("path"), "path");
@@ -468,11 +509,15 @@ namespace Rugtopia.View
             lockT.raycastTarget = false;
             if (name == "PathCard")
             {
+                // Card is taller than wide (about 302 x 421). A square dot is ~36px.
+                Color[] colors = { ViewKit.Hex("#5C3B28"), ViewKit.Hex("#8A5A3C"), ViewKit.Gold };
                 for (int i = 0; i < 3; i++)
                 {
-                    float py = 0.34f + i * 0.12f;
-                    var dot = Panel(card.transform, "Dot" + i, new Vector2(0.4f, py), new Vector2(0.6f, py + 0.1f), i == 2 ? ViewKit.Gold : ThemeConfig.Button);
-                    dot.GetComponent<Image>().sprite = Glyphs.Circle;
+                    float py = 0.36f + i * 0.12f;
+                    var dot = Panel(card.transform, "Dot" + i, new Vector2(0.44f, py), new Vector2(0.56f, py + 0.085f), colors[i]);
+                    var di = dot.GetComponent<Image>();
+                    di.sprite = Glyphs.SolidCircle;
+                    di.preserveAspect = true;
                 }
             }
             if (name == "DailyCard")
@@ -491,7 +536,7 @@ namespace Rugtopia.View
                 var knot = Panel(card.transform, "Knot", new Vector2(0.44f, 0.58f), new Vector2(0.56f, 0.70f), ViewKit.Hex("#8E2A22"));
                 knot.GetComponent<Image>().sprite = Glyphs.SolidCircle;
                 knot.GetComponent<Image>().preserveAspect = true;
-                var badge = Panel(card.transform, "Badge", new Vector2(0.74f, 0.74f), new Vector2(0.94f, 0.94f), ViewKit.Hex("#C0392B"));
+                var badge = Panel(card.transform, "Badge", new Vector2(0.86f, 0.88f), new Vector2(0.96f, 0.97f), ViewKit.Hex("#C0392B"));
                 badge.GetComponent<Image>().sprite = Glyphs.SolidCircle;
                 badge.GetComponent<Image>().preserveAspect = true;
             }
@@ -567,9 +612,10 @@ namespace Rugtopia.View
                 day.verticalOverflow = VerticalWrapMode.Overflow;
                 if (i < 6)
                 {
-                    var icon = Panel(cell, "Coin", new Vector2(0.1f, 0.28f), new Vector2(0.38f, 0.62f), Color.white);
+                    var icon = Panel(cell, "Coin", new Vector2(0.34f, 0.36f), new Vector2(0.66f, 0.58f), Color.white);
                     var ii = icon.GetComponent<Image>();
                     ii.sprite = ArtKit.Coin;
+                    ii.preserveAspect = true;
                     ii.raycastTarget = false;
                 }
                 else
@@ -577,10 +623,11 @@ namespace Rugtopia.View
                     Sprite[] icons = { Glyphs.SlotIcon, Glyphs.CombIcon, Glyphs.ShuttleIcon };
                     for (int k = 0; k < 3; k++)
                     {
-                        float ix = 0.08f + k * 0.3f;
-                        var icon = Panel(cell, "B" + k, new Vector2(ix, 0.32f), new Vector2(ix + 0.24f, 0.62f), ThemeConfig.Ink);
+                        float ix = 0.12f + k * 0.28f;
+                        var icon = Panel(cell, "B" + k, new Vector2(ix, 0.36f), new Vector2(ix + 0.20f, 0.56f), ThemeConfig.Ink);
                         var ii = icon.GetComponent<Image>();
                         ii.sprite = icons[k];
+                        ii.preserveAspect = true;
                         ii.raycastTarget = false;
                     }
                 }
@@ -608,14 +655,14 @@ namespace Rugtopia.View
             var x = Btn(card.transform, "X", new Vector2(0.84f, 0.86f), new Vector2(0.96f, 0.96f), "×", "home", false);
             x.GetComponent<Image>().color = new Color(0, 0, 0, 0);
             x.GetComponentInChildren<Text>().color = ThemeConfig.Ink;
-            Txt(card.transform, "Title", new Vector2(0.12f, 0.84f), new Vector2(0.8f, 0.96f), Copy.Get("streak"), 36, TextAnchor.MiddleLeft, ThemeConfig.Ink);
+            Txt(card.transform, "Title", new Vector2(0.14f, 0.84f), new Vector2(0.86f, 0.96f), Copy.Get("streak"), 36, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             _streakCount = Txt(card.transform, "Count", new Vector2(0.1f, 0.7f), new Vector2(0.9f, 0.82f), "0 / 3", 28, TextAnchor.MiddleCenter, ThemeConfig.Muted);
             _modalPips = new Image[3];
             for (int i = 0; i < 2; i++)
             {
                 float left = 0.1f + i * 0.22f + 0.16f;
                 float right = 0.1f + (i + 1) * 0.22f;
-                var yarn = Panel(card.transform, "Yarn" + i, new Vector2(left, 0.505f), new Vector2(right, 0.535f), ViewKit.Hex("#A56B3C"));
+                var yarn = Panel(card.transform, "Yarn" + i, new Vector2(left - 0.01f, 0.508f), new Vector2(right + 0.01f, 0.532f), ViewKit.Hex("#A56B3C"));
                 yarn.GetComponent<Image>().raycastTarget = false;
             }
             for (int i = 0; i < 3; i++)
@@ -632,7 +679,7 @@ namespace Rugtopia.View
             prize.GetComponent<Image>().type = Image.Type.Sliced;
             var prizeText = Txt(prize, "T", Vector2.zero, Vector2.one, "+1", 22, TextAnchor.MiddleCenter, ViewKit.Ink);
             prizeText.raycastTarget = false;
-            Txt(card.transform, "PrizeLabel", new Vector2(0.62f, 0.32f), new Vector2(0.98f, 0.42f), Copy.Get("streakReward"), 16, TextAnchor.MiddleCenter, ThemeConfig.Muted);
+            Txt(card.transform, "PrizeLabel", new Vector2(0.58f, 0.32f), new Vector2(0.98f, 0.44f), Copy.Get("streakReward"), 20, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             _streakFoot = Txt(card.transform, "Reset", new Vector2(0.08f, 0.08f), new Vector2(0.92f, 0.24f), Copy.Get("streakReset"), 22, TextAnchor.MiddleCenter, ThemeConfig.Muted);
         }
 
@@ -645,12 +692,15 @@ namespace Rugtopia.View
             Btn(root, "Close", new Vector2(0.22f, 0.05f), new Vector2(0.78f, 0.18f), Copy.Get("close"), "settingsClose", true);
         }
 
-        static void PlaceYarn(RectTransform yarn, float x, float y, float w, float h)
+        static void YarnBar(Transform parent, string name, float x, float y, float w, float h, Color color)
         {
-            yarn.anchorMin = yarn.anchorMax = new Vector2(0.5f, 1f);
-            yarn.pivot = new Vector2(0.5f, 1f);
-            yarn.sizeDelta = new Vector2(w, h);
-            yarn.anchoredPosition = new Vector2(x, y);
+            var bar = Panel(parent, name, Vector2.zero, Vector2.zero, color);
+            var rt = bar.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(Mathf.Max(1f, w), Mathf.Max(1f, h));
+            rt.anchoredPosition = new Vector2(x, y);
+            bar.GetComponent<Image>().raycastTarget = false;
         }
 
         static void Kill(GameObject go)
@@ -738,10 +788,15 @@ namespace Rugtopia.View
     /// <summary>A woven pattern drawn with UI cells, fringe and a resting shadow. Not the play board.</summary>
     public static class RugPortrait
     {
-        public static void Draw(RectTransform box, string[] rows, bool fringe)
+        public static void Draw(RectTransform box, string[] rows, bool fringe, bool square)
         {
             if (rows == null || rows.Length == 0) return;
             int h = rows.Length, w = rows[0].Length;
+            if (square)
+            {
+                DrawSquare(box, rows, fringe, w, h);
+                return;
+            }
             var frame = New(box, "Frame", new Vector2(0.04f, fringe ? 0.08f : 0.06f), new Vector2(0.96f, fringe ? 0.92f : 0.94f), new Color(0.42f, 0.26f, 0.16f, 1f));
             frame.GetComponent<Image>().sprite = ArtKit.UiRound;
             frame.GetComponent<Image>().type = Image.Type.Sliced;
@@ -776,6 +831,49 @@ namespace Rugtopia.View
                 float x = 0.08f + i * (0.84f / 14f);
                 New(box, "Ft" + i, new Vector2(x, 0.93f), new Vector2(x + 0.012f, 0.99f), new Color(0.85f, 0.76f, 0.62f, 1f));
                 New(box, "Fb" + i, new Vector2(x, 0.01f), new Vector2(x + 0.012f, 0.07f), new Color(0.85f, 0.76f, 0.62f, 1f));
+            }
+        }
+
+        static void DrawSquare(RectTransform box, string[] rows, bool fringe, int w, int h)
+        {
+            float fringeU = fringe ? 0.7f : 0f;
+            const float frameU = 0.18f;
+            float unitsH = h + fringeU + frameU;
+            float unitsW = w + frameU;
+            var hostGo = new GameObject("Fit", typeof(RectTransform), typeof(AspectRatioFitter));
+            hostGo.transform.SetParent(box, false);
+            var host = hostGo.GetComponent<RectTransform>();
+            host.anchorMin = host.anchorMax = new Vector2(0.5f, 0.5f);
+            host.pivot = new Vector2(0.5f, 0.5f);
+            host.anchoredPosition = Vector2.zero;
+            var fitter = hostGo.GetComponent<AspectRatioFitter>();
+            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            fitter.aspectRatio = unitsW / unitsH;
+            float side = (frameU * 0.5f) / unitsW;
+            float fringeBand = (fringeU * 0.5f) / unitsH;
+            float frameBand = (frameU * 0.5f) / unitsH;
+            float cell = 1f / unitsH;
+            var frame = New(host, "Frame", new Vector2(side * 0.25f, fringeBand + frameBand * 0.2f), new Vector2(1f - side * 0.25f, 1f - fringeBand - frameBand * 0.2f), new Color(0.42f, 0.26f, 0.16f, 1f));
+            frame.GetComponent<Image>().raycastTarget = false;
+            float gridTop = 1f - fringeBand - frameBand;
+            for (int r = 0; r < h; r++)
+            for (int c = 0; c < w; c++)
+            {
+                float x0 = side + c / unitsW;
+                float y1 = gridTop - r * cell;
+                float y0 = y1 - cell;
+                char ch = c < rows[r].Length ? rows[r][c] : 'C';
+                var tile = New(host, "C" + r + "_" + c, new Vector2(x0 + 0.003f, y0 + 0.003f), new Vector2(x0 + 1f / unitsW - 0.003f, y1 - 0.003f), ViewKit.Of(ch));
+                tile.GetComponent<Image>().raycastTarget = false;
+            }
+            if (!fringe) return;
+            int n = Mathf.Max(8, w * 3);
+            for (int i = 0; i < n; i++)
+            {
+                float x = side + (1f - 2f * side) * i / n;
+                float fw = (1f - 2f * side) / n * 0.35f;
+                New(host, "Ft" + i, new Vector2(x, 1f - fringeBand * 0.85f), new Vector2(x + fw, 0.995f), new Color(0.85f, 0.76f, 0.62f, 1f));
+                New(host, "Fb" + i, new Vector2(x, 0.005f), new Vector2(x + fw, fringeBand * 0.85f), new Color(0.85f, 0.76f, 0.62f, 1f));
             }
         }
 
