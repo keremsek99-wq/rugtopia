@@ -16,8 +16,18 @@ namespace Rugtopia.Meta
         public int lives = EconomyConfig.MaxLives;
         public long livesTicksUtc;      // DateTime.UtcNow.Ticks when the refill timer started
         public int streak;
+        public bool streakBroken;
         public List<string> seenIntros = new List<string>();
         public List<float> bestSeconds = new List<float>();
+        public bool pickedLang;
+        public string theme = "light";
+        public string freeContinueDay = "";
+        public long firstPlayUtc;
+        public int dailyDay;
+        public string dailyLast = "";
+        public bool muted;
+        public bool musicMuted;
+        public List<int> hung = new List<int>();
     }
 
     /// <summary>PlayerPrefs JSON save (week-1 stub; cloud save / iCloud is out of slice scope).</summary>
@@ -33,6 +43,10 @@ namespace Rugtopia.Meta
             var json = PlayerPrefs.GetString(Key, "");
             _data = string.IsNullOrEmpty(json) ? NewSave() : JsonUtility.FromJson<SaveData>(json);
             if (_data == null) _data = NewSave();
+            if (_data.firstPlayUtc == 0) { _data.firstPlayUtc = DateTime.UtcNow.Ticks; Save(); }
+            if (_data.seenIntros == null) _data.seenIntros = new List<string>();
+            if (_data.bestSeconds == null) _data.bestSeconds = new List<float>();
+            if (_data.hung == null) _data.hung = new List<int>();
         }
 
         public static void Save()

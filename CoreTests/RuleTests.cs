@@ -186,7 +186,23 @@ namespace Rugtopia.Core.Tests
         {
             Assert.Equal(40, EconomyConfig.Reward("ftue")); Assert.Equal(150, EconomyConfig.Reward("boss"));
             Assert.Equal(900, EconomyConfig.ContinuePrice(0)); Assert.Equal(2100, EconomyConfig.ContinuePrice(7));
-            Assert.False(EconomyConfig.LosesLifeOnFail(2)); Assert.True(EconomyConfig.LosesLifeOnFail(3));
+            Assert.False(EconomyConfig.LosesLifeOnFail(14)); Assert.True(EconomyConfig.LosesLifeOnFail(15));
+            Assert.Equal(7, EconomyConfig.UnlockSlot); Assert.Equal(13, EconomyConfig.UnlockComb); Assert.Equal(17, EconomyConfig.UnlockShuttle);
+            Assert.Equal(19, EconomyConfig.UnlockStreak);
+            Assert.Equal(29, EconomyConfig.UnlockInterstitial);
+        }
+
+        [Fact]
+        public void Difficulty_cycle_marks_5_hard_9_super_and_the_next_bonus()
+        {
+            foreach (var d in TestData.Levels)
+            {
+                int n = d.index + 1;
+                if (n % 10 == 5) Assert.Equal("hard", d.tag);
+                else if (n % 10 == 9) Assert.Equal("veryhard", d.tag);
+                else if (n % 10 == 0) Assert.Equal("bonus", d.tag);
+                else Assert.DoesNotContain(d.tag, new[] { "hard", "veryhard" });
+            }
         }
     }
 }

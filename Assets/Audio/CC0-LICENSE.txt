@@ -1,0 +1,44 @@
+Rugtopia audio is CC0 only.
+
+SFX clips live in Assets/Resources/Sfx/. Each pack license sits in that
+folder next to the clips that came from it. The looping bed is
+Assets/Resources/Music/home.ogg, with LICENSE-Sunset-Walk.txt beside it.
+
+Interface Sounds 1.0 — Kenney (www.kenney.nl) — CC0
+https://kenney.nl/assets/interface-sounds
+License file: LICENSE-Interface-Sounds.txt
+  tap.ogg     click_001.ogg       UI tap
+  pick.ogg    pluck_001.ogg       spool pick
+  belt.ogg    close_002.ogg       belt shift
+  stitch.ogg  pluck_002.ogg       stitch (pitched up along a row)
+  row.ogg     confirmation_001.ogg row completed
+  fail.ogg    question_004.ogg    gentle fail sting
+
+Impact Sounds 1.0 — Kenney — CC0
+https://kenney.nl/assets/impact-sounds
+License file: LICENSE-Impact-Sounds.txt
+  drop.ogg    impactWood_light_001.ogg   spool set into a slot
+  no.ogg      impactSoft_medium_000.ogg  locked or invalid tap
+
+UI Audio — Kenney — CC0
+https://kenney.nl/assets/ui-audio
+License file: LICENSE-UI-Audio.txt
+  booster.ogg  switch15.ogg   booster use
+
+RPG Audio — Kenney — CC0
+https://kenney.nl/assets/rpg-audio
+License file: LICENSE-RPG-Audio.txt
+  coin.ogg    handleCoins2.ogg   reward claim
+
+Music Jingles — Kenney — CC0
+https://kenney.nl/assets/music-jingles
+License file: LICENSE-Music-Jingles.txt
+  win.ogg     jingles_PIZZI03.ogg   pizzicato win jingle
+
+Sunset Walk — KiluaBoy — CC0
+https://opengameart.org/content/sunset-walk-ambient-quiet-sweet-loop
+License file: Assets/Resources/Music/LICENSE-Sunset-Walk.txt
+  home.ogg    SunsetWalk.ogg   calm loop, Home and Play
+
+Credit is appreciated and not required.
+http://creativecommons.org/publicdomain/zero/1.0/

@@ -1,4 +1,5 @@
 using System;
+using Rugtopia.Meta;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,29 +9,48 @@ using UnityEngine.InputSystem.UI;
 
 namespace Rugtopia.View
 {
-    /// <summary>Screen-space UI built in code (uGUI + legacy Text so it needs no TMP Essentials import in week 1).
-    /// Top bar, booster buttons, win/fail panels. Strings are English placeholders; Unity Localization tables come in week 4.</summary>
+    /// <summary>Screen-space UI. Top bar holds the stitch counter. Win and fail cards share one tight layout.</summary>
     public class HUD : MonoBehaviour
     {
-        public event Action<string> Clicked;   // ids: slot, comb, shuttle, continue, retry, next, prev, menu
+        public event Action<string> Clicked;
 
+        Canvas _canvas;
+        RectTransform _ui;
         Text _title, _coins, _lives, _status;
-        GameObject _winPanel, _failPanel;
-        Text _winText, _failText, _continueLabel;
+        GameObject _winPanel, _failPanel, _menu, _map, _top;
+        Text _winTitle, _winCoins, _failTitle, _failCount, _failLeft, _failBody, _continueLabel, _menuBody, _introText, _badgeText;
+        Image _failFill;
+        ShellUI _shell;
+        Button _hang;
+        GameObject _badge, _diffSplash;
+        Text _diffSplashText;
+        Coroutine _splash;
+        Button _langEn, _langTr;
+        bool _hangWas;
+        Text _playLabel, _langLabel, _themeLabel, _mapTitle, _mapMeta, _menuSub, _skip, _chipText;
+        GameObject _dim, _chip;
+        RectTransform[] _stars;
+        RectTransform _winRug;
+        GameObject _intro;
         Button _slot, _comb, _shuttle;
         Text _slotL, _combL, _shuttleL;
+        Button[] _levels;
+        Text[] _levelLabels;
+        float _starT;
 
         public void Build()
         {
             var canvasGo = new GameObject("HUD Canvas");
             canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 10;
+            _canvas = canvasGo.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _canvas.sortingOrder = 100;
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1080, 2340); scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
             var root = canvasGo.GetComponent<RectTransform>();
+            _ui = root;
 
             if (FindAnyObjectByType<EventSystem>() == null)
             {
@@ -43,45 +63,644 @@ namespace Rugtopia.View
 #endif
             }
 
-            var top = Panel(root, "TopBar", new Vector2(0, 0.93f), new Vector2(1, 1), new Color(0.29f, 0.17f, 0.12f, 0.92f));
-            _title = Txt(top, "Title", new Vector2(0.22f, 0), new Vector2(0.78f, 1), "", 44, TextAnchor.MiddleCenter, Color.white);
-            _coins = Txt(top, "Coins", new Vector2(0.78f, 0), new Vector2(0.98f, 1), "", 38, TextAnchor.MiddleRight, new Color(1f, 0.85f, 0.3f));
-            _lives = Txt(top, "Lives", new Vector2(0.02f, 0), new Vector2(0.22f, 1), "", 38, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
-            Btn(top, "Prev", new Vector2(0.24f, 0.15f), new Vector2(0.3f, 0.85f), "<", "prev");
-            Btn(top, "Next", new Vector2(0.7f, 0.15f), new Vector2(0.76f, 0.85f), ">", "next");
-            _status = Txt(root, "Status", new Vector2(0.05f, 0.885f), new Vector2(0.95f, 0.925f), "", 32, TextAnchor.MiddleCenter, new Color(0.17f, 0.1f, 0.08f));
+            _top = Panel(root, "TopBar", new Vector2(0, 0.885f), new Vector2(1, 1), new Color(0.12f, 0.07f, 0.05f, 0.0f)).gameObject;
+            var top = _top.transform;
+            Btn(top, "Home", new Vector2(0.03f, 0.42f), new Vector2(0.15f, 0.96f), "‹", "home");
+            var restart = Btn(top, "Restart", new Vector2(0.85f, 0.42f), new Vector2(0.97f, 0.96f), "", "restart");
+            restart.transform.Find("Label").gameObject.SetActive(false);
+            var restartMark = Panel(restart.transform, "Icon", new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f), ViewKit.Cream);
+            var restartImg = restartMark.GetComponent<Image>();
+            restartImg.sprite = Glyphs.Restart;
+            restartImg.preserveAspect = true;
+            restartImg.raycastTarget = false;
+            _title = Txt(top, "Title", new Vector2(0.16f, 0.5f), new Vector2(0.54f, 1f), "", 52, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _status = Txt(top, "Status", new Vector2(0.2f, 0.16f), new Vector2(0.8f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Gold);
+            _lives = Txt(top, "Lives", new Vector2(0.03f, 0.0f), new Vector2(0.2f, 0.38f), "", 28, TextAnchor.MiddleLeft, new Color(1f, 0.55f, 0.6f));
+            _coins = Txt(top, "Coins", new Vector2(0.8f, 0.0f), new Vector2(0.97f, 0.38f), "", 28, TextAnchor.MiddleRight, ViewKit.Gold);
 
-            _slot = Btn(root, "Slot", new Vector2(0.06f, 0.365f), new Vector2(0.34f, 0.41f), "+1 Slot", "slot"); _slotL = _slot.GetComponentInChildren<Text>();
-            _comb = Btn(root, "Comb", new Vector2(0.36f, 0.365f), new Vector2(0.64f, 0.41f), "Comb", "comb"); _combL = _comb.GetComponentInChildren<Text>();
-            _shuttle = Btn(root, "Shuttle", new Vector2(0.66f, 0.365f), new Vector2(0.94f, 0.41f), "Shuttle", "shuttle"); _shuttleL = _shuttle.GetComponentInChildren<Text>();
+            // ~48pt circles on a 9:19.5 phone. Reference canvas is 1080x2340.
+            float dy = 0.056f, dx = dy * (2340f / 1080f), gap = 0.03f;
+            float span = 3f * dx + 2f * gap;
+            float bx = (1f - span) * 0.5f;
+            float by = 0.04f;
+            _slot = IconBtn(root, "Slot", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.PackSlot, "slot", 0.12f); _slotL = _slot.transform.Find("Badge/Count").GetComponent<Text>();
+            bx += dx + gap;
+            _comb = IconBtn(root, "Comb", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.CombIcon, "comb"); _combL = _comb.transform.Find("Badge/Count").GetComponent<Text>();
+            bx += dx + gap;
+            _shuttle = IconBtn(root, "Shuttle", new Vector2(bx, by), new Vector2(bx + dx, by + dy), Glyphs.PackShuttle, "shuttle", 0.12f); _shuttleL = _shuttle.transform.Find("Badge/Count").GetComponent<Text>();
 
-            _winPanel = Panel(root, "WinPanel", new Vector2(0.1f, 0.35f), new Vector2(0.9f, 0.65f), new Color(0.2f, 0.45f, 0.3f, 0.96f)).gameObject;
-            _winText = Txt(_winPanel.transform, "Text", new Vector2(0.05f, 0.45f), new Vector2(0.95f, 0.95f), "", 52, TextAnchor.MiddleCenter, Color.white);
-            Btn(_winPanel.transform, "NextBtn", new Vector2(0.25f, 0.08f), new Vector2(0.75f, 0.35f), "Next", "next");
-            _failPanel = Panel(root, "FailPanel", new Vector2(0.1f, 0.33f), new Vector2(0.9f, 0.67f), new Color(0.55f, 0.18f, 0.2f, 0.96f)).gameObject;
-            _failText = Txt(_failPanel.transform, "Text", new Vector2(0.05f, 0.6f), new Vector2(0.95f, 0.95f), "", 48, TextAnchor.MiddleCenter, Color.white);
-            _continueLabel = Btn(_failPanel.transform, "ContinueBtn", new Vector2(0.15f, 0.33f), new Vector2(0.85f, 0.55f), "Continue", "continue").GetComponentInChildren<Text>();
-            Btn(_failPanel.transform, "RetryBtn", new Vector2(0.25f, 0.06f), new Vector2(0.75f, 0.27f), "Retry", "retry");
+            _dim = Panel(root, "Dim", Vector2.zero, Vector2.one, new Color(0.059f, 0.031f, 0.02f, 0.72f)).gameObject;
+            _dim.SetActive(false);
+            var chip = Panel(root, "CoinChip", new Vector2(0.33f, 0.905f), new Vector2(0.67f, 0.97f), new Color(0f, 0f, 0f, 0.55f));
+            var chipImg = chip.GetComponent<Image>();
+            chipImg.sprite = ArtKit.UiRound;
+            chipImg.type = Image.Type.Sliced;
+            var icon = Panel(chip, "Icon", new Vector2(0.06f, 0.14f), new Vector2(0.28f, 0.86f), Color.white);
+            var iconImg = icon.GetComponent<Image>();
+            iconImg.sprite = ArtKit.Coin;
+            iconImg.raycastTarget = false;
+            _chipText = Txt(chip, "Val", new Vector2(0.28f, 0f), new Vector2(0.96f, 1f), "", 34, TextAnchor.MiddleCenter, ViewKit.Hex("#FFE9A8"));
+            _chip = chip.gameObject;
+            _chip.SetActive(false);
+
+            _winPanel = Card(root, "WinPanel", new Vector2(0.08f, 0.26f), new Vector2(0.92f, 0.76f), ViewKit.Hex("#C4A484"));
+            _winTitle = Txt(_winPanel.transform, "Title", new Vector2(0.08f, 0.86f), new Vector2(0.92f, 0.97f), "", 56, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var rugSlot = new GameObject("WinRug", typeof(RectTransform));
+            rugSlot.transform.SetParent(_winPanel.transform, false);
+            _winRug = rugSlot.GetComponent<RectTransform>();
+            _winRug.anchorMin = new Vector2(0.18f, 0.66f);
+            _winRug.anchorMax = new Vector2(0.82f, 0.86f);
+            _winRug.offsetMin = _winRug.offsetMax = Vector2.zero;
+            _stars = new RectTransform[3];
+            for (int i = 0; i < 3; i++)
+            {
+                bool mid = i == 1;
+                float x = mid ? 0.40f : 0.18f + i * 0.22f;
+                float w = mid ? 0.20f : 0.16f;
+                float y0 = mid ? 0.50f : 0.515f;
+                float y1 = mid ? 0.64f : 0.625f;
+                var badge = Panel(_winPanel.transform, "Star" + i, new Vector2(x, y0), new Vector2(x + w, y1), ViewKit.Gold);
+                var badgeImg = badge.GetComponent<Image>();
+                badgeImg.sprite = Glyphs.SolidCircle;
+                badgeImg.preserveAspect = true;
+                var star = Panel(badge, "Glyph", new Vector2(0.22f, 0.22f), new Vector2(0.78f, 0.78f), ViewKit.Hex("#FFF6D8"));
+                var si = star.GetComponent<Image>();
+                si.sprite = Glyphs.SolidStar;
+                si.preserveAspect = true;
+                si.raycastTarget = false;
+                _stars[i] = badge;
+            }
+            var coin = Panel(_winPanel.transform, "Coin", new Vector2(0.30f, 0.405f), new Vector2(0.40f, 0.495f), Color.white);
+            var coinImg = coin.GetComponent<Image>();
+            coinImg.sprite = ArtKit.Coin;
+            coinImg.preserveAspect = true;
+            coinImg.color = Color.white;
+            coinImg.raycastTarget = false;
+            _winCoins = Txt(_winPanel.transform, "Coins", new Vector2(0.40f, 0.40f), new Vector2(0.76f, 0.50f), "", 48, TextAnchor.MiddleLeft, ViewKit.Ink);
+            var coinKey = _winCoins.gameObject.AddComponent<Outline>();
+            coinKey.effectColor = ViewKit.Hex("#3A1C12");
+            coinKey.effectDistance = new Vector2(1.4f, -1.4f);
+            var coinDrop = _winCoins.gameObject.AddComponent<Shadow>();
+            coinDrop.effectColor = new Color(0.22f, 0.10f, 0.06f, 0.35f);
+            coinDrop.effectDistance = new Vector2(0f, -2f);
+            var winNext = FamilyPill(_winPanel.transform, "NextBtn", new Vector2(0.08f, 0.22f), new Vector2(0.92f, 0.352f), "Continue", "next", 46, Glyphs.PlayMark);
+            _skip = Txt(_winPanel.transform, "Skip", new Vector2(0.52f, 0.04f), new Vector2(0.94f, 0.16f), "", 22, TextAnchor.MiddleCenter, ViewKit.Wool);
+            FamilyIcon(_winPanel.transform, "HomeBtn", new Vector2(0.06f, 0.035f), new Vector2(0.28f, 0.175f), Glyphs.HomeMark, "Home", "home");
+            _hang = Btn(_winPanel.transform, "HangBtn", new Vector2(0.12f, 0.40f), new Vector2(0.88f, 0.52f), "Hang it", "hang", false);
+            _hang.gameObject.SetActive(false);
+            _langEn = FamilyFace(_winPanel.transform, "LangEn", new Vector2(0.08f, 0.36f), new Vector2(0.48f, 0.50f), "English", "langEn", 42, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f, 1f), ViewKit.Hex("#1A0C08"));
+            _langTr = FamilyFace(_winPanel.transform, "LangTr", new Vector2(0.52f, 0.36f), new Vector2(0.92f, 0.50f), "Türkçe", "langTr", 42, ViewKit.Green, ViewKit.Hex("#24543A"), Color.white, ViewKit.Hex("#143828"));
+            _langEn.gameObject.SetActive(false);
+            _langTr.gameObject.SetActive(false);
+            SetNamed(_winPanel, "LangEnSh", false);
+            SetNamed(_winPanel, "LangTrSh", false);
+            _badge = Panel(top, "Badge", new Vector2(0.52f, 0.50f), new Vector2(0.83f, 0.96f), ViewKit.Hex("#8E44AD")).gameObject;
+            _badge.GetComponent<Image>().sprite = ArtKit.UiRound;
+            _badge.GetComponent<Image>().type = Image.Type.Sliced;
+            _badgeText = Txt(_badge.transform, "Label", new Vector2(0.06f, 0f), new Vector2(0.94f, 1f), "", 20, TextAnchor.MiddleCenter, Color.white);
+            _badgeText.resizeTextForBestFit = true;
+            _badgeText.resizeTextMinSize = 11;
+            _badgeText.resizeTextMaxSize = 20;
+            _badgeText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _badge.SetActive(false);
+            _diffSplash = Card(root, "DiffSplash", new Vector2(0.14f, 0.40f), new Vector2(0.86f, 0.60f), ViewKit.Hex("#8E44AD"));
+            _diffSplash.AddComponent<CanvasGroup>();
+            _diffSplashText = Txt(_diffSplash.transform, "Label", new Vector2(0.08f, 0.15f), new Vector2(0.92f, 0.85f), "", 52, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _diffSplash.SetActive(false);
+            _playLabel = null;
+            Remember(winNext, "winNext");
+
+            _failPanel = Card(root, "FailPanel", new Vector2(0.08f, 0.24f), new Vector2(0.92f, 0.72f), ViewKit.Hex("#C4A484"));
+            _failTitle = Txt(_failPanel.transform, "Title", new Vector2(0.08f, 0.88f), new Vector2(0.92f, 0.97f), "", 44, TextAnchor.MiddleCenter, ViewKit.Ink);
+            _failCount = Txt(_failPanel.transform, "Count", new Vector2(0.08f, 0.755f), new Vector2(0.92f, 0.875f), "", 56, TextAnchor.MiddleCenter, ViewKit.Ink);
+            var countKey = _failCount.gameObject.AddComponent<Outline>();
+            countKey.effectColor = ViewKit.Hex("#3A1C12");
+            countKey.effectDistance = new Vector2(1.5f, -1.5f);
+            _failLeft = Txt(_failPanel.transform, "Left", new Vector2(0.08f, 0.675f), new Vector2(0.92f, 0.75f), "", 26, TextAnchor.MiddleCenter, ViewKit.Hex("#3D2A20"));
+            var bar = Panel(_failPanel.transform, "Bar", new Vector2(0.12f, 0.56f), new Vector2(0.88f, 0.64f), ViewKit.Hex("#E6D3BC"));
+            var barImg = bar.GetComponent<Image>();
+            barImg.sprite = ArtKit.UiRound;
+            barImg.type = Image.Type.Sliced;
+            _failFill = Panel(bar, "Fill", Vector2.zero, new Vector2(0.4f, 1f), ViewKit.Hex("#C4552A")).GetComponent<Image>();
+            _failFill.sprite = ArtKit.UiRound;
+            _failFill.type = Image.Type.Sliced;
+            _failBody = Txt(_failPanel.transform, "Body", new Vector2(0.08f, 0.46f), new Vector2(0.92f, 0.55f), "", 24, TextAnchor.MiddleCenter, ViewKit.Hex("#5C3B28"));
+            _continueLabel = FamilyPill(_failPanel.transform, "ContinueBtn", new Vector2(0.08f, 0.28f), new Vector2(0.92f, 0.42f), "Continue", "continue", 40, Glyphs.PlayMark, 54).GetComponentInChildren<Text>();
+            _continueLabel.lineSpacing = 0.82f;
+            FamilyIcon(_failPanel.transform, "RetryBtn", new Vector2(0.18f, 0.045f), new Vector2(0.48f, 0.195f), Glyphs.Restart, "Retry", "retry");
+            FamilyIcon(_failPanel.transform, "MapBtn", new Vector2(0.52f, 0.045f), new Vector2(0.82f, 0.195f), Glyphs.LinePath, "Levels", "map");
+
+            _menu = Panel(root, "Menu", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
+            Txt(_menu.transform, "Title", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.82f), "Rugtopia", 92, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _menuSub = Txt(_menu.transform, "Sub", new Vector2(0.1f, 0.52f), new Vector2(0.9f, 0.62f), "", 40, TextAnchor.MiddleCenter, ViewKit.Gold);
+            _menuBody = Txt(_menu.transform, "Body", new Vector2(0.1f, 0.42f), new Vector2(0.9f, 0.52f), "", 34, TextAnchor.MiddleCenter, ViewKit.Cream);
+            _playLabel = Btn(_menu.transform, "Play", new Vector2(0.18f, 0.24f), new Vector2(0.82f, 0.36f), "Play", "play", true).GetComponentInChildren<Text>();
+            _langLabel = Btn(_menu.transform, "Lang", new Vector2(0.08f, 0.12f), new Vector2(0.48f, 0.21f), "Türkçe", "lang").GetComponentInChildren<Text>();
+            _themeLabel = Btn(_menu.transform, "Theme", new Vector2(0.52f, 0.12f), new Vector2(0.92f, 0.21f), "Dark", "theme").GetComponentInChildren<Text>();
+
+            _intro = Card(root, "Intro", new Vector2(0.1f, 0.34f), new Vector2(0.9f, 0.66f), ViewKit.Gold);
+            _introText = Txt(_intro.transform, "Body", new Vector2(0.08f, 0.38f), new Vector2(0.92f, 0.92f), "", 36, TextAnchor.MiddleCenter, ViewKit.Ink);
+            Btn(_intro.transform, "Ok", new Vector2(0.22f, 0.08f), new Vector2(0.78f, 0.30f), "OK", "introOk", true);
+            _intro.SetActive(false);
+
+            _map = Panel(root, "Map", Vector2.zero, Vector2.one, ViewKit.Background).gameObject;
+            _mapTitle = Txt(_map.transform, "Title", new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.98f), "Levels", 64, TextAnchor.MiddleCenter, ViewKit.Cream);
+            Btn(_map.transform, "Back", new Vector2(0.04f, 0.91f), new Vector2(0.22f, 0.98f), "Back", "home");
+            _mapMeta = Txt(_map.transform, "Meta", new Vector2(0.22f, 0.90f), new Vector2(0.98f, 0.98f), "", 28, TextAnchor.MiddleRight, ViewKit.Cream);
+            int n = 30;
+            _levels = new Button[n];
+            _levelLabels = new Text[n];
+            for (int i = 0; i < n; i++)
+            {
+                int col = i % 5, row = i / 5;
+                float x0 = 0.05f + col * 0.185f;
+                float y1 = 0.84f - row * 0.11f;
+                _levels[i] = Btn(_map.transform, "L" + i, new Vector2(x0, y1 - 0.09f), new Vector2(x0 + 0.16f, y1), (i + 1).ToString(), "lv" + i);
+                _levelLabels[i] = _levels[i].GetComponentInChildren<Text>();
+            }
             HidePanels();
+            ApplyLanguage();
+            _shell = gameObject.AddComponent<ShellUI>();
+            _shell.Build(_canvas.transform);
+            _shell.Clicked += s => { if (Clicked != null) Clicked(s); };
+        }
+
+        void Remember(Button b, string key)
+        {
+            if (b == null) return;
+            b.gameObject.name = key;
+        }
+
+        public void ApplyLanguage()
+        {
+            if (_menuSub != null) _menuSub.text = Copy.Get("menuSub");
+            if (_playLabel != null) _playLabel.text = Copy.Get("play");
+            if (_langLabel != null) _langLabel.text = Copy.Get(LangIsTr() ? "langToEn" : "langToTr");
+            if (_themeLabel != null) _themeLabel.text = Copy.Get(ThemeConfig.IsLight ? "themeToDark" : "themeToLight");
+            if (_mapTitle != null) _mapTitle.text = Copy.Get("levels");
+            if (_winTitle != null) _winTitle.text = Copy.Get("winTitle");
+            SetChildLabel(_winPanel, "winNext", Copy.Get("next"));
+            if (_skip != null) _skip.text = Copy.Get("tapSkip");
+            SetChildLabel(_failPanel, "RetryBtn", Copy.Get("retryFree"));
+            SetChildLabel(_failPanel, "MapBtn", Copy.Get("levels"));
+            SetChildLabel(_winPanel, "HomeBtn", Copy.Get("toHome"));
+            SetChildLabel(_winPanel, "HangBtn", Copy.Get("hang"));
+        }
+
+        static bool LangIsTr() { return SaveServiceLang() == "tr"; }
+        static string SaveServiceLang()
+        {
+            var d = Rugtopia.Meta.SaveService.Data;
+            return d != null && d.lang == "tr" ? "tr" : "en";
+        }
+
+        static void SetChildLabel(GameObject panel, string child, string text)
+        {
+            if (panel == null) return;
+            var t = panel.transform.Find(child);
+            if (t == null) return;
+            var label = t.GetComponentInChildren<Text>();
+            if (label != null) label.text = text;
+        }
+
+        public void ShowMenu(int coins, int reached)
+        {
+            SetPlayChrome(false);
+            HideIntro();
+            ApplyLanguage();
+            if (_menu != null) _menu.SetActive(false);
+            if (_map != null) _map.SetActive(false);
+            HidePanels();
+            if (_shell != null) _shell.ShowHome();
+            ApplyTheme();
+        }
+
+        public void ShowMap(int unlockedIndex, int count)
+        {
+            SetPlayChrome(false);
+            HideIntro();
+            ApplyLanguage();
+            if (_menu != null) _menu.SetActive(false);
+            if (_map != null) _map.SetActive(false);
+            HidePanels();
+            if (_shell != null) _shell.ShowPath();
+            ApplyTheme();
+            int n = _levels == null ? 0 : _levels.Length;
+            for (int i = 0; i < n; i++)
+            {
+                bool open = i < count && i <= unlockedIndex;
+                _levels[i].gameObject.SetActive(i < count);
+                _levels[i].interactable = open;
+                var img = _levels[i].GetComponent<Image>();
+                if (img != null) img.color = open ? ThemeConfig.Button : (ThemeConfig.IsLight ? ViewKit.Hex("#CDB89A") : new Color(0.72f, 0.66f, 0.58f));
+                if (_levelLabels[i] != null) _levelLabels[i].color = open ? ThemeConfig.ButtonText : ThemeConfig.Muted;
+                if (_levelLabels[i] != null) _levelLabels[i].text = open ? (i + 1).ToString() : "·";
+            }
+        }
+
+        public void Bind(Camera cam)
+        {
+            if (_canvas == null || cam == null) return;
+            _canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            _canvas.worldCamera = cam;
+            _canvas.planeDistance = 2f;
+        }
+
+        public void ShowPlay()
+        {
+            SetPlayChrome(true);
+            if (_menu != null) _menu.SetActive(false);
+            if (_map != null) _map.SetActive(false);
+            if (_lives != null) _lives.gameObject.SetActive(false);
+            if (_coins != null) _coins.gameObject.SetActive(false);
+            if (_status != null) _status.gameObject.SetActive(false);
+            if (_shell != null) _shell.Hide();
+            ApplyTheme();
+        }
+
+        void SetPlayChrome(bool on)
+        {
+            if (_top != null) _top.SetActive(on);
+            SetBoosters(on);
+        }
+
+        public void SetBoosters(bool on)
+        {
+            if (_slot != null) _slot.gameObject.SetActive(on);
+            if (_comb != null) _comb.gameObject.SetActive(on);
+            if (_shuttle != null) _shuttle.gameObject.SetActive(on);
+        }
+
+        public void ShowIntro(string text)
+        {
+            if (_intro == null) return;
+            _introText.text = text;
+            _intro.SetActive(true);
+            _intro.transform.SetAsLastSibling();
+        }
+
+        public void HideIntro()
+        {
+            if (_intro != null) _intro.SetActive(false);
+        }
+
+        public void ShowLevelComplete(int coins)
+        {
+            bool restartStars = _winPanel == null || !_winPanel.activeSelf;
+            HidePanels();
+            HideIntro();
+            ApplyLanguage();
+            if (restartStars) _starT = 0f;
+            _winCoins.text = "+" + coins + "  " + Copy.Get("coins");
+            ShowDim(true);
+            _winPanel.SetActive(true);
+            _winPanel.transform.SetAsLastSibling();
+            ShowLangChoice(false);
+            BurstConfetti();
+        }
+
+        void BurstConfetti()
+        {
+            ClearBits();
+            for (int i = 0; i < 48; i++)
+            {
+                float x = UnityEngine.Random.Range(0.02f, 0.94f);
+                float y = UnityEngine.Random.Range(0.58f, 0.97f);
+                float w = UnityEngine.Random.Range(0.016f, 0.034f);
+                float h = UnityEngine.Random.Range(0.01f, 0.02f);
+                var bit = Panel(_ui, "Bit" + i, new Vector2(x, y), new Vector2(x + w, y + h), Color.HSVToRGB((i * 0.13f) % 1f, 0.78f, 1f));
+                bit.localRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(-50f, 50f));
+                bit.SetSiblingIndex(_winPanel.transform.GetSiblingIndex());
+            }
+        }
+
+        void ClearBits()
+        {
+            if (_ui == null) return;
+            for (int i = _ui.childCount - 1; i >= 0; i--)
+            {
+                var child = _ui.GetChild(i);
+                if (!child.name.StartsWith("Bit")) continue;
+                if (Application.isPlaying) Destroy(child.gameObject);
+                else DestroyImmediate(child.gameObject);
+            }
+        }
+
+        public void SetWinPortrait(string[] rows)
+        {
+            if (_winRug == null) return;
+            for (int i = _winRug.childCount - 1; i >= 0; i--)
+            {
+                var go = _winRug.GetChild(i).gameObject;
+                if (Application.isPlaying) Destroy(go);
+                else DestroyImmediate(go);
+            }
+            if (rows != null) RugPortrait.Draw(_winRug, rows, true, true);
+        }
+
+        void Update()
+        {
+            if (_stars == null || _winPanel == null || !_winPanel.activeSelf) return;
+            _starT += Time.deltaTime;
+            for (int i = 0; i < _stars.Length; i++)
+            {
+                float pop = Mathf.Clamp01((_starT - i * 0.12f) / 0.28f);
+                float bounce = pop < 1f ? Mathf.Sin(pop * Mathf.PI) * 0.35f : 0.08f * Mathf.Sin(Time.time * 5f + i);
+                float s = Mathf.Lerp(0.2f, i == 1 ? 1.12f : 1f, pop) + bounce;
+                _stars[i].localScale = new Vector3(s, s, 1f);
+            }
         }
 
         public void SetTop(string title, int coins, int lives) { _title.text = title; _coins.text = coins + " ¢"; _lives.text = "♥ " + lives; }
-        public void SetStatus(string s) { _status.text = s; }
+        public void SetStatus(string s) { if (_status != null) _status.text = s; }
 
         public void SetBooster(string id, bool unlocked, int inventory, int price, bool armed)
         {
             Button b = id == "slot" ? _slot : id == "comb" ? _comb : _shuttle;
             Text l = id == "slot" ? _slotL : id == "comb" ? _combL : _shuttleL;
-            string name = id == "slot" ? "+1 Slot" : id == "comb" ? "Comb" : "Shuttle";
             b.interactable = unlocked;
-            l.text = !unlocked ? name + " (locked)" : name + (inventory > 0 ? " x" + inventory : " " + price + "¢") + (armed ? " ON" : "");
+            var badge = b.transform.Find("Badge");
+            if (badge != null) badge.gameObject.SetActive(unlocked);
+            if (l != null) l.text = inventory > 0 ? inventory.ToString() : price.ToString();
+            var img = b.GetComponent<Image>();
+            if (img != null) img.color = !unlocked ? new Color(ThemeConfig.Button.r, ThemeConfig.Button.g, ThemeConfig.Button.b, 0.45f) : armed ? ViewKit.Gold : ThemeConfig.Button;
+            var icon = b.transform.Find("Icon");
+            if (icon != null)
+            {
+                var ic = icon.GetComponent<Image>();
+                if (ic != null) ic.color = new Color(1f, 0.95f, 0.88f, unlocked ? 1f : 0.45f);
+            }
         }
 
-        public void ShowWin(string text) { HidePanels(); _winText.text = text; _winPanel.SetActive(true); }
-        public void ShowFail(string text, int continuePrice) { HidePanels(); _failText.text = text; _continueLabel.text = "Continue +1 slot · " + continuePrice + "¢"; _failPanel.SetActive(true); }
-        public void HidePanels() { _winPanel.SetActive(false); _failPanel.SetActive(false); }
+        Image _cover;
 
-        // ---- tiny uGUI builders ----
+        public void SetCover(float a)
+        {
+            if (_canvas == null) return;
+            if (_cover == null)
+            {
+                var go = new GameObject("Cover", typeof(RectTransform));
+                go.transform.SetParent(_canvas.transform, false);
+                var rt = go.GetComponent<RectTransform>();
+                rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
+                _cover = go.AddComponent<Image>();
+                _cover.raycastTarget = false;
+            }
+            var c = ThemeConfig.BgTop; c.a = Mathf.Clamp01(a);
+            _cover.color = c;
+            _cover.gameObject.SetActive(a > 0.02f);
+            if (a > 0.02f) _cover.transform.SetAsLastSibling();
+        }
+
+        public void Remind(string s) { StartCoroutine(RemindCo(s)); }
+        System.Collections.IEnumerator RemindCo(string s)
+        {
+            if (_status == null) yield break;
+            _status.gameObject.SetActive(true);
+            _status.text = s;
+            yield return new WaitForSeconds(1.2f);
+            if (_status != null) _status.gameObject.SetActive(false);
+        }
+
+        public void TossCoins() { StartCoroutine(TossCo()); }
+        System.Collections.IEnumerator TossCo()
+        {
+            if (_canvas == null) yield break;
+            var bits = new RectTransform[6];
+            for (int i = 0; i < bits.Length; i++)
+            {
+                var go = new GameObject("CoinFly", typeof(RectTransform));
+                go.transform.SetParent(_canvas.transform, false);
+                var img = go.AddComponent<Image>();
+                img.sprite = ArtKit.Coin;
+                img.raycastTarget = false;
+                var rt = go.GetComponent<RectTransform>();
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.48f);
+                rt.sizeDelta = new Vector2(54f, 54f);
+                bits[i] = rt;
+            }
+            float t = 0f;
+            while (t < 0.42f)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(t / 0.42f);
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    float u = Mathf.Clamp01((k - i * 0.05f) / 0.75f);
+                    bits[i].anchoredPosition = Vector2.Lerp(new Vector2((i - 2.5f) * 36f, 0f), new Vector2(0f, 460f), u * u);
+                }
+                yield return null;
+            }
+            for (int i = 0; i < bits.Length; i++) if (bits[i] != null) Destroy(bits[i].gameObject);
+        }
+
+        public void ShowHang(bool on) { if (_hang != null) _hang.gameObject.SetActive(on); }
+        public void SetFailNote(string s) { if (_failBody != null) _failBody.text = s ?? ""; }
+        public void ShowDaily() { if (_shell != null) _shell.ShowDaily(); }
+        public void ShowGallery() { if (_shell != null) _shell.ShowGallery(); }
+        public void ShowStreakSheet() { if (_shell != null) _shell.ShowStreak(); }
+        public void ShowSettings(bool on) { if (_shell != null) _shell.ShowSettings(on); }
+
+        public void ShowLangChoice(bool on)
+        {
+            if (_langEn != null) _langEn.gameObject.SetActive(on);
+            if (_langTr != null) _langTr.gameObject.SetActive(on);
+            SetNamed(_winPanel, "LangEnSh", on);
+            SetNamed(_winPanel, "LangTrSh", on);
+            if (on && _hang != null) _hangWas = _hang.gameObject.activeSelf;
+            SetWinReward(!on);
+            if (_hang != null) _hang.gameObject.SetActive(on ? false : _hangWas);
+        }
+
+        void SetWinReward(bool on)
+        {
+            if (_winPanel == null) return;
+            for (int i = 0; i < _winPanel.transform.childCount; i++)
+            {
+                var child = _winPanel.transform.GetChild(i);
+                string n = child.name;
+                if (n == "Title" || n == "WinRug" || n == "Fill" || n == "LangEn" || n == "LangTr" || n == "LangEnSh" || n == "LangTrSh" || n == "HangBtn") continue;
+                child.gameObject.SetActive(on);
+            }
+        }
+
+        public void ShowBadge(string text, Color color)
+        {
+            if (_splash != null) { StopCoroutine(_splash); _splash = null; }
+            if (_diffSplash != null) _diffSplash.SetActive(false);
+            if (_badge == null) return;
+            _badge.SetActive(true);
+            var img = _badge.GetComponent<Image>();
+            if (img != null) img.color = color;
+            if (_badgeText != null) _badgeText.text = text;
+            _badge.transform.SetAsLastSibling();
+        }
+
+        /// <summary>Full-screen callout that shrinks away, then the header pill stays.</summary>
+        public void PlayDifficultyIntro(string splash, Color color, string pill)
+        {
+            if (_splash != null) StopCoroutine(_splash);
+            HideBadge();
+            _splash = StartCoroutine(SplashThenPill(splash, color, pill));
+        }
+
+        System.Collections.IEnumerator SplashThenPill(string splash, Color color, string pill)
+        {
+            if (_diffSplash != null)
+            {
+                var edge = _diffSplash.GetComponent<Image>();
+                if (edge != null) edge.color = color;
+                if (_diffSplashText != null) _diffSplashText.text = splash;
+                var rt = _diffSplash.GetComponent<RectTransform>();
+                var group = _diffSplash.GetComponent<CanvasGroup>();
+                rt.localScale = Vector3.one;
+                if (group != null) group.alpha = 1f;
+                _diffSplash.SetActive(true);
+                _diffSplash.transform.SetAsLastSibling();
+                float t = 0f;
+                while (t < 0.7f) { t += Time.unscaledDeltaTime; yield return null; }
+                float u = 0f;
+                while (u < 0.38f)
+                {
+                    u += Time.unscaledDeltaTime;
+                    float k = Mathf.Clamp01(u / 0.38f);
+                    float s = Mathf.Lerp(1f, 0.15f, k);
+                    rt.localScale = new Vector3(s, s, 1f);
+                    if (group != null) group.alpha = 1f - k;
+                    yield return null;
+                }
+                _diffSplash.SetActive(false);
+                rt.localScale = Vector3.one;
+                if (group != null) group.alpha = 1f;
+            }
+            _splash = null;
+            ShowBadge(pill, color);
+        }
+
+        public void HideBadge()
+        {
+            if (_splash != null) { StopCoroutine(_splash); _splash = null; }
+            if (_diffSplash != null) _diffSplash.SetActive(false);
+            if (_badge != null) _badge.SetActive(false);
+        }
+
+        public void ApplyTheme()
+        {
+            if (_title != null) _title.color = ThemeConfig.Ink;
+            if (_status != null) _status.color = ThemeConfig.Muted;
+            var surface = ThemeConfig.IsLight ? ThemeConfig.BgTop : ViewKit.Background;
+            var titleInk = ThemeConfig.IsLight ? ThemeConfig.Ink : ViewKit.Cream;
+            Paint(_menu, surface);
+            Paint(_map, surface);
+            SetText(_menu, "Title", titleInk);
+            SetText(_menu, "Sub", ThemeConfig.Muted);
+            SetText(_menu, "Body", titleInk);
+            SetText(_map, "Title", titleInk);
+            SetText(_map, "Meta", titleInk);
+            TintButtons(_top != null ? _top.transform : null);
+            TintButtons(_menu != null ? _menu.transform : null);
+            TintButtons(_map != null ? _map.transform : null);
+            TintButtons(_failPanel != null ? _failPanel.transform : null);
+            TintButtons(_winPanel != null ? _winPanel.transform : null);
+            TintOne(_slot);
+            TintOne(_comb);
+            TintOne(_shuttle);
+            PaintFill(_winPanel, ThemeConfig.Card);
+            PaintFill(_failPanel, ThemeConfig.Card);
+            if (_themeLabel != null) _themeLabel.text = Copy.Get(ThemeConfig.IsLight ? "themeToDark" : "themeToLight");
+        }
+
+        static void Paint(GameObject go, Color color)
+        {
+            if (go == null) return;
+            var img = go.GetComponent<Image>();
+            if (img != null) img.color = color;
+        }
+
+        static void SetText(GameObject go, string child, Color color)
+        {
+            if (go == null) return;
+            var t = go.transform.Find(child);
+            if (t == null) return;
+            var label = t.GetComponent<Text>();
+            if (label != null) label.color = color;
+        }
+
+        static void PaintFill(GameObject card, Color color)
+        {
+            if (card == null) return;
+            var fill = card.transform.Find("Fill");
+            if (fill == null) return;
+            var img = fill.GetComponent<Image>();
+            if (img != null) img.color = color;
+        }
+
+        static void TintButtons(Transform root)
+        {
+            if (root == null) return;
+            for (int i = 0; i < root.childCount; i++) TintOne(root.GetChild(i).GetComponent<Button>());
+        }
+
+        static void TintOne(Button b)
+        {
+            if (b == null) return;
+            var img = b.GetComponent<Image>();
+            if (img == null) return;
+            string n = b.name;
+            if (n == "winNext" || n == "ContinueBtn" || n == "RetryBtn" || n == "MapBtn" || n == "HomeBtn" || n == "LangEn" || n == "LangTr") return;
+            if (Mathf.Abs(img.color.g - ViewKit.Green.g) < 0.08f && img.color.g > img.color.r) return;
+            img.color = ThemeConfig.Button;
+            var label = b.GetComponentInChildren<Text>();
+            if (label != null) label.color = ThemeConfig.ButtonText;
+        }
+
+        public void ShowWin(string text) { ShowLevelComplete(0); if (_winTitle != null) _winTitle.text = text; }
+        public void ShowFail(string title, int stitchesLeft, float progress, string continueLabel)
+        {
+            HidePanels();
+            ApplyLanguage();
+            _failTitle.text = title;
+            if (_failCount != null) _failCount.text = stitchesLeft.ToString();
+            if (_failLeft != null) _failLeft.text = Copy.Get(stitchesLeft == 1 ? "left1" : "leftN");
+            if (_failFill != null)
+            {
+                var rt = _failFill.rectTransform;
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = new Vector2(Mathf.Clamp01(progress), 1f);
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+            }
+            _failBody.text = "";
+            SetFailCopy(WrapContinue(continueLabel));
+            ShowDim(false);
+            _failPanel.SetActive(true);
+            _failPanel.transform.SetAsLastSibling();
+        }
+        public void HidePanels()
+        {
+            _winPanel.SetActive(false);
+            _failPanel.SetActive(false);
+            if (_dim != null) _dim.SetActive(false);
+            if (_chip != null) _chip.SetActive(false);
+            if (_diffSplash != null) _diffSplash.SetActive(false);
+            ClearBits();
+        }
+
+        void ShowDim(bool withChip)
+        {
+            if (_dim != null)
+            {
+                _dim.SetActive(true);
+                _dim.transform.SetAsLastSibling();
+            }
+            if (_chip != null)
+            {
+                _chip.SetActive(withChip);
+                if (withChip && _chipText != null) _chipText.text = _coins != null ? _coins.text.Replace(" ¢", "") : "";
+                if (withChip) _chip.transform.SetAsLastSibling();
+            }
+        }
+
         static RectTransform Rect(Transform parent, string name, Vector2 aMin, Vector2 aMax)
         {
             var go = new GameObject(name, typeof(RectTransform));
@@ -94,17 +713,330 @@ namespace Rugtopia.View
         {
             var rt = Rect(parent, name, aMin, aMax); rt.gameObject.AddComponent<Image>().color = c; return rt;
         }
+        GameObject Card(Transform parent, string name, Vector2 aMin, Vector2 aMax, Color border)
+        {
+            var edge = Panel(parent, name, aMin, aMax, border);
+            var edgeImg = edge.GetComponent<Image>();
+            edgeImg.sprite = ArtKit.UiRound;
+            edgeImg.type = Image.Type.Sliced;
+            var fill = Panel(edge, "Fill", new Vector2(0.025f, 0.02f), new Vector2(0.975f, 0.98f), ViewKit.Hex("#F3E6CF"));
+            var fillImg = fill.GetComponent<Image>();
+            fillImg.sprite = ArtKit.UiRound;
+            fillImg.type = Image.Type.Sliced;
+            fillImg.raycastTarget = false;
+            return edge.gameObject;
+        }
         static Text Txt(Transform parent, string name, Vector2 aMin, Vector2 aMax, string s, int size, TextAnchor anchor, Color c)
         {
             var t = Rect(parent, name, aMin, aMax).gameObject.AddComponent<Text>();
-            t.font = ViewKit.Font; t.text = s; t.fontSize = size; t.alignment = anchor; t.color = c; t.raycastTarget = false;
+            t.font = ViewKit.Font; t.text = s; t.fontSize = size; t.fontStyle = FontStyle.Bold; t.alignment = anchor; t.color = c;
+            t.alignByGeometry = true; t.raycastTarget = false;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Truncate;
             return t;
         }
         Button Btn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id)
         {
-            var rt = Panel(parent, name, aMin, aMax, new Color(0.96f, 0.9f, 0.78f));
+            return Btn(parent, name, aMin, aMax, label, id, false);
+        }
+
+        Button Btn(Transform parent, string name, Vector2 aMin, Vector2 aMax, string label, string id, bool primary)
+        {
+            var rt = Panel(parent, name, aMin, aMax, primary ? ViewKit.Green : ViewKit.Hex("#3D2A20"));
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
             var b = rt.gameObject.AddComponent<Button>();
-            Txt(rt, "Label", Vector2.zero, Vector2.one, label, 34, TextAnchor.MiddleCenter, new Color(0.17f, 0.1f, 0.08f));
+            var ink = primary ? Color.white : ViewKit.Cream;
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 44, TextAnchor.MiddleCenter, ink);
+            var lrt = text.rectTransform;
+            lrt.anchorMin = new Vector2(0.06f, 0.5f);
+            lrt.anchorMax = new Vector2(0.94f, 0.5f);
+            lrt.pivot = new Vector2(0.5f, 0.5f);
+            lrt.sizeDelta = new Vector2(0f, 72f);
+            lrt.anchoredPosition = Vector2.zero;
+            b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return b;
+        }
+
+        static string WrapContinue(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            int split = s.LastIndexOf('&');
+            if (split <= 0) return s;
+            return s.Substring(0, split).TrimEnd() + "\n" + s.Substring(split).TrimStart();
+        }
+
+        void SetFailCopy(string wrapped)
+        {
+            if (_continueLabel == null) return;
+            var lines = _continueLabel.transform.parent;
+            var tracked = lines.Find("Tracked");
+            int nl = string.IsNullOrEmpty(wrapped) ? -1 : wrapped.IndexOf('\n');
+            if (nl < 0)
+            {
+                _continueLabel.text = wrapped ?? "";
+                _continueLabel.alignment = TextAnchor.MiddleCenter;
+                if (tracked != null) tracked.gameObject.SetActive(false);
+                return;
+            }
+            string top = wrapped.Substring(0, nl);
+            string bottom = wrapped.Substring(nl + 1);
+            _continueLabel.text = top;
+            _continueLabel.alignment = TextAnchor.MiddleLeft;
+            if (tracked == null)
+            {
+                var go = new GameObject("Tracked", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+                go.transform.SetParent(lines, false);
+                var h = go.GetComponent<HorizontalLayoutGroup>();
+                h.childAlignment = TextAnchor.MiddleLeft;
+                h.childControlWidth = true;
+                h.childControlHeight = true;
+                h.childForceExpandWidth = false;
+                h.childForceExpandHeight = false;
+                var fit = go.GetComponent<ContentSizeFitter>();
+                fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                tracked = go.transform;
+            }
+            tracked.gameObject.SetActive(true);
+            for (int i = tracked.childCount - 1; i >= 0; i--)
+            {
+                var child = tracked.GetChild(i).gameObject;
+                if (Application.isPlaying) Destroy(child);
+                else DestroyImmediate(child);
+            }
+            var outline = _continueLabel.GetComponent<Outline>();
+            var shadow = _continueLabel.GetComponent<Shadow>();
+            var slots = new System.Collections.Generic.List<LayoutElement>();
+            for (int i = 0; i < bottom.Length; i++)
+            {
+                bool gap = bottom[i] == ' ';
+                var glyph = Txt(tracked, "C" + i, Vector2.zero, Vector2.one, gap ? "" : bottom[i].ToString(), _continueLabel.fontSize, TextAnchor.MiddleCenter, _continueLabel.color);
+                glyph.horizontalOverflow = HorizontalWrapMode.Overflow;
+                glyph.verticalOverflow = VerticalWrapMode.Overflow;
+                var le = glyph.gameObject.AddComponent<LayoutElement>();
+                le.preferredWidth = gap ? 14f : Mathf.Max(8f, glyph.preferredWidth * 0.82f);
+                le.preferredHeight = _continueLabel.fontSize;
+                slots.Add(le);
+                if (gap) continue;
+                if (outline != null)
+                {
+                    var key = glyph.gameObject.AddComponent<Outline>();
+                    key.effectColor = outline.effectColor;
+                    key.effectDistance = outline.effectDistance;
+                }
+                if (shadow != null)
+                {
+                    var drop = glyph.gameObject.AddComponent<Shadow>();
+                    drop.effectColor = shadow.effectColor;
+                    drop.effectDistance = shadow.effectDistance;
+                }
+            }
+            float target = LayoutUtility.GetPreferredWidth(_continueLabel.rectTransform);
+            var layout = tracked.GetComponent<HorizontalLayoutGroup>();
+            var trackedRt = tracked.GetComponent<RectTransform>();
+            float spacing = 7f;
+            float last = -1f;
+            bool measured = false;
+            if (target > 8f && slots.Count > 1)
+            {
+                for (float s = 2f; s <= 16f; s += 1f)
+                {
+                    layout.spacing = s;
+                    for (int i = 0; i < bottom.Length; i++)
+                        if (bottom[i] == ' ') slots[i].preferredWidth = 12f + s * 1.6f;
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(trackedRt);
+                    float width = LayoutUtility.GetPreferredWidth(trackedRt);
+                    if (width > last + 0.5f) measured = true;
+                    last = width;
+                    spacing = s;
+                    if (measured && width >= target - 4f) break;
+                }
+            }
+            if (!measured) spacing = 7f;
+            layout.spacing = spacing;
+            for (int i = 0; i < bottom.Length; i++)
+                if (bottom[i] == ' ') slots[i].preferredWidth = 12f + spacing * 1.6f;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(trackedRt);
+        }
+
+        static void SetNamed(GameObject panel, string child, bool on)
+        {
+            if (panel == null) return;
+            var t = panel.transform.Find(child);
+            if (t != null) t.gameObject.SetActive(on);
+        }
+
+        Button FamilyPill(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Sprite mark, int markPx = 0)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.006f), new Color(0.36f, 0.12f, 0.05f, 0.30f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, ViewKit.Hex("#C4552A"));
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, ViewKit.Hex("#9A3A1E"));
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 0.86f, 0.74f, 0.28f));
+            var rowGo = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            rowGo.transform.SetParent(rt, false);
+            var row = rowGo.GetComponent<RectTransform>();
+            row.anchorMin = row.anchorMax = new Vector2(0.5f, 0.46f);
+            row.pivot = new Vector2(0.5f, 0.5f);
+            row.anchoredPosition = Vector2.zero;
+            var h = rowGo.GetComponent<HorizontalLayoutGroup>();
+            h.childAlignment = TextAnchor.MiddleCenter;
+            h.spacing = 8f;
+            h.childControlWidth = true;
+            h.childControlHeight = true;
+            h.childForceExpandWidth = false;
+            h.childForceExpandHeight = false;
+            var fit = rowGo.GetComponent<ContentSizeFitter>();
+            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (mark != null)
+            {
+                var icon = Panel(row, "Mark", Vector2.zero, Vector2.one, Color.white);
+                var ii = icon.GetComponent<Image>();
+                ii.sprite = mark;
+                ii.preserveAspect = true;
+                ii.raycastTarget = false;
+                var le = icon.gameObject.AddComponent<LayoutElement>();
+                float markSize = markPx > 0 ? markPx : (font >= 40 ? 42f : 28f);
+                le.preferredWidth = le.preferredHeight = markSize;
+            }
+            var linesGo = new GameObject("Lines", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            linesGo.transform.SetParent(row, false);
+            var lines = linesGo.GetComponent<VerticalLayoutGroup>();
+            lines.childAlignment = TextAnchor.MiddleLeft;
+            lines.spacing = -2f;
+            lines.childControlWidth = true;
+            lines.childControlHeight = true;
+            lines.childForceExpandWidth = false;
+            lines.childForceExpandHeight = false;
+            var linesFit = linesGo.GetComponent<ContentSizeFitter>();
+            linesFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            linesFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var text = Txt(linesGo.transform, "Label", Vector2.zero, Vector2.one, label, font, TextAnchor.MiddleCenter, Color.white);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = ViewKit.Hex("#3A1C12");
+            key.effectDistance = new Vector2(1.8f, -1.8f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0.16f, 0.05f, 0.02f, 0.65f);
+            drop.effectDistance = new Vector2(0f, -2f);
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        Button FamilyIcon(Transform parent, string name, Vector2 a, Vector2 b, Sprite icon, string label, string id)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.01f), new Vector2(b.x, b.y - 0.006f), new Color(0.30f, 0.18f, 0.10f, 0.14f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, Color.white);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = -12f;
+            layout.padding = new RectOffset(0, 0, 0, 0);
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            var glyph = Panel(rt, "Icon", Vector2.zero, Vector2.one, ViewKit.Hex("#C4552A"));
+            var gi = glyph.GetComponent<Image>();
+            gi.sprite = icon;
+            gi.preserveAspect = true;
+            gi.raycastTarget = false;
+            var gle = glyph.gameObject.AddComponent<LayoutElement>();
+            gle.preferredWidth = gle.preferredHeight = 150f;
+            var text = Txt(rt, "Label", Vector2.zero, Vector2.one, label, 28, TextAnchor.MiddleCenter, ViewKit.Ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var tle = text.gameObject.AddComponent<LayoutElement>();
+            tle.preferredWidth = 200f;
+            tle.preferredHeight = 32f;
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        Button FamilyFace(Transform parent, string name, Vector2 a, Vector2 b, string label, string id, int font, Color face, Color lip, Color ink, Color keyColor)
+        {
+            var shadow = Panel(parent, name + "Sh", new Vector2(a.x, a.y - 0.012f), new Vector2(b.x, b.y - 0.006f), new Color(0.16f, 0.08f, 0.05f, 0.28f));
+            var sh = shadow.GetComponent<Image>();
+            sh.sprite = ArtKit.UiRound;
+            sh.type = Image.Type.Sliced;
+            sh.raycastTarget = false;
+            var rt = Panel(parent, name, a, b, face);
+            var image = rt.GetComponent<Image>();
+            image.sprite = ArtKit.UiRound;
+            image.type = Image.Type.Sliced;
+            var btn = rt.gameObject.AddComponent<Button>();
+            ClipFace(rt, "Lip", 0f, 0.18f, lip);
+            ClipFace(rt, "Rim", 0.90f, 1f, new Color(1f, 1f, 1f, 0.16f));
+            var text = Txt(rt, "Label", new Vector2(0.06f, 0.16f), new Vector2(0.94f, 0.72f), label, font, TextAnchor.MiddleCenter, ink);
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var key = text.gameObject.AddComponent<Outline>();
+            key.effectColor = keyColor;
+            key.effectDistance = new Vector2(1.7f, -1.7f);
+            var drop = text.gameObject.AddComponent<Shadow>();
+            drop.effectColor = new Color(0f, 0f, 0f, 0.35f);
+            drop.effectDistance = new Vector2(0f, -2f);
+            btn.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
+            return btn;
+        }
+
+        static void ClipFace(Transform parent, string name, float y0, float y1, Color color)
+        {
+            var clipGo = new GameObject(name, typeof(RectTransform), typeof(RectMask2D));
+            clipGo.transform.SetParent(parent, false);
+            var clip = clipGo.GetComponent<RectTransform>();
+            clip.anchorMin = new Vector2(0f, y0);
+            clip.anchorMax = new Vector2(1f, y1);
+            clip.offsetMin = clip.offsetMax = Vector2.zero;
+            var face = Panel(clip, "Face", Vector2.zero, Vector2.one, color);
+            float span = Mathf.Max(0.001f, y1 - y0);
+            var fr = face.GetComponent<RectTransform>();
+            fr.anchorMin = new Vector2(0f, (0f - y0) / span);
+            fr.anchorMax = new Vector2(1f, (1f - y0) / span);
+            fr.offsetMin = fr.offsetMax = Vector2.zero;
+            var img = face.GetComponent<Image>();
+            img.sprite = ArtKit.UiRound;
+            img.type = Image.Type.Sliced;
+            img.raycastTarget = false;
+        }
+
+        Button IconBtn(Transform parent, string name, Vector2 aMin, Vector2 aMax, Sprite icon, string id, float inset = 0.22f)
+        {
+            var rt = Panel(parent, name, aMin, aMax, ThemeConfig.Button);
+            var image = rt.GetComponent<Image>();
+            image.sprite = Glyphs.Circle;
+            image.preserveAspect = true;
+            var b = rt.gameObject.AddComponent<Button>();
+            var mark = Panel(rt, "Icon", new Vector2(inset, inset), new Vector2(1f - inset, 1f - inset), new Color(1f, 0.95f, 0.88f, 1f));
+            var markImg = mark.GetComponent<Image>();
+            markImg.sprite = icon;
+            markImg.preserveAspect = true;
+            markImg.raycastTarget = false;
+            var badge = Panel(rt, "Badge", new Vector2(0.58f, 0.58f), new Vector2(1.08f, 1.08f), ViewKit.Ink);
+            var badgeImg = badge.GetComponent<Image>();
+            badgeImg.sprite = Glyphs.Circle;
+            badgeImg.raycastTarget = false;
+            var count = Txt(badge, "Count", Vector2.zero, Vector2.one, "", 22, TextAnchor.MiddleCenter, ViewKit.Cream);
+            count.horizontalOverflow = HorizontalWrapMode.Overflow;
+            count.verticalOverflow = VerticalWrapMode.Overflow;
             b.onClick.AddListener(() => { if (Clicked != null) Clicked(id); });
             return b;
         }

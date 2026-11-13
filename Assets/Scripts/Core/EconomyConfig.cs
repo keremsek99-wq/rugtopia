@@ -8,7 +8,8 @@ namespace Rugtopia.Core
         public const int StartCoins = 300;
         public const int PriceSlot = 600, PriceComb = 700, PriceShuttle = 900, PriceRefill = 900;
         public static readonly int[] ContinuePrices = { 900, 1500, 2100 };
-        public const int UnlockSlot = 9, UnlockComb = 17, UnlockShuttle = 24, UnlockStreak = 24, UnlockRv2x = 7, UnlockInterstitial = 19;
+        public const int UnlockSlot = 7, UnlockComb = 13, UnlockShuttle = 17, UnlockStreak = 19, UnlockRv2x = 7, UnlockInterstitial = 29;
+        public const int UnlockDaily = 10, UnlockGallery = 10; // maxLevel after beating level 10
         public const int FreeSlot = 3, FreeComb = 2, FreeShuttle = 2; // granted with the booster intro
         public const int MaxLives = 5, PassLives = 8;
         public static readonly TimeSpan LifeRefill = TimeSpan.FromMinutes(30);
@@ -26,6 +27,6 @@ namespace Rugtopia.Core
             }
         }
         public static int ContinuePrice(int continuesUsed) { return ContinuePrices[Math.Min(continuesUsed, ContinuePrices.Length - 1)]; }
-        public static bool LosesLifeOnFail(int levelIndex) { return levelIndex >= 3; }
+        public static bool LosesLifeOnFail(int levelIndex) { return levelIndex >= 15; }
     }
 }

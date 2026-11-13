@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Rugtopia.Core;
 
 namespace Rugtopia.Meta
@@ -51,11 +52,33 @@ namespace Rugtopia.Meta
             SaveService.Save();
         }
 
+        public static bool FreeContinueToday()
+        {
+            return S.freeContinueDay != DateTime.UtcNow.ToString("yyyyMMdd");
+        }
+
+        public static int ContinueCost()
+        {
+            return FreeContinueToday() ? 0 : EconomyConfig.ContinuePrice(0);
+        }
+
+        /// <summary>Interstitial stub: level 30 or later, and never on the first calendar day.</summary>
+        public static bool AllowInterstitial(int levelIndex)
+        {
+            if (levelIndex < EconomyConfig.UnlockInterstitial) return false;
+            if (S.firstPlayUtc == 0) return false;
+            var first = new DateTime(S.firstPlayUtc, DateTimeKind.Utc).Date;
+            return first != DateTime.UtcNow.Date;
+        }
+
         public static bool TryContinue(GameState g)
         {
-            int price = EconomyConfig.ContinuePrice(g.Continues);
-            if (S.coins < price || !g.Continue()) return false;
-            S.coins -= price; S.invComb += 1; // continue = +1 slot (Core) + 1 free comb (inventory)
+            bool free = FreeContinueToday();
+            int price = free ? 0 : EconomyConfig.ContinuePrice(g.Continues);
+            if (!free && S.coins < price) return false;
+            if (!g.Continue()) return false;
+            if (free) S.freeContinueDay = DateTime.UtcNow.ToString("yyyyMMdd");
+            else { S.coins -= price; S.invComb += 1; }
             SaveService.Save();
             return true;
         }
@@ -66,6 +89,8 @@ namespace Rugtopia.Meta
             S.coins += reward;
             S.maxLevel = Math.Max(S.maxLevel, levelIndex + 1);
             S.streak++;
+            S.streakBroken = false;
+            Analytics.Track("streak_changed", ("to", S.streak.ToString()), ("reason", "win"));
             while (S.bestSeconds.Count <= levelIndex) S.bestSeconds.Add(0);
             if (S.bestSeconds[levelIndex] <= 0 || seconds < S.bestSeconds[levelIndex]) S.bestSeconds[levelIndex] = seconds;
             SaveService.Save();
@@ -74,10 +99,73 @@ namespace Rugtopia.Meta
 
         public static void OnFailExit(int levelIndex)
         {
-            S.streak = 0;
+            BreakStreak("exit");
             if (EconomyConfig.LosesLifeOnFail(levelIndex)) LoseLife();
             SaveService.Save();
         }
+
+        public static void BreakStreak(string reason)
+        {
+            int was = S.streak;
+            if (was <= 0) return;
+            S.streak = 0;
+            S.streakBroken = true;
+            SaveService.Save();
+            Analytics.Track("streak_changed", ("from", was.ToString()), ("to", "0"), ("reason", reason));
+        }
+
+        public static bool DailyUnlocked { get { return S.maxLevel >= EconomyConfig.UnlockDaily; } }
+        public static bool GalleryUnlocked { get { return S.maxLevel >= EconomyConfig.UnlockGallery; } }
+        public static bool StreakUnlocked { get { return S.maxLevel >= EconomyConfig.UnlockStreak; } }
+
+        public static int DailyCoin(int day)
+        {
+            int[] table = { 40, 70, 100, 140, 200, 280, 100 };
+            if (day < 0) day = 0;
+            if (day > 6) day = 6;
+            return table[day];
+        }
+
+        public static bool DailyClaimedToday()
+        {
+            return S.dailyLast == Day(0);
+        }
+
+        /// <summary>The day index that can be claimed now, or -1 when today is already claimed. A missed day returns 0.</summary>
+        public static int DailyOffer()
+        {
+            if (S.dailyLast == Day(0)) return -1;
+            if (S.dailyLast != Day(-1)) S.dailyDay = 0;
+            if (S.dailyDay < 0 || S.dailyDay > 6) S.dailyDay = 0;
+            return S.dailyDay;
+        }
+
+        public static void ClaimDaily()
+        {
+            int day = DailyOffer();
+            if (day < 0) return;
+            S.coins += DailyCoin(day);
+            if (day == 6) { S.invSlot += 1; S.invComb += 1; S.invShuttle += 1; }
+            S.dailyLast = Day(0);
+            S.dailyDay = (day + 1) % 7;
+            SaveService.Save();
+            Analytics.Track("daily_claim", ("day", (day + 1).ToString()));
+        }
+
+        public static bool IsHung(int levelIndex)
+        {
+            return S.hung != null && S.hung.Contains(levelIndex);
+        }
+
+        public static void Hang(int levelIndex)
+        {
+            if (S.hung == null) S.hung = new List<int>();
+            if (!S.hung.Contains(levelIndex)) S.hung.Add(levelIndex);
+            SaveService.Save();
+            Analytics.Track("gallery_hang", ("level", (levelIndex + 1).ToString()));
+        }
+
+        static string Day(int offset) { return DateTime.UtcNow.AddDays(offset).ToString("yyyyMMdd"); }
 
         // ---- lives (5, one back every 30 min) ----
         public static int Lives { get { Tick(); return S.lives; } }

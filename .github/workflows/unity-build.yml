@@ -39,7 +39,7 @@ permissions:
   checks: write
 
 concurrency:
-  group: unity-build-${{ github.workflow }}-${{ github.ref }}
+  group: unity-build-run-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
