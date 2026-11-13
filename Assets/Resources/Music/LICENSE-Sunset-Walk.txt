@@ -1,0 +1,13 @@
+Sunset Walk
+Author: KiluaBoy
+Source: https://opengameart.org/content/sunset-walk-ambient-quiet-sweet-loop
+Original file: SunsetWalk.ogg
+
+License: Creative Commons Zero, CC0
+http://creativecommons.org/publicdomain/zero/1.0/
+
+The author released this track as CC0. It is a quiet ambient loop.
+Credit to Kilua Boy is optional and not required.
+
+This file is stored as Assets/Resources/Music/home.ogg and is not re-encoded,
+so the published loop seam stays intact.

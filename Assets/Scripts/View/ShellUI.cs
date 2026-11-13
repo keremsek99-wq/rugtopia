@@ -95,6 +95,7 @@ namespace Rugtopia.View
             if (!on) return;
             _settings.transform.SetAsLastSibling();
             SetButton(_settings.transform, "Sound", Copy.Get(SaveService.Data.muted ? "soundOff" : "soundOn"));
+            SetButton(_settings.transform, "Music", Copy.Get(SaveService.Data.musicMuted ? "musicOff" : "musicOn"));
             SetButton(_settings.transform, "Theme", Copy.Get(ThemeConfig.IsLight ? "themeToDark" : "themeToLight"));
             SetButton(_settings.transform, "Lang", Copy.Get(SaveService.Data.lang == "tr" ? "langToEn" : "langToTr"));
         }
@@ -792,7 +793,8 @@ namespace Rugtopia.View
             Txt(root, "Title", new Vector2(0.16f, 0.86f), new Vector2(0.84f, 0.97f), Copy.Get("settings"), 40, TextAnchor.MiddleCenter, ThemeConfig.Ink);
             Choice(root, "Lang", new Vector2(0.1f, 0.68f), new Vector2(0.9f, 0.84f), Copy.Get("langToTr"), "lang", 36, ViewKit.Hex("#3D2A20"), ViewKit.Hex("#24140E"), new Color(1f, 0.96f, 0.90f), ViewKit.Hex("#1A0C08"));
             Choice(root, "Theme", new Vector2(0.1f, 0.50f), new Vector2(0.9f, 0.66f), Copy.Get("themeToDark"), "theme", 36, ViewKit.Green, ViewKit.Hex("#24543A"), Color.white, ViewKit.Hex("#143828"));
-            Choice(root, "Sound", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.48f), Copy.Get("soundOn"), "sound", 34, Color.white, ViewKit.Hex("#E6D3BC"), ThemeConfig.Ink, ViewKit.Hex("#3A1C12"));
+            Choice(root, "Sound", new Vector2(0.1f, 0.32f), new Vector2(0.49f, 0.48f), Copy.Get("soundOn"), "sound", 30, Color.white, ViewKit.Hex("#E6D3BC"), ThemeConfig.Ink, ViewKit.Hex("#3A1C12"));
+            Choice(root, "Music", new Vector2(0.51f, 0.32f), new Vector2(0.9f, 0.48f), Copy.Get("musicOn"), "music", 30, Color.white, ViewKit.Hex("#E6D3BC"), ThemeConfig.Ink, ViewKit.Hex("#3A1C12"));
             IconLabel(root, "Close", new Vector2(0.37f, 0.05f), new Vector2(0.63f, 0.26f), Glyphs.CloseMark, Copy.Get("close"), "settingsClose");
         }
 

@@ -259,6 +259,7 @@ namespace Rugtopia.View
             if (_mode != Mode.Play || _busy || _g == null || _g.Status != GameStatus.Playing) return;
             Vector2 screen;
             if (!PointerDown(out screen)) return;
+            AudioBus.NotifyGesture();
             if (OverUi()) return;
             Vector2 world = _cam.ScreenToWorldPoint(new Vector3(screen.x, screen.y, 10));
             int lane, depth;
@@ -267,6 +268,7 @@ namespace Rugtopia.View
             bool comb = _g.CombArmed;
             if (comb && !Economy.Consume(Booster.Comb)) { _g.ToggleComb(); RefreshAll(); return; }
             if (comb) Analytics.Track("booster_used", ("booster", "comb"), ("level", (levelIndex + 1).ToString()));
+            if (comb) Feel.Play("booster");
             int hpBefore = _g.Hp;
             if (!_g.Take(lane, depth))
             {
@@ -327,10 +329,15 @@ namespace Rugtopia.View
                 if (e.Kind == EventKind.SpoolTaken && !flew)
                 {
                     flew = true;
-                    Feel.Play("tap");
+                    Feel.Play("pick");
                     Color c = SpoolColor(e.SpoolId);
                     yield return _fx.Fly(from, slot, c, 0.26f);
+                    Feel.Play("drop");
                     _belt.Refresh(_g);
+                }
+                else if (e.Kind == EventKind.SpoolEmptied)
+                {
+                    Feel.Play("belt");
                 }
                 else if (e.Kind == EventKind.StitchWoven)
                 {
@@ -363,6 +370,7 @@ namespace Rugtopia.View
                 if (levelIndex == 0) Analytics.Track("ftue_step", ("step", "win"));
                 if (Economy.AllowInterstitial(levelIndex)) Analytics.Track("interstitial_stub", ("level", (levelIndex + 1).ToString()));
                 Feel.Play("win");
+                Feel.Play("coin");
                 _fx.Confetti();
                 int shown = 0;
                 _hud.ShowLevelComplete(0);
@@ -409,6 +417,32 @@ namespace Rugtopia.View
 
         void OnHud(string id)
         {
+            if (id == "sound")
+            {
+                SaveService.Data.muted = !SaveService.Data.muted;
+                SaveService.Save();
+                Feel.Play("tap");
+                _hud.ShowSettings(true);
+                return;
+            }
+            if (id == "music")
+            {
+                SaveService.Data.musicMuted = !SaveService.Data.musicMuted;
+                SaveService.Save();
+                Feel.Play("tap");
+                AudioBus.ApplyMusic();
+                _hud.ShowSettings(true);
+                return;
+            }
+            if (id != "slot" && id != "comb" && id != "shuttle")
+            {
+                if (id.Length > 2 && id.StartsWith("lv") && int.TryParse(id.Substring(2), out int lockedLi) && lockedLi > SaveService.Data.maxLevel)
+                {
+                    Feel.Play("no");
+                    return;
+                }
+                Feel.Play("tap");
+            }
             if (id == "langEn" || id == "langTr")
             {
                 SaveService.Data.lang = id == "langTr" ? "tr" : "en";
@@ -445,14 +479,7 @@ namespace Rugtopia.View
             if (id == "introOk") { _hud.HideIntro(); return; }
             if (id == "settings") { _hud.ShowSettings(true); return; }
             if (id == "settingsClose") { _hud.ShowSettings(false); return; }
-            if (id == "sound")
-            {
-                SaveService.Data.muted = !SaveService.Data.muted;
-                SaveService.Save();
-                _hud.ShowSettings(true);
-                return;
-            }
-            if (id == "claim") { Economy.ClaimDaily(); _hud.ShowDaily(); return; }
+            if (id == "claim") { Economy.ClaimDaily(); Feel.Play("coin"); _hud.ShowDaily(); return; }
             if (id == "daily") { if (Economy.DailyUnlocked) _hud.ShowDaily(); return; }
             if (id == "gallery") { if (Economy.GalleryUnlocked) _hud.ShowGallery(); return; }
             if (id == "streak") { _hud.ShowStreakSheet(); return; }
@@ -476,13 +503,20 @@ namespace Rugtopia.View
                 case "slot":
                     if (_g.Status == GameStatus.Playing && Economy.Consume(Booster.Slot))
                     {
+                        Feel.Play("booster");
                         Analytics.Track("booster_used", ("booster", "slot"), ("level", (levelIndex + 1).ToString()));
                         Commit(() => _g.AddSlot(), new Vector2(0f, _belt.y));
                     }
+                    else if (_g.Status == GameStatus.Playing) Feel.Play("no");
                     break;
                 case "comb":
                     if (_g.Status != GameStatus.Playing) break;
-                    if (_g.CombArmed || Economy.CanAfford(Booster.Comb)) _g.ToggleComb();
+                    if (_g.CombArmed || Economy.CanAfford(Booster.Comb))
+                    {
+                        _g.ToggleComb();
+                        Feel.Play("tap");
+                    }
+                    else Feel.Play("no");
                     RefreshAll();
                     break;
                 case "shuttle":
@@ -491,11 +525,14 @@ namespace Rugtopia.View
                         int hpBefore = _g.Hp;
                         if (_g.UseShuttle())
                         {
+                            Feel.Play("booster");
                             Economy.Consume(Booster.Shuttle);
                             Analytics.Track("booster_used", ("booster", "shuttle"), ("level", (levelIndex + 1).ToString()));
                             StartCoroutine(Animate(CopyEvents(), new Vector2(0f, _belt.y), hpBefore));
                         }
+                        else Feel.Play("no");
                     }
+                    else if (_g.Status == GameStatus.Playing) Feel.Play("no");
                     break;
                 case "continue":
                     {
@@ -507,7 +544,7 @@ namespace Rugtopia.View
                             _hud.HidePanels();
                             StartCoroutine(Animate(CopyEvents(), new Vector2(0f, _belt.y), hpBefore));
                         }
-                        else _hud.SetStatus("Not enough coins");
+                        else { Feel.Play("no"); _hud.SetStatus("Not enough coins"); }
                         break;
                     }
                 case "retry":

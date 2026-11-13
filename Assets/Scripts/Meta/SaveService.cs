@@ -26,6 +26,7 @@ namespace Rugtopia.Meta
         public int dailyDay;
         public string dailyLast = "";
         public bool muted;
+        public bool musicMuted;
         public List<int> hung = new List<int>();
     }
 

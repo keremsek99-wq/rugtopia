@@ -277,6 +277,7 @@ namespace Rugtopia.EditorTools
             Grab(cam, rt, hud, dir, "shell-path.png", w, h);
             hud.ShowMenu(save.coins, 12);
             save.muted = false;
+            save.musicMuted = false;
             hud.ShowSettings(true);
             Grab(cam, rt, hud, dir, "shell-settings.png", w, h);
             hud.ShowSettings(false);
